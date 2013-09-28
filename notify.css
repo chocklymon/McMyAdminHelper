@@ -1,0 +1,25 @@
+/*
+Styles for the notification popup
+*/
+
+/* RESETS */
+html, body, div {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+/* PAGE STYLES */
+body {
+    color: #101010;
+    background: #FFD573 url(notify-bg.png);
+    font: 16px/150% Georgia, "Times New Roman", Times, serif;
+}
+
+.wrapper {
+    width: 90%;
+    margin: 5% auto;
+    border-radius: 3px;
+    background-color: #FCFCFC;
+    padding: 5px 10px;
+}
