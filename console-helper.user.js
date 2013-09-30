@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.1
+// @version 0.1.2
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -40,12 +40,38 @@ var ch_m = function($) {
     
     var
     
-    /** A list of commands to add to the right click menu. */
-    contextCommands = [
+    /**
+     * A list of commands to be run on a player. These are added to the player
+     * context menu. The name of the currently selected player is added
+     * after the command.
+     * @type Array
+     */
+    playerCommands = [
         {cmnd : 'ban',    text : 'Ban Player'},
         {cmnd : 'kick',   text : 'Kick Player'},
         {cmnd : 'mute',   text : 'Mute Player'},
         {cmnd : 'player', text : 'Get Player Info'}
+    ],
+    
+    /**
+     * A list of commands. These commands are simply set into the input box
+     * as specified.
+     * @type Array
+     */
+    generalCommands = [
+        {cmnd : 's Fred',        text : 'Say'},
+        {cmnd : '/msg ~console', text : 'Msg Self'}
+    ],
+    
+    /**
+     * A list of quick commands. These commands are executed immediately when
+     * the user clicks on the command button.
+     * @type Array
+     */
+    quickCommands = [
+        {cmnd : 'ss',  text : 'Server Status'},
+        {cmnd : 'mvw', text : 'MV Who'},
+        {cmnd : 'who', text : 'Who'}
     ],
     
     /** The key used to retrieve and set data from the local storage object. */
@@ -54,13 +80,16 @@ var ch_m = function($) {
     /** The data object containing the local storage data. */
     data = JSON.parse(localStorage.getItem(localStorageKey)),
           
-    /** Stores the name of the player that is being used for the context menu commands. */
+    /**
+     * Stores the name of the player that is being used for the player context
+     * menu commands.
+     */
     player,
             
     /** Stores if the custom context menu is open. */
     contextMenuOpen = false,
     
-    /** Create the context menu HTML element. */
+    /** Create the context menu HTML element used for the player commands. */
     contextMenu = $('<div>').attr('id', 'ch-contextmenu');
     
     
@@ -237,8 +266,21 @@ var ch_m = function($) {
         }
         chat_box.val(text);
     }
+    
+    function runQuickCommand(event) {
+        setInputText('/' + $(this).attr('data'));
+        
+        // Fire the 'onenter' event for the chat entry box
+        var e = $.Event('keypress');
+        e.keyCode = '13';
+        $("#chatEntryBox").trigger(e);
+    }
 
-    function runCommand(event) {
+    function runGeneralCommand(event) {
+        setInputText('/' + $(this).attr('data'));
+    }
+
+    function runPlayerCommand(event) {
         var cmnd = $(event.target).attr('data');
         setInputText('/' + cmnd + ' ' + player);
         
@@ -268,13 +310,13 @@ var ch_m = function($) {
     
     
     //   Context Menu   //
-    // Attach the commands to the context menu
-    for (var i=0; i < contextCommands.length; i++) {
+    // Attach the commands to the player context menu
+    for (var i=0; i < playerCommands.length; i++) {
         contextMenu.append(
             $('<div>')
-                .attr('data', contextCommands[i].cmnd)
-                .click(runCommand)
-                .text(contextCommands[i].text)
+                .attr('data', playerCommands[i].cmnd)
+                .click(runPlayerCommand)
+                .text(playerCommands[i].text)
         );
     }
     
@@ -310,6 +352,37 @@ var ch_m = function($) {
             closeMenu();
         }
     });
+    
+    
+    // Add command buttons //
+    // Attach the command button holder
+    $("#chatArea").append(
+        $('<div>').attr('id', 'ch-cmnds')
+    );
+    
+    // Attach the commands
+    for (var i=0; i<generalCommands.length; i++) {
+        $("#ch-cmnds").append(
+            $('<button>')
+                .text(generalCommands[i].text)
+                .attr('data', generalCommands[i].cmnd)
+                .click(runGeneralCommand)
+        );
+    }
+    if (generalCommands.length > 0 && quickCommands.length > 0) {
+        // Insert a spacer between the two command types
+        $("#ch-cmnds").append($('<div>').addClass('ch-h-spacer'));
+    }
+    for (var i=0; i<quickCommands.length; i++) {
+        $("#ch-cmnds").append(
+            $('<button>')
+                .text(quickCommands[i].text)
+                .attr('data', quickCommands[i].cmnd)
+                .click(runQuickCommand)
+        );
+    }
+    
+    
     
     
     // Replace the current add row function with mine

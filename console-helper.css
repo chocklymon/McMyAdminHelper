@@ -22,3 +22,16 @@ Console chat helper styles
 #ch-contextmenu div:hover {
     background-color: #DFDFDF;
 }
+
+.ch-h-spacer {
+    display: inline-block;
+    width: 1px;
+    background-color: #888;
+    margin: 1px 5px;
+    padding: 0;
+    height: 10px;
+}
+
+#ch-cmnds button {
+    margin: 6px 5px 4px 4px;
+}
