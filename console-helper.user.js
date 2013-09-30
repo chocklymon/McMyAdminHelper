@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.5
+// @version 0.1.6
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -15,7 +15,7 @@ Some helpful filters.
 - Innapropriate Language -
 {regex:"(hentai|ecchi|yaoi|yuri|futa|p[0o]rn|pr[0o]n|[e3]rot[i1]c|rape)",modifiers:"gi",replace:"<b>$1</b>",alert:true,name:"Pornographic Language"}
 {regex:"(pussy|cunt|vag|b[0o]+b|breast|p[e3]+n[i1]+s?|d[i1]ck|(?:\\s|^)ass(?:$|[^u])|genital)",modifiers:"gi",replace:"<b>$1</b>",alert:true,name:"Anatomical Terms"}
-{regex:"(b[i1]tch|wh[o0]re|jack[ \\-]*ass|arse|n[i1]gger|sh[i1]+t|dam[mn]*|fag|fuck|(?:[^io]|^)f[ \\-]*you|screw)",modifiers:"gi",replace:"<b>$1</b>",alert:true,name:"Curse Words"}
+{regex:"(b[i1]tch|wh[o0]re|jack[ \\-]*ass|arse|n[i1]gger|sh[i1]+t|dam[mn]*(?:[^a])|fag|fuck|(?:\\s|^)f[ \\-]*(?:yo)?u+(?:\\s|$)|f[ \\-]*u{3,}|screw)",modifiers:"gi",replace:"<b>$1</b>",alert:true,name:"Curse Words"}
 {regex:"((?:[^r]|^)God|Christ|Jesus|hell(?:$|[^o]))",modifiers:"gi",replace:"<b>$1</b>",alert:true,name:"Religious Language"}
 
 - Moderator Words -
@@ -311,8 +311,19 @@ var ch_m = function($) {
         chat_box.val(text + ' ');
     }
     
+    function runCommand(cmnd, append) {
+        if (typeof cmnd == 'object') {
+            // Try to get the command from the objects data attribute
+            cmnd = $(cmnd).attr('data');
+        }
+        setInputText(cmnd, append, false);
+        
+        // Focus on the input field
+        $("#chatEntryBox").focus();
+    }
+    
     function runQuickCommand(event) {
-        setInputText($(this).attr('data'));
+        runCommand(this);
         
         // Fire the 'onenter' event for the chat entry box
         var e = $.Event('keypress');
@@ -321,12 +332,12 @@ var ch_m = function($) {
     }
 
     function runGeneralCommand(event) {
-        setInputText($(this).attr('data'));
+        runCommand(this);
     }
 
     function runPlayerCommand(event) {
         var cmnd = $(event.target).attr('data');
-        setInputText(cmnd + ' ' + player);
+        runCommand(cmnd + ' ' + player);
         
         // Close the context menu
         closeMenu();
@@ -366,7 +377,7 @@ var ch_m = function($) {
         // Add the /msg command to the clicked on player
         var player_div = $(event.target);
         if (player_div.hasClass('chatName')) {
-            setInputText("msg " + player_div.text(), true);
+            runCommand("msg " + player_div.text(), true);
         }
     }).bind("contextmenu", function(event) {
         // Display the context menu
