@@ -8,7 +8,9 @@
         <div class="wrapper">
             <div class="message">
                 <?php
-                if (isset($_GET['message'])) {
+                if (isset($_GET['m'])) {
+                    echo $_GET['m'];
+                } else if (isset($_GET['message'])) {
                     echo $_GET['message'];
                 } else {
                     echo "Notification alert";

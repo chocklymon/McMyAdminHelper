@@ -1,0 +1,24 @@
+/*
+Console chat helper styles
+*/
+
+#ch-contextmenu {
+    display: none;
+    position: absolute;
+    width: 100px;
+    background-color: #F0F0F0;
+    font-family: Segoe UI, Sans-Serif;
+    font-size: 10pt;
+    border: 1px solid #555;
+    border-radius: 2px;
+    padding: 5px;
+}
+#ch-contextmenu div {
+    border-bottom: 1px solid #DDD;
+    padding: 4px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+#ch-contextmenu div:hover {
+    background-color: #DFDFDF;
+}
