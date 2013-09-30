@@ -40,19 +40,7 @@ var ch_m = function($) {
     
     var
     
-    /**
-     * A list of commands to be run on a player. These are added to the player
-     * context menu. The name of the currently selected player is added
-     * after the command.
-     * @type Array
-     */
-    playerCommands = [
-        {cmnd : 'ban',    text : 'Ban Player'},
-        {cmnd : 'kick',   text : 'Kick Player'},
-        {cmnd : 'mute',   text : 'Mute Player'},
-        {cmnd : 'player', text : 'Get Player Info'}
-    ],
-    
+    // Commands //
     /**
      * A list of commands. These commands are simply set into the input box
      * as specified.
@@ -73,6 +61,26 @@ var ch_m = function($) {
         {cmnd : 'mvw', text : 'MV Who'},
         {cmnd : 'who', text : 'Who'}
     ],
+            
+    /**
+     * A list of commands to be run on a player. These are added to the player
+     * context menu. The name of the currently selected player is added
+     * after the command.
+     * @type Array
+     */
+    playerCommands = [
+        {cmnd : 'ban',    text : 'Ban Player'},
+        {cmnd : 'kick',   text : 'Kick Player'},
+        {cmnd : 'mute',   text : 'Mute Player'},
+        {cmnd : 'player', text : 'Get Player Info'}
+    ],
+    
+    // Other //
+    /** Stores if the custom context menu is open. */
+    contextMenuOpen = false,
+    
+    /** Create the context menu HTML element used for the player commands. */
+    contextMenu = $('<div>').attr('id', 'ch-contextmenu'),
     
     /** The key used to retrieve and set data from the local storage object. */
     localStorageKey = "cdata",
@@ -84,13 +92,7 @@ var ch_m = function($) {
      * Stores the name of the player that is being used for the player context
      * menu commands.
      */
-    player,
-            
-    /** Stores if the custom context menu is open. */
-    contextMenuOpen = false,
-    
-    /** Create the context menu HTML element used for the player commands. */
-    contextMenu = $('<div>').attr('id', 'ch-contextmenu');
+    player;
     
     
     /* ----------------------------- *
@@ -215,12 +217,77 @@ var ch_m = function($) {
     }
     
     /**
+     * Closes the player context menu.
+     */
+    function closeMenu() {
+        contextMenu.hide();
+        contextMenuOpen = false;
+    }
+    
+    /**
+     * Gets the left position for the player context menu.
+     * @param {event} evt The event object that triggered the context menu to be
+     * opened, used to get the position of the mouse.
+     * @returns {String} The left position for the context menu in pixels.
+     */
+    function getContextMenuLeft(evt) {
+        var val = 0;
+        if (evt.pageX) {
+            val = evt.pageX;
+        } else if (evt.clientX) {
+           val = evt.clientX + (
+                // Compensate for horizontal scrolling
+                document.documentElement.scrollLeft
+                    ? document.documentElement.scrollLeft
+                    : document.body.scrollLeft
+            );
+        }
+        // Make sure val is not off the edge of the page
+        var page_width = $('body').width();
+        var menu_width = contextMenu.width();
+        if (val + menu_width > page_width) {
+            val -= menu_width;
+        }
+        return val + "px";
+    }
+    
+    /**
+     * Gets the top position for the player context menu.
+     * @param {event} evt The event object that triggered the context menu to be
+     * opened, used to get the position of the mouse.
+     * @returns {String} The top position for the context menu in pixels.
+     */
+    function getContextMenuTop(evt) {
+        var val = 0;
+        if (evt.pageY) {
+            val = evt.pageY;
+        } else if (evt.clientY) {
+            val = evt.clientY + (
+                // Compensate for vertical scrolling
+                document.documentElement.scrollTop
+                    ? document.documentElement.scrollTop
+                    : document.body.scrollTop
+            );
+        }
+        // Make sure val is not off the bottom of the page
+        var page_height = $('body').height();
+        var menu_height = contextMenu.height();
+        if (val + menu_height > page_height) {
+            val -= menu_height;
+        }
+        return val + "px";
+    }
+    
+    /**
      * Notifies the user of important events by opening a new window.
      * @param {string} message The message to display in the notification.
      */
     function notify(message) {
-        window.open('http://c.lan/personal/chat-helper/notify.php?m=' + encodeURIComponent(message),
-            'notification','width=300,height=150,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0');
+        window.open(
+            'http://c.lan/personal/chat-helper/notify.php?m=' + encodeURIComponent(message),
+            'notification',
+            'width=300,height=150,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0'
+        );
     }
     
     /**
@@ -256,46 +323,57 @@ var ch_m = function($) {
         return text;
     }
     
-    function getContextMenuLeft(evt) {
-        var val = 0;
-        if (evt.pageX) {
-            val = evt.pageX;
-        } else if (evt.clientX) {
-           val = evt.clientX + (
-                // Compensate for horizontal scrolling
-                document.documentElement.scrollLeft
-                    ? document.documentElement.scrollLeft
-                    : document.body.scrollLeft
-            );
+    /**
+     * Sets a command into the input text and then focuses on the input text
+     * field.
+     * @param {mixed} cmnd The command to input as a string, or the HTML
+     * element that has a command in it's data attribute.
+     * @param {boolean} append When true the text is placed at the beginning of
+     * any existing input text, otherwise the text is replaced. See setInputText.
+     */
+    function runCommand(cmnd, append) {
+        if (typeof cmnd == 'object') {
+            // Try to get the command from the objects data attribute
+            cmnd = $(cmnd).attr('data');
         }
-        // Make sure val is not off the edge of the page
-        var page_width = $('body').width();
-        var menu_width = contextMenu.width();
-        if (val + menu_width > page_width) {
-            val -= menu_width;
-        }
-        return val + "px";
+        setInputText(cmnd, append, false);
+        
+        // Focus on the input field
+        $("#chatEntryBox").focus();
     }
     
-    function getContextMenuTop(evt) {
-        var val = 0;
-        if (evt.pageY) {
-            val = evt.pageY;
-        } else if (evt.clientY) {
-            val = evt.clientY + (
-                // Compensate for vertical scrolling
-                document.documentElement.scrollTop
-                    ? document.documentElement.scrollTop
-                    : document.body.scrollTop
-            );
-        }
-        // Make sure val is not off the bottom of the page
-        var page_height = $('body').height();
-        var menu_height = contextMenu.height();
-        if (val + menu_height > page_height) {
-            val -= menu_height;
-        }
-        return val + "px";
+    /**
+     * Sets a command into the input box, and then immediatly runs the command.
+     * @param {Event} event The event triggering this function.
+     */
+    function runQuickCommand(event) {
+        runCommand(this);
+        
+        // Fire the 'onenter' event for the chat entry box
+        var e = $.Event('keypress');
+        e.keyCode = '13';
+        $("#chatEntryBox").trigger(e);
+    }
+
+    /**
+     * Sets a command into the input box, removing any current text.
+     * @param {Event} event The event triggering this function.
+     */
+    function runGeneralCommand(event) {
+        runCommand(this);
+    }
+
+    /**
+     * Sets a command into the input box, and then closes the player context
+     * menu.
+     * @param {Event} event The event triggering this function.
+     */
+    function runPlayerCommand(event) {
+        var cmnd = $(event.target).attr('data');
+        runCommand(cmnd + ' ' + player);
+        
+        // Close the context menu
+        closeMenu();
     }
     
     /**
@@ -316,43 +394,6 @@ var ch_m = function($) {
             text += ' ' + chat_box.val();
         }
         chat_box.val(text + ' ');
-    }
-    
-    function runCommand(cmnd, append) {
-        if (typeof cmnd == 'object') {
-            // Try to get the command from the objects data attribute
-            cmnd = $(cmnd).attr('data');
-        }
-        setInputText(cmnd, append, false);
-        
-        // Focus on the input field
-        $("#chatEntryBox").focus();
-    }
-    
-    function runQuickCommand(event) {
-        runCommand(this);
-        
-        // Fire the 'onenter' event for the chat entry box
-        var e = $.Event('keypress');
-        e.keyCode = '13';
-        $("#chatEntryBox").trigger(e);
-    }
-
-    function runGeneralCommand(event) {
-        runCommand(this);
-    }
-
-    function runPlayerCommand(event) {
-        var cmnd = $(event.target).attr('data');
-        runCommand(cmnd + ' ' + player);
-        
-        // Close the context menu
-        closeMenu();
-    }
-    
-    function closeMenu() {
-        contextMenu.hide();
-        contextMenuOpen = false;
     }
     
     
@@ -409,7 +450,7 @@ var ch_m = function($) {
     });
     
     
-    // Add command buttons //
+    //   Command Buttons   //
     // Attach the command button holder
     $("#chatArea").append(
         $('<div>').attr('id', 'ch-cmnds')
