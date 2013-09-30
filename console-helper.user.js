@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.6
+// @version 0.1.7
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -256,7 +256,7 @@ var ch_m = function($) {
         return text;
     }
     
-    function mouseX(evt) {
+    function getContextMenuLeft(evt) {
         var val = 0;
         if (evt.pageX) {
             val = evt.pageX;
@@ -268,15 +268,16 @@ var ch_m = function($) {
                     : document.body.scrollLeft
             );
         }
-        // Make sure val is not off the edge of the window
-        var window_width = $(window).width();
-        if (val + 100 > window_width) {
-            val = window_width - 100;
+        // Make sure val is not off the edge of the page
+        var page_width = $('body').width();
+        var menu_width = contextMenu.width();
+        if (val + menu_width > page_width) {
+            val -= menu_width;
         }
         return val + "px";
     }
     
-    function mouseY(evt) {
+    function getContextMenuTop(evt) {
         var val = 0;
         if (evt.pageY) {
             val = evt.pageY;
@@ -287,6 +288,12 @@ var ch_m = function($) {
                     ? document.documentElement.scrollTop
                     : document.body.scrollTop
             );
+        }
+        // Make sure val is not off the bottom of the page
+        var page_height = $('body').height();
+        var menu_height = contextMenu.height();
+        if (val + menu_height > page_height) {
+            val -= menu_height;
         }
         return val + "px";
     }
@@ -385,8 +392,8 @@ var ch_m = function($) {
         if (player_div.hasClass('chatName')) {
             player = player_div.text();
             contextMenu.css({
-                left    : mouseX(event),
-                top     : mouseY(event),
+                left    : getContextMenuLeft(event),
+                top     : getContextMenuTop(event),
                 display : 'block'
             });
             event.preventDefault();
