@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.3
+// @version 0.1.5
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -59,7 +59,7 @@ var ch_m = function($) {
      * @type Array
      */
     generalCommands = [
-        {cmnd : 's Fred',        text : 'Say'},
+        {cmnd : 's Fred',       text : 'Say'},
         {cmnd : 'msg ~console', text : 'Msg Self'}
     ],
     
@@ -270,8 +270,8 @@ var ch_m = function($) {
         }
         // Make sure val is not off the edge of the window
         var window_width = $(window).width();
-        if (val - 200 > window_width) {
-            val = window_width - 200;
+        if (val + 100 > window_width) {
+            val = window_width - 100;
         }
         return val + "px";
     }
