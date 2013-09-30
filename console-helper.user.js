@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.2
+// @version 0.1.3
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -60,7 +60,7 @@ var ch_m = function($) {
      */
     generalCommands = [
         {cmnd : 's Fred',        text : 'Say'},
-        {cmnd : '/msg ~console', text : 'Msg Self'}
+        {cmnd : 'msg ~console', text : 'Msg Self'}
     ],
     
     /**
@@ -102,8 +102,7 @@ var ch_m = function($) {
     
     /**
      * Clears a value from local storage.
-     * key - Optional, deletes the key and it's value from local storage. If
-     * not provided removes all data from local storage.
+     * @param {string} key Optional, deletes the key and it's value from local
      */
     function clear(key) {
         if (key == null) {
@@ -121,8 +120,10 @@ var ch_m = function($) {
     
     /**
      * Gets a piece of data from local storage.
-     * key - the key for the data. If null returns all data stored.
-     * defaultValue - Value to return if the key has no value.
+     * @param {string} key The key for the data. If not provided then this returns
+     * all stored data.
+     * @param {mixed} defaultValue The value to return if the key has no value.
+     * @returns {mixed}
      */
     function get(key, defaultValue) {
         if(key == null){
@@ -138,8 +139,8 @@ var ch_m = function($) {
 
     /**
      * Sets a value to local storage.
-     * key - The key for the value.
-     * value - The data to store.
+     * @param {string} key The key for the value.
+     * @param {mixed} value The data to store.
      */
     function set(key, value) {
         if(data == null){
@@ -154,7 +155,8 @@ var ch_m = function($) {
     
     
     function addChatEntry(name, message, isChat) {
-        // This is a modified verion of the addChatEntry function
+        // This is a modified verion of the addChatEntry function found in
+        // MyMcAdmin.js (version 2.4.4.0).
         message = processMessage(message);
         
         var newLine = $("<div class=\"chatEntry\"></div>");
@@ -179,6 +181,36 @@ var ch_m = function($) {
         if (ScrollChat)
         {
             hist.scrollTop = hist.scrollHeight;
+        }
+    }
+    
+    /**
+     * Appends a series of HTML elements to run the supplied commands to a
+     * jQuery HTML Element.
+     * @param {jQuery} el The jQuery to append the commands to.
+     * @param {array} commands The array of command objects. Each command
+     * object is attached to the element. The command objects should contain
+     * a cmnd that specifies the command to run, and a text that is the
+     * text to display to the user.
+     * @param {function} callback The function to call when the command element
+     * is clicked. Defaults to runGeneralCommand
+     * @param {string} type The html element type to use when appending.
+     * Defaults to '&lt;button&gt;'.
+     */
+    function attachCommands(el, commands, callback, type) {
+        if (!callback) {
+            callback = runGeneralCommand;
+        }
+        if (!type) {
+            type = '<button>';
+        }
+        for (var i=0; i<commands.length; i++) {
+            el.append(
+                $(type)
+                    .text(commands[i].text)
+                    .attr('data', commands[i].cmnd)
+                    .click(callback)
+            );
         }
     }
     
@@ -238,8 +270,8 @@ var ch_m = function($) {
         }
         // Make sure val is not off the edge of the window
         var window_width = $(window).width();
-        if (val - 140 > window_width) {
-            val = window_width - 120;
+        if (val - 200 > window_width) {
+            val = window_width - 200;
         }
         return val + "px";
     }
@@ -259,16 +291,28 @@ var ch_m = function($) {
         return val + "px";
     }
     
-    function setInputText(text, append) {
+    /**
+     * Sets the input text.
+     * @param {string} text The text to put into the input box.
+     * @param {boolean} append When true the text is placed at the beginning of
+     * any existing input text, otherwise the text is replaced.
+     * @param {boolean} notCommand When true, the slash ('/') is not added
+     * to the beginning of the text.
+     * @returns {undefined}
+     */
+    function setInputText(text, append, notCommand) {
         var chat_box = $("#chatEntryBox");
-        if (append) {
-            text += " " + chat_box.val();
+        if (!notCommand) {
+            text = '/' + text;
         }
-        chat_box.val(text);
+        if (append) {
+            text += ' ' + chat_box.val();
+        }
+        chat_box.val(text + ' ');
     }
     
     function runQuickCommand(event) {
-        setInputText('/' + $(this).attr('data'));
+        setInputText($(this).attr('data'));
         
         // Fire the 'onenter' event for the chat entry box
         var e = $.Event('keypress');
@@ -277,12 +321,12 @@ var ch_m = function($) {
     }
 
     function runGeneralCommand(event) {
-        setInputText('/' + $(this).attr('data'));
+        setInputText($(this).attr('data'));
     }
 
     function runPlayerCommand(event) {
         var cmnd = $(event.target).attr('data');
-        setInputText('/' + cmnd + ' ' + player);
+        setInputText(cmnd + ' ' + player);
         
         // Close the context menu
         closeMenu();
@@ -311,14 +355,7 @@ var ch_m = function($) {
     
     //   Context Menu   //
     // Attach the commands to the player context menu
-    for (var i=0; i < playerCommands.length; i++) {
-        contextMenu.append(
-            $('<div>')
-                .attr('data', playerCommands[i].cmnd)
-                .click(runPlayerCommand)
-                .text(playerCommands[i].text)
-        );
-    }
+    attachCommands(contextMenu, playerCommands, runPlayerCommand, '<div>');
     
     // Attach the context menu to the page
     contextMenu.appendTo('body');
@@ -329,7 +366,7 @@ var ch_m = function($) {
         // Add the /msg command to the clicked on player
         var player_div = $(event.target);
         if (player_div.hasClass('chatName')) {
-            setInputText("/msg " + player_div.text(), true);
+            setInputText("msg " + player_div.text(), true);
         }
     }).bind("contextmenu", function(event) {
         // Display the context menu
@@ -361,27 +398,12 @@ var ch_m = function($) {
     );
     
     // Attach the commands
-    for (var i=0; i<generalCommands.length; i++) {
-        $("#ch-cmnds").append(
-            $('<button>')
-                .text(generalCommands[i].text)
-                .attr('data', generalCommands[i].cmnd)
-                .click(runGeneralCommand)
-        );
-    }
+    attachCommands($("#ch-cmnds"), generalCommands, runGeneralCommand);
     if (generalCommands.length > 0 && quickCommands.length > 0) {
         // Insert a spacer between the two command types
         $("#ch-cmnds").append($('<div>').addClass('ch-h-spacer'));
     }
-    for (var i=0; i<quickCommands.length; i++) {
-        $("#ch-cmnds").append(
-            $('<button>')
-                .text(quickCommands[i].text)
-                .attr('data', quickCommands[i].cmnd)
-                .click(runQuickCommand)
-        );
-    }
-    
+    attachCommands($("#ch-cmnds"), quickCommands, runQuickCommand);
     
     
     
