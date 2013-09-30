@@ -10,6 +10,8 @@
 /*
 - Message Filter Template -
 {regex:"",modifiers:"",replace:"",alert:false,name:""}
+
+See console-helper.user.js for some example filters.
 */
 
 // Wrap everything inside of an anymous function
@@ -345,7 +347,7 @@ var ch_m = function($) {
         
         //      Import the CSS        //
         $('head').append($("<link>").attr({
-            'href' : "http://c.lan/personal/chat-helper/chat-helper.css",
+            'href' : "http://c.lan/personal/chat-helper/live-map-helper.css",
             'type' : 'text/css',
             'rel'  : 'stylesheet',
             'media': 'screen'

@@ -8,11 +8,6 @@
 // ==/UserScript==
 
 /*
- * Most of this is simply a modified version of the chat-helper code.
- */
-
-
-/*
 Some helpful filters.
 - Template -
 {regex:"",modifiers:"",replace:"",alert:false,name:""}
