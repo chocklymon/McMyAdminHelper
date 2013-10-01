@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.8
+// @version 0.1.9
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -24,7 +24,7 @@ Some helpful filters.
 {regex:"(moved wrongly)",modifiers:"", replace:"<b>$1</b>", alert:false, name:"Misc"}
 
 - URLs -
-{regex:"(https?://.*\\.\\w+\\S+)",modifiers:"gi",replace:"<a target='_blank' href=\"$1\">$1</a>",alert:false,name:"URL creator"}
+{regex:"(https?://\\w+\\.\\w+\\S+)",modifiers:"gi",replace:"<a target='_blank' href=\"$1\">$1</a>",alert:false,name:"URL creator"}
 
 - Name -
 {regex:"(fred|waffle|console)",modifiers:"gi",replace:"<i>$1</i>",alert:false,name:"Username"}
@@ -76,6 +76,14 @@ var ch_m = function($) {
     ],
     
     // Other //
+    /** The defaults for message filter proccessing. */
+    filterDefaults = {
+        modifiers : 'gi',
+        alert     : false,
+        count     : false,
+        replace   : "<b>$1</b>"
+    },
+    
     /** Stores if the custom context menu is open. */
     contextMenuOpen = false,
     
@@ -292,33 +300,34 @@ var ch_m = function($) {
     
     /**
      * Proccess a chat message for input into a row.
-     * @param {string} message The message to process
+     * @param {string} text The message to process
      * @return {string} The message ready for input as an HTML message.
      */
-    function processMessage(message) {
-        var text = message;
+    function processMessage(text) {
+        var filters = get("filters", []),
+            filter,
+            regex;
 		
 		// Escape any HTML entities
 		text = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 		
 		// Process any message notifications.
-        var messages = get("messages", []);
-        
-        $.each(messages, function(index, m) {
+        for (var i=0; i<filters.length; i++) {            
+            filter = $.extend({}, filterDefaults, filters[i]);
             
-            var regex = new RegExp(m.regex, m.modifiers);
+            regex = new RegExp(filter.regex, filter.modifiers);
             
+            // See if we have a match
             if (text.match(regex) != null) {
-                // Text contains a match
-                
                 // Replace the text
-                text = text.replace(regex, m.replace);
+                text = text.replace(regex, filter.replace);
                 
-                if (m.alert) {
+                // Pop a notification if needed
+                if (filter.alert) {
                     notify("<b>Chat Message Alert:</b><br>" + text);
                 }
             }
-        });
+        }
         
         return text;
     }
@@ -472,6 +481,7 @@ var ch_m = function($) {
     // Expose the local storage helpers
     window.set = set;
     window.get = get;
+    window.clear = clear;
 };
 
 // Inserts the main method into the header of the page so that JQuery works.
