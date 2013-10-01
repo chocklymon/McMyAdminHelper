@@ -22,6 +22,7 @@
  *              // Code for previous command here
  *         }
  *     });
+ * - Add interface for editing, removing, and adding filters.
  */
 
 /*
@@ -31,8 +32,8 @@ Some helpful filters.
 
 - Innapropriate Language -
 {regex:"(hentai|ecchi|yaoi|yuri|futa|p[0o]rn|pr[0o]n|[e3]rot[i1]c|rape)",alert:true,name:"Pornographic Language"}
-{regex:"(pussy|cunt|vag|b[0o]+b|breast|p[e3]+n[i1]+s?|d[i1]ck|(?:\\s|^)ass(?:$|[^u])|genital)",alert:true,name:"Anatomical Terms"}
-{regex:"(b[i1]tch|wh[o0]re|jack[ \\-]*ass|arse|n[i1]gger|sh[i1]+t|dam[mn]*(?:[^a])|fag|fuck|(?:\\s|^)f[ \\-]*(?:yo)?u+(?:\\s|$)|f[ \\-]*u{3,}|screw)",alert:true,name:"Curse Words"}
+{regex:"(pussy|cunt|vag|b[0o]+b|breast|p[e3]+n[i1]+s?|d[i1]ck|(?:\\s|^)ass(?:$|[^u])|arse|genital)",alert:true,name:"Anatomical Terms"}
+{regex:"(b[i1]tch|wh[o0]re|jack[ \\-]*ass|n[i1]gger|sh[i1]+t|dam[mn]*(?:[^a])|fag|fuck|(?:\\s|^)f[ \\-]*(?:yo)?u+(?:\\s|$)|f[ \\-]*u{3,}|screw)",alert:true,name:"Curse Words"}
 {regex:"((?:[^r]|^)God|Christ|Jesus|hell(?:$|[^o]))",alert:true,name:"Religious Language"}
 
 - Moderator Words -
@@ -132,11 +133,11 @@ var ch_m = function($) {
      * @param {string} key Optional, deletes the key and it's value from local
      */
     function clear(key) {
-        if (key == null) {
+        if (!key) {
             data = null;
             localStorage.removeItem(localStorageKey);
         } else {
-            if(data == null){
+            if (!data) {
                 // Do nothing if there is no data
                 return;
             }
@@ -153,11 +154,9 @@ var ch_m = function($) {
      * @returns {mixed}
      */
     function get(key, defaultValue) {
-        if(key == null){
+        if (!key) {
             return data;
-        } else if(data == null){
-            return defaultValue;
-        } else if(data[key] == null){
+        } else if(!data || !data[key]) {
             return defaultValue;
         } else {
             return data[key];
@@ -170,7 +169,7 @@ var ch_m = function($) {
      * @param {mixed} value The data to store.
      */
     function set(key, value) {
-        if(data == null){
+        if (!data) {
             data = {};
         }
         data[key] = value;
@@ -335,7 +334,7 @@ var ch_m = function($) {
             regex = new RegExp(filter.regex, filter.modifiers);
             
             // See if we have a match
-            if (text.match(regex) != null) {
+            if (text.match(regex) !== null) {
                 // Replace the text
                 text = text.replace(regex, filter.replace);
                 
@@ -358,7 +357,7 @@ var ch_m = function($) {
      * any existing input text, otherwise the text is replaced. See setInputText.
      */
     function runCommand(cmnd, append) {
-        if (typeof cmnd == 'object') {
+        if (typeof cmnd === 'object') {
             // Try to get the command from the objects data attribute
             cmnd = $(cmnd).attr('data');
         }
@@ -431,7 +430,7 @@ var ch_m = function($) {
     
     // Attach the CSS to the page
     $('head').append($("<link>").attr({
-        href  : "http://chockly.org/ch/console-helper.css",
+        href  : 'http://chockly.org/ch/console-helper.css',
         type  : 'text/css',
         rel   : 'stylesheet',
         media : 'screen'
@@ -492,7 +491,7 @@ var ch_m = function($) {
     
     
     
-    // Replace the current add row function with mine
+    // Replace the current add chat row function with the modified one
     window.addChatEntry = addChatEntry;
     
     // Expose the local storage helpers
@@ -501,7 +500,7 @@ var ch_m = function($) {
     window.clear = clear;
 };
 
-// Inserts the main method into the header of the page so that JQuery works.
+// Inserts the main method into the page so that JQuery works.
 var chathelper = document.createElement('script');
 chathelper.type = "text/javascript";
 chathelper.textContent = '(' + ch_m.toString() + ')(jQuery);';
