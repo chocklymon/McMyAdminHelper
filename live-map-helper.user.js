@@ -2,7 +2,7 @@
 // @name FSMC Chat Helper
 // @description Adds additional functionality to the final score mc live map chat.
 // @author Curtis Oakley
-// @version 0.1.42
+// @version 0.1.43
 // @match http://mc.finalscoremc.com:25966/*
 // @namespace http://mc.finalscoremc.com:25966/
 // ==/UserScript==
@@ -276,7 +276,7 @@ var ch_m = function($) {
      * Notifies the user of important events by opening a new window.
      */
     function notify(message) {
-        window.open('http://c.lan/personal/chat-helper/notify.php?message=' + encodeURIComponent(message),
+        window.open('http://chockly.org/ch/?m=' + encodeURIComponent(message),
             'notification','width=300,height=150,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0');
     }
     
@@ -347,7 +347,7 @@ var ch_m = function($) {
         
         //      Import the CSS        //
         $('head').append($("<link>").attr({
-            'href' : "http://c.lan/personal/chat-helper/live-map-helper.css",
+            'href' : "http://chockly.org/ch/live-map-helper.css",
             'type' : 'text/css',
             'rel'  : 'stylesheet',
             'media': 'screen'
