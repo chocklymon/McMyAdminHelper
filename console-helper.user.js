@@ -7,27 +7,44 @@
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
 
+/* TODO:
+ * - Add a count so if a message filter is triggered repeatedly in a short enough time it can trigger an alert.
+ *    - Will need a variable to store the filter ID (What to use for the ID? the array index? some sort of hash? the regex?)
+ *    - Will need a configurable variable to specify how long the count should be stored before being cleared.
+ * - Store the last 10 (configurable) commands, have pressing up trigger the message
+ * to be entered into the input box.
+ *     This will require a way to hook into the command being sent from the input box, before the input boxes value is cleared (possibly unbind keypress and use custom version of McMyAdmin's on keypress enter event code)
+ *     $("#chatEntryBox").keyup(function(event) {
+ *         if (event.keyCode == 38) {// 38 is the keycode for the up arrow
+ *              // Code for commands here
+ *              // This should store any text into a temporary variable, so that arrow down can bring it back up.
+ *         } else if (event.keyCode == 40) {// 40 is keycode for down arrow
+ *              // Code for previous command here
+ *         }
+ *     });
+ */
+
 /*
 Some helpful filters.
 - Template -
 {regex:"",modifiers:"",replace:"",alert:false,name:""}
 
 - Innapropriate Language -
-{regex:"(hentai|ecchi|yaoi|yuri|futa|p[0o]rn|pr[0o]n|[e3]rot[i1]c|rape)",modifiers:"gi",replace:"<b>$1</b>",alert:true,name:"Pornographic Language"}
-{regex:"(pussy|cunt|vag|b[0o]+b|breast|p[e3]+n[i1]+s?|d[i1]ck|(?:\\s|^)ass(?:$|[^u])|genital)",modifiers:"gi",replace:"<b>$1</b>",alert:true,name:"Anatomical Terms"}
-{regex:"(b[i1]tch|wh[o0]re|jack[ \\-]*ass|arse|n[i1]gger|sh[i1]+t|dam[mn]*(?:[^a])|fag|fuck|(?:\\s|^)f[ \\-]*(?:yo)?u+(?:\\s|$)|f[ \\-]*u{3,}|screw)",modifiers:"gi",replace:"<b>$1</b>",alert:true,name:"Curse Words"}
-{regex:"((?:[^r]|^)God|Christ|Jesus|hell(?:$|[^o]))",modifiers:"gi",replace:"<b>$1</b>",alert:true,name:"Religious Language"}
+{regex:"(hentai|ecchi|yaoi|yuri|futa|p[0o]rn|pr[0o]n|[e3]rot[i1]c|rape)",alert:true,name:"Pornographic Language"}
+{regex:"(pussy|cunt|vag|b[0o]+b|breast|p[e3]+n[i1]+s?|d[i1]ck|(?:\\s|^)ass(?:$|[^u])|genital)",alert:true,name:"Anatomical Terms"}
+{regex:"(b[i1]tch|wh[o0]re|jack[ \\-]*ass|arse|n[i1]gger|sh[i1]+t|dam[mn]*(?:[^a])|fag|fuck|(?:\\s|^)f[ \\-]*(?:yo)?u+(?:\\s|$)|f[ \\-]*u{3,}|screw)",alert:true,name:"Curse Words"}
+{regex:"((?:[^r]|^)God|Christ|Jesus|hell(?:$|[^o]))",alert:true,name:"Religious Language"}
 
 - Moderator Words -
-{regex:"(h[ea]lp|st[oa]p)",modifiers:"gi",replace:"<b>$1</b>",alert:false,name:"Help Words"}
-{regex:"(gr[ei]+f|theft|th[ei]+f|stole|steal|cheat|hack|x[\\- ]*ray)",modifiers:"gi",replace:"<b>$1</b>",alert:true,name:"Grief Alert"}
-{regex:"(moved wrongly)",modifiers:"", replace:"<b>$1</b>", alert:false, name:"Misc"}
+{regex:"(h[ea]lp|st[oa]p)",name:"Help Words"}
+{regex:"(gr[ei]+f|theft|th[ei]+f|stole|steal|cheat|hack|x[\\- ]*ray)",alert:true,name:"Grief Alert"}
+{regex:"(moved wrongly)",count:3,name:"Misc"}
 
 - URLs -
-{regex:"(https?://\\w+\\.\\w+\\S+)",modifiers:"gi",replace:"<a target='_blank' href=\"$1\">$1</a>",alert:false,name:"URL creator"}
+{regex:"(https?://\\w+\\.\\w+\\S+)",replace:"<a target='_blank' href=\"$1\">$1</a>",name:"URL creator"}
 
 - Name -
-{regex:"(fred|waffle|console)",modifiers:"gi",replace:"<i>$1</i>",alert:false,name:"Username"}
+{regex:"(fred|waffle|console)",replace:"<i>$1</i>",name:"Username"}
 
 */
 
