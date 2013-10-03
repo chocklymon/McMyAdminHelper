@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.9
+// @version 0.1.11
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -23,6 +23,8 @@
  *         }
  *     });
  * - Add interface for editing, removing, and adding filters.
+ * - Add an interface for editing, removing, and adding buttons.
+ *    - Will store the current commands into local storage, have defaults for when absent to first populate the local storage.
  */
 
 /*
@@ -488,6 +490,31 @@ var ch_m = function($) {
         $("#ch-cmnds").append($('<div>').addClass('ch-h-spacer'));
     }
     attachCommands($("#ch-cmnds"), quickCommands, runQuickCommand);
+    
+    
+    //  Helper Manager Interface  //
+    $('body').append(
+"<div id='ch-manager' class='modalbg modalnormal' style='display:none'>"
++   "<div class='modalpanel'>"
++       "<ul class='ch-tab-navigation'>"
++           "<li><a href='#ch-filters'>Filters</a></li>"
++           "<li><a href='#ch-pcmnds'>Player Commands</a></li>"
++           "<li><a href='#ch-gcmnds'>General Commands</a></li>"
++           "<li><a href='#ch-qcmnds'>Quick Commands</a></li>"
++       "</ul>"
++       "<div class='ch-tabs'>"
++           "<div id='ch-filters'></div>"
++           "<div id='ch-pcmnds'></div>"
++           "<div id='ch-gcmnds'></div>"
++           "<div id='ch-qcmnds'></div>"
++       "</div>"
++       "<div class='modalbuttons'>"
++           "<button id='ch-save'>Save</button>"
++           "<button id='ch-cancel'>Cancel</button>"
++       "</div>"
++   "</div>"
++"</div>"
+    );
     
     
     
