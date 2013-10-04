@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.11
+// @version 0.1.12
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -417,10 +417,11 @@ var ch_m = function($) {
         if (!notCommand) {
             text = '/' + text;
         }
+        text += ' ';
         if (append) {
-            text += ' ' + chat_box.val();
+            text += chat_box.val();
         }
-        chat_box.val(text + ' ');
+        chat_box.val(text);
     }
     
     
@@ -432,7 +433,7 @@ var ch_m = function($) {
     
     // Attach the CSS to the page
     $('head').append($("<link>").attr({
-        href  : 'http://chockly.org/ch/console-helper.css',
+        href  : 'http://c.lan/personal/chat-helper/console-helper.css',
         type  : 'text/css',
         rel   : 'stylesheet',
         media : 'screen'
@@ -494,7 +495,7 @@ var ch_m = function($) {
     
     //  Helper Manager Interface  //
     $('body').append(
-"<div id='ch-manager' class='modalbg modalnormal' style='display:none'>"
+"<div id='ch-manager' class='modalbg modalnormal'>"
 +   "<div class='modalpanel'>"
 +       "<ul class='ch-tab-navigation'>"
 +           "<li><a href='#ch-filters'>Filters</a></li>"

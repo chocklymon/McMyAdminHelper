@@ -2,6 +2,7 @@
 Console chat helper styles
 */
 
+/* Player Commands Context Menu */
 #ch-contextmenu {
     display: none;
     position: absolute;
@@ -23,6 +24,7 @@ Console chat helper styles
     background-color: #DFDFDF;
 }
 
+/* General and Quick Commands */
 .ch-h-spacer {
     display: inline-block;
     width: 1px;
@@ -34,4 +36,46 @@ Console chat helper styles
 
 #ch-cmnds button {
     margin: 6px 5px 4px 4px;
+}
+
+/* Helper Management Interface */
+#ch-manager {
+    display:none;
+}
+.ch-tab-navigation {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    min-height: 25px;
+}
+.ch-tab-navigation li {
+    float: left;
+    padding: 0;
+    margin: 0;
+    border-left: 4px solid transparent;
+}
+.ch-tab-navigation .picked {
+    border-left-color: #5EA8DE;
+}
+.ch-tab-navigation a {
+    text-decoration: none;
+    padding: 6px 12px 6px 6px;
+    min-width: 25px;
+    display: block;
+    color: #7AC5FF;
+}
+.ch-tab-navigation a:hover {
+    color: #7AC5FF;
+}
+.ch-tab-navigation li:hover {
+    background-color: rgba(255,255,255,0.2);
+}
+.ch-tabs {
+    clear:both;
+    overflow:auto;
+    min-height:200px;
+    border-top: 1px solid #515151;
+}
+.ch-tabs div {
+    display: none;
 }
