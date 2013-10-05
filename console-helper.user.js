@@ -312,15 +312,11 @@ var ch_m = function($) {
     function hash(input) {
 		var hash = 0,
 			l = input.length,
-			i,
-			c;
-			
-		if (l === 0)
-			return hash;
+			character;
 		
-		for (i = 0; i < l; i++) {
-			c  = input.charCodeAt(i);
-			hash  = ((hash<<5)-hash)+c;
+		for (var i = 0; i < l; i++) {
+			character = input.charCodeAt(i);
+			hash = ((hash<<5)-hash) + character;
 			hash |= 0; // Convert to 32bit integer
 		}
 		return hash;
