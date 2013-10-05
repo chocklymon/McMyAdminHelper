@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.12
+// @version 0.1.13
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -305,13 +305,36 @@ var ch_m = function($) {
     }
     
     /**
+     * Creates a hash from a string. This is not a cryptographically safe,
+     * just a very basic hash generation function.
+     * @param {string} input The string to get the has for.
+     */
+    function hash(input) {
+		var hash = 0,
+			l = input.length,
+			i,
+			c;
+			
+		if (l === 0)
+			return hash;
+		
+		for (i = 0; i < l; i++) {
+			c  = input.charCodeAt(i);
+			hash  = ((hash<<5)-hash)+c;
+			hash |= 0; // Convert to 32bit integer
+		}
+		return hash;
+	}
+    
+    /**
      * Notifies the user of important events by opening a new window.
      * @param {string} message The message to display in the notification.
      */
     function notify(message) {
+    	var id = hash(message);
         window.open(
             'http://chockly.org/ch/?m=' + encodeURIComponent(message),
-            'notification',
+            'notify-'+id,
             'width=300,height=150,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0'
         );
     }
@@ -433,7 +456,7 @@ var ch_m = function($) {
     
     // Attach the CSS to the page
     $('head').append($("<link>").attr({
-        href  : 'http://c.lan/personal/chat-helper/console-helper.css',
+        href  : 'http://chockly.org/ch/console-helper.css',
         type  : 'text/css',
         rel   : 'stylesheet',
         media : 'screen'
