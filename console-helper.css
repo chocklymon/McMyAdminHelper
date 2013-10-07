@@ -75,10 +75,18 @@ Console chat helper styles
     overflow:auto;
     min-height:200px;
     border-top: 1px solid #515151;
+    color: #d0d0d0;
+    background-color: #333;
 }
 .ch-tabs div {
     display: none;
 }
 div.ch-active {
     display: block;
+}
+input.ch-tiny {
+    width: 30px;
+}
+input.ch-medium {
+    width: 100px;
 }

@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.17
+// @version 0.1.20
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -57,7 +57,10 @@ var ch_m = function($) {
     
     /** Defines the tables layout used to display commands. */
     commandTableLayout = {
-        'Command' : 'cmnd',
+        'Command' : {
+            value  : 'cmnd',
+            append : '/'
+        },
         'Name' : 'text'
     },
     
@@ -273,9 +276,11 @@ var ch_m = function($) {
                     if (typeof dataKey === 'object') {
                         datum = $.extend({}, {
                             // Defaults
-                            type  : 'text',
-                            data  : '',
-                            value : ''
+                            type   : 'text',
+                            data   : '',
+                            value  : '',
+                            append : '',
+                            class  : false
                         }, dataKey);
 
                         input.attr('type', datum.type);
@@ -292,6 +297,14 @@ var ch_m = function($) {
                         } else {
                             // Assume string type
                             input.attr('value', result);
+                        }
+                        
+                        // Append the pre-message
+                        td.text(datum.append);
+                        
+                        // Attach the input class
+                        if (datum.class) {
+                            input.addClass(datum.class);
                         }
                     } else {
                         // Assume a simple text field
@@ -699,12 +712,25 @@ var ch_m = function($) {
                 },
                 data  : 'modifiers'
             },
-            'Replace' : 'replace',
+            'Replace' : {
+                value : 'replace',
+                class : 'ch-medium'
+            },
             'Alert' : {
                 type  : 'checkbox',
                 value : 'alert'
             },
-            'Count' : 'count'
+            'Count' : {
+                value : function(data) {
+                    if (data) {
+                        return data;
+                    } else {
+                        return '';
+                    }
+                },
+                data  : 'count',
+                class : 'ch-tiny'
+            }
         }
     );
     buildTable('ch-pcmnds', get(storageKeys.playerCommands),  commandTableLayout);
