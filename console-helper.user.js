@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.20
+// @version 0.1.22
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -25,6 +25,7 @@
  * - Add interface for editing, removing, and adding filters.
  * - Add an interface for editing, removing, and adding buttons.
  *    - Will store the current commands into local storage, have defaults for when absent to first populate the local storage.
+ * - Prevent chat message parsing for previous ones?
  */
 
 /*
@@ -746,6 +747,20 @@ var ch_m = function($) {
         // TODO reset any changed fields.
         $("#ch-manager").hide();
     });
+    
+    
+    // Attach a user info link for opening the manager
+    $("#userinfo")
+        .append($('<span>').text(" | "))
+        .append(
+            $("<a>")
+            .attr('href', '#console-helper')
+            .click(function(event){
+                $("#ch-manager").show();
+                event.preventDefault();
+            })
+            .text('Console Helper')
+        );
     
     
     // Replace the current add chat row function with the modified one
