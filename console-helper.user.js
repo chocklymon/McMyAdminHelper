@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.16
+// @version 0.1.17
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -725,10 +725,25 @@ var ch_m = function($) {
     // Replace the current add chat row function with the modified one
     window.addChatEntry = addChatEntry;
     
+    // Debugging helpers //
     // Expose the local storage helpers
     window.set = set;
     window.get = get;
     window.clear = clear;
+    window.addFilter = function(filter) {
+        var filters = get(storageKeys.filters);
+        filters.push(filter);
+        set(storageKeys.filters, filters);
+    };
+    window.updateFilter = function(index, value, key) {
+        var filters = get(storageKeys.filters);
+        if (key) {
+            filters[index][key] = value;
+        } else {
+            filters[index] = value;
+        }
+        set(storageKeys.filters, filters);
+    };
 };
 
 // Inserts the main method into the page so that JQuery works.
