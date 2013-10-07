@@ -79,3 +79,6 @@ Console chat helper styles
 .ch-tabs div {
     display: none;
 }
+.ch-active {
+    display: block;
+}

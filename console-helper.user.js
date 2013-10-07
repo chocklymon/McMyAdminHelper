@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.13
+// @version 0.1.14
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -34,7 +34,7 @@ Some helpful filters.
 
 - Innapropriate Language -
 {regex:"(hentai|ecchi|yaoi|yuri|futa|p[0o]rn|pr[0o]n|[e3]rot[i1]c|rape)",alert:true,name:"Pornographic Language"}
-{regex:"(pussy|cunt|vag|b[0o]+b|breast|p[e3]+n[i1]+s?|d[i1]ck|(?:\\s|^)ass(?:$|[^u])|arse|genital)",alert:true,name:"Anatomical Terms"}
+{regex:"(pussy|cunt|vag|b[0o]{2,}b|breast|p[e3]+n[i1]+s?|d[i1]ck|(?:\\s|^)ass(?:$|[^u])|arse|genital)",alert:true,name:"Anatomical Terms"}
 {regex:"(b[i1]tch|wh[o0]re|jack[ \\-]*ass|n[i1]gger|sh[i1]+t|dam[mn]*(?:[^a])|fag|fuck|(?:\\s|^)f[ \\-]*(?:yo)?u+(?:\\s|$)|f[ \\-]*u{3,}|screw)",alert:true,name:"Curse Words"}
 {regex:"((?:[^r]|^)God|Christ|Jesus|hell(?:$|[^o]))",alert:true,name:"Religious Language"}
 
@@ -102,6 +102,12 @@ var ch_m = function($) {
         alert     : false,
         count     : false,
         replace   : "<b>$1</b>"
+    },
+    
+    /** Defines the tables layout used to display commands. */
+    commandTableLayout = {
+        'Command' : 'cmnd',
+        'Name' : 'text'
     },
     
     /** Stores if the custom context menu is open. */
@@ -240,6 +246,46 @@ var ch_m = function($) {
                     .click(callback)
             );
         }
+    }
+    
+    /**
+     * Builds a table into the given component.
+     * @param {string} tableId The HTML id of the element.
+     * @param {object} data The data to put into the table.
+     * @param {object} layout The table headers and content definitions. Used
+     * to map the data to the table. Consists of labels : datakey
+     * @returns {undefined}
+     */
+    function buildTable(tableId, data, layout) {
+        /*
+         'Match All' : {
+            type  : 'checkbox',
+            value : function(data) {
+                if (data && data.indexOf('g') > -1) {
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+            data  : 'modifiers'
+        } 
+        */
+        var table = $('<table>'),
+            header = $('<thead>'),
+            body = $('<tbody>'),
+            row;
+        
+        row = $('<tr>');
+        
+        $.each(layout, function(index, value) {
+            row.append($('<th>').text(index));
+        });
+        
+        header.append(row);
+        table.append(header);
+        table.append(body);
+        
+        $("#" + tableId).append(table);
     }
     
     /**
@@ -536,6 +582,61 @@ var ch_m = function($) {
 +"</div>"
     );
     
+    $("#ch-manager ul.ch-tab-navigation a").click(function(event) {
+        $("#ch-manager .picked").removeClass('picked');
+        var t = $(this);
+        t.parent().addClass('picked');
+        var id = t.attr('href');
+        // Switch which tab is displayed
+        $("#ch-manager .ch-active").removeClass('ch-active');
+        $(id).addClass('ch-active');
+        event.preventDefault();
+    });
+    
+    // Build the tab contents
+    buildTable('ch-filters', get('filters'), {
+        'Match'  : 'regex',
+        'Match All' : {
+            type  : 'checkbox',
+            value : function(data) {
+                if (data && data.indexOf('g') > -1) {
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+            data  : 'modifiers'
+        },
+        'Ignore Case': {
+            type  : 'checkbox',
+            value : function(data) {
+                if (data && data.indexOf('i') > -1) {
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+            data  : 'modifiers'
+        },
+        'Alert' : {
+            type: 'checkbox',
+            value: 'alert'
+        },
+        'Count' : 'count'
+    });
+    buildTable('ch-pcmnds', get('pcmnds'), commandTableLayout);
+    buildTable('ch-gcmnds', get('gcmnds'), commandTableLayout);
+    buildTable('ch-qcmnds', get('qcmnds'), commandTableLayout);
+    
+    // Save/Cancel
+    $("#ch-save").click(function(event) {
+        // TODO save
+        $("#ch-manager").hide();
+    });
+    $("#ch-cancel").click(function(event) {
+        // TODO reset any changed fields.
+        $("#ch-manager").hide();
+    });
     
     
     // Replace the current add chat row function with the modified one
