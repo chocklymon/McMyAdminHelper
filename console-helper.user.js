@@ -47,42 +47,6 @@ var ch_m = function($) {
     
     var
     
-    // Commands //
-    /**
-     * A list of commands. These commands are simply set into the input box
-     * as specified.
-     * @type Array
-     */
-    generalCommands = [
-        {cmnd : 's Fred',       text : 'Say'},
-        {cmnd : 'msg ~console', text : 'Msg Self'}
-    ],
-    
-    /**
-     * A list of quick commands. These commands are executed immediately when
-     * the user clicks on the command button.
-     * @type Array
-     */
-    quickCommands = [
-        {cmnd : 'ss',  text : 'Server Status'},
-        {cmnd : 'mvw', text : 'MV Who'},
-        {cmnd : 'who', text : 'Who'}
-    ],
-            
-    /**
-     * A list of commands to be run on a player. These are added to the player
-     * context menu. The name of the currently selected player is added
-     * after the command.
-     * @type Array
-     */
-    playerCommands = [
-        {cmnd : 'ban',    text : 'Ban Player'},
-        {cmnd : 'kick',   text : 'Kick Player'},
-        {cmnd : 'mute',   text : 'Mute Player'},
-        {cmnd : 'player', text : 'Get Player Info'}
-    ],
-    
-    // Other //
     /** The defaults for message filter proccessing. */
     filterDefaults = {
         modifiers : 'gi',
@@ -113,7 +77,15 @@ var ch_m = function($) {
      * Stores the name of the player that is being used for the player context
      * menu commands.
      */
-    player;
+    player,
+    
+    /** Stores the names of keys used to get and set data from localStorage. */
+    storageKeys = {
+        generalCommands: 'gcmnds',
+        quickCommands : 'qcmnds',
+        playerCommands : 'pcmnds',
+        filters : 'filters'
+    };
     
     
     /* ----------------------------- *
@@ -305,7 +277,6 @@ var ch_m = function($) {
                             data  : '',
                             value : ''
                         }, dataKey);
-                        console.log(datum);
 
                         input.attr('type', datum.type);
 
@@ -314,8 +285,6 @@ var ch_m = function($) {
                         } else {
                             result = value[datum.value];
                         }
-
-                        console.log(result);
 
                         if (datum.type === 'checkbox') {
                             // Checkbox type
@@ -460,7 +429,7 @@ var ch_m = function($) {
      * @return {string} The message ready for input as an HTML message.
      */
     function processMessage(text) {
-        var filters = get("filters", []),
+        var filters = get(storageKeys.filters, []),
             filter,
             regex;
 		
@@ -582,18 +551,18 @@ var ch_m = function($) {
     if (!get()) {
         // Nothing stored, build the defaults
         // General Commands
-        set('gcmnds', [
+        set(storageKeys.generalCommands, [
             {cmnd : 's Fred',       text : 'Say'},// TODO get username and insert it here
             {cmnd : 'msg ~console', text : 'Msg Self'}
         ]);
         // Quick Commands
-        set('qcmnds', [
+        set(storageKeys.quickCommands, [
             {cmnd : 'ss',  text : 'Server Status'},
             {cmnd : 'mvw', text : 'MV Who'},
             {cmnd : 'who', text : 'Who'}
         ]);
         // Player Commands
-        set('pcmnds', [
+        set(storageKeys.playerCommands, [
             {cmnd : 'ban',    text : 'Ban Player'},
             {cmnd : 'kick',   text : 'Kick Player'},
             {cmnd : 'mute',   text : 'Mute Player'},
@@ -601,14 +570,14 @@ var ch_m = function($) {
         ]);
         
         // Filters
-        set('filters', [
+        set(storageKeys.filters, [
             {regex:"(hentai|ecchi|yaoi|yuri|futa|p[0o]rn|pr[0o]n|[e3]rot[i1]c|rape)",alert:true,name:"Pornographic Language"},
             {regex:"(pussy|cunt|vag|b[0o]{2,}b|breast|p[e3]+n[i1]+s?|d[i1]ck|(?:\\s|^)ass(?:$|[^u])|arse|genital)",alert:true,name:"Anatomical Terms"},
             {regex:"(b[i1]tch|wh[o0]re|jack[ \\-]*ass|n[i1]gger|sh[i1]+t|dam[mn]*(?:[^a])|fag|fuck|(?:\\s|^)f[ \\-]*(?:yo)?u+(?:\\s|$)|f[ \\-]*u{3,}|screw)",alert:true,name:"Curse Words"},
             {regex:"((?:[^r]|^)God|Christ|Jesus|hell(?:$|[^o]))",alert:true,name:"Religious Language"},
             {regex:"(h[ea]lp|st[oa]p)",name:"Help Words"},
             {regex:"(gr[ei]+f|theft|th[ei]+f|stole|steal|cheat|hack|x[\\- ]*ray)",alert:true,name:"Grief Alert"},
-            {regex:"(moved wrongly)",count:3,name:"Misc"},
+            {regex:"(moved wrongly)",count:3,name:"Bad Movement"},
             {regex:"(https?://\\w+\\.\\w+\\S+)",replace:"<a target='_blank' href=\"$1\">$1</a>",name:"URL creator"}
         ]);
     }
@@ -616,7 +585,7 @@ var ch_m = function($) {
     
     //   Context Menu   //
     // Attach the commands to the player context menu
-    attachCommands(contextMenu, playerCommands, runPlayerCommand, '<div>');
+    attachCommands(contextMenu, get(storageKeys.playerCommands), runPlayerCommand, '<div>');
     
     // Attach the context menu to the page
     contextMenu.appendTo('body');
@@ -659,12 +628,12 @@ var ch_m = function($) {
     );
     
     // Attach the commands
-    attachCommands($("#ch-cmnds"), generalCommands, runGeneralCommand);
-    if (generalCommands.length > 0 && quickCommands.length > 0) {
+    attachCommands($("#ch-cmnds"), get(storageKeys.generalCommands), runGeneralCommand);
+    if (get(storageKeys.generalCommands).length > 0 && get(storageKeys.quickCommands).length > 0) {
         // Insert a spacer between the two command types
         $("#ch-cmnds").append($('<div>').addClass('ch-h-spacer'));
     }
-    attachCommands($("#ch-cmnds"), quickCommands, runQuickCommand);
+    attachCommands($("#ch-cmnds"), get(storageKeys.quickCommands), runQuickCommand);
     
     
     //  Helper Manager Interface  //
@@ -705,7 +674,7 @@ var ch_m = function($) {
     // Build the tab contents
     buildTable(
         'ch-filters',
-        mergeDefaults(get('filters'), filterDefaults),
+        mergeDefaults(get(storageKeys.filters), filterDefaults),
         {
             'Match'  : 'regex',
             'Match All' : {
@@ -738,9 +707,9 @@ var ch_m = function($) {
             'Count' : 'count'
         }
     );
-    buildTable('ch-pcmnds', get('pcmnds'), commandTableLayout);
-    buildTable('ch-gcmnds', get('gcmnds'), commandTableLayout);
-    buildTable('ch-qcmnds', get('qcmnds'), commandTableLayout);
+    buildTable('ch-pcmnds', get(storageKeys.playerCommands),  commandTableLayout);
+    buildTable('ch-gcmnds', get(storageKeys.generalCommands), commandTableLayout);
+    buildTable('ch-qcmnds', get(storageKeys.quickCommands),   commandTableLayout);
     
     // Save/Cancel
     $("#ch-save").click(function(event) {
