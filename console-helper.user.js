@@ -28,27 +28,14 @@
  */
 
 /*
-Some helpful filters.
+Message Filters
 - Template -
 {regex:"",modifiers:"",replace:"",alert:false,name:""}
-
-- Innapropriate Language -
-{regex:"(hentai|ecchi|yaoi|yuri|futa|p[0o]rn|pr[0o]n|[e3]rot[i1]c|rape)",alert:true,name:"Pornographic Language"}
-{regex:"(pussy|cunt|vag|b[0o]{2,}b|breast|p[e3]+n[i1]+s?|d[i1]ck|(?:\\s|^)ass(?:$|[^u])|arse|genital)",alert:true,name:"Anatomical Terms"}
-{regex:"(b[i1]tch|wh[o0]re|jack[ \\-]*ass|n[i1]gger|sh[i1]+t|dam[mn]*(?:[^a])|fag|fuck|(?:\\s|^)f[ \\-]*(?:yo)?u+(?:\\s|$)|f[ \\-]*u{3,}|screw)",alert:true,name:"Curse Words"}
-{regex:"((?:[^r]|^)God|Christ|Jesus|hell(?:$|[^o]))",alert:true,name:"Religious Language"}
-
-- Moderator Words -
-{regex:"(h[ea]lp|st[oa]p)",name:"Help Words"}
-{regex:"(gr[ei]+f|theft|th[ei]+f|stole|steal|cheat|hack|x[\\- ]*ray)",alert:true,name:"Grief Alert"}
-{regex:"(moved wrongly)",count:3,name:"Misc"}
-
-- URLs -
-{regex:"(https?://\\w+\\.\\w+\\S+)",replace:"<a target='_blank' href=\"$1\">$1</a>",name:"URL creator"}
 
 - Name -
 {regex:"(fred|waffle|console)",replace:"<i>$1</i>",name:"Username"}
 
+See the default generator for more.
 */
 
 // Wrap everything inside of an anymous function
@@ -589,6 +576,42 @@ var ch_m = function($) {
         rel   : 'stylesheet',
         media : 'screen'
     }));
+    
+    
+    // Build the default commands and filters if needed
+    if (!get()) {
+        // Nothing stored, build the defaults
+        // General Commands
+        set('gcmnds', [
+            {cmnd : 's Fred',       text : 'Say'},// TODO get username and insert it here
+            {cmnd : 'msg ~console', text : 'Msg Self'}
+        ]);
+        // Quick Commands
+        set('qcmnds', [
+            {cmnd : 'ss',  text : 'Server Status'},
+            {cmnd : 'mvw', text : 'MV Who'},
+            {cmnd : 'who', text : 'Who'}
+        ]);
+        // Player Commands
+        set('pcmnds', [
+            {cmnd : 'ban',    text : 'Ban Player'},
+            {cmnd : 'kick',   text : 'Kick Player'},
+            {cmnd : 'mute',   text : 'Mute Player'},
+            {cmnd : 'player', text : 'Get Player Info'}
+        ]);
+        
+        // Filters
+        set('filters', [
+            {regex:"(hentai|ecchi|yaoi|yuri|futa|p[0o]rn|pr[0o]n|[e3]rot[i1]c|rape)",alert:true,name:"Pornographic Language"},
+            {regex:"(pussy|cunt|vag|b[0o]{2,}b|breast|p[e3]+n[i1]+s?|d[i1]ck|(?:\\s|^)ass(?:$|[^u])|arse|genital)",alert:true,name:"Anatomical Terms"},
+            {regex:"(b[i1]tch|wh[o0]re|jack[ \\-]*ass|n[i1]gger|sh[i1]+t|dam[mn]*(?:[^a])|fag|fuck|(?:\\s|^)f[ \\-]*(?:yo)?u+(?:\\s|$)|f[ \\-]*u{3,}|screw)",alert:true,name:"Curse Words"},
+            {regex:"((?:[^r]|^)God|Christ|Jesus|hell(?:$|[^o]))",alert:true,name:"Religious Language"},
+            {regex:"(h[ea]lp|st[oa]p)",name:"Help Words"},
+            {regex:"(gr[ei]+f|theft|th[ei]+f|stole|steal|cheat|hack|x[\\- ]*ray)",alert:true,name:"Grief Alert"},
+            {regex:"(moved wrongly)",count:3,name:"Misc"},
+            {regex:"(https?://\\w+\\.\\w+\\S+)",replace:"<a target='_blank' href=\"$1\">$1</a>",name:"URL creator"}
+        ]);
+    }
     
     
     //   Context Menu   //
