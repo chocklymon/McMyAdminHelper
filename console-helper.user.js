@@ -253,9 +253,9 @@ var ch_m = function($) {
                     $('<td>').append(
                         $('<img>')
                             .attr({
-                                src   : '',// TODO
-                                alt   : 'Delete',
-                                class : 'ch-delete'
+                                'src'   : '',// TODO
+                                'alt'   : 'Delete',
+                                'class' : 'ch-delete'
                             })
                             .click(function(event){
                                 console.log(event);
@@ -552,7 +552,7 @@ var ch_m = function($) {
         // Nothing stored, build the defaults
         // General Commands
         set(storageKeys.generalCommands, [
-            {cmnd : 's Fred',       text : 'Say'},// TODO get username and insert it here
+            {cmnd : 's ' + localStorage.getItem('SAVEUSER'), text : 'Say'},
             {cmnd : 'msg ~console', text : 'Msg Self'}
         ]);
         // Quick Commands
