@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.14
+// @version 0.1.16
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -257,31 +257,103 @@ var ch_m = function($) {
      * @returns {undefined}
      */
     function buildTable(tableId, data, layout) {
-        /*
-         'Match All' : {
-            type  : 'checkbox',
-            value : function(data) {
-                if (data && data.indexOf('g') > -1) {
-                    return true;
-                } else {
-                    return false;
-                }
-            },
-            data  : 'modifiers'
-        } 
-        */
+        // Initialize the variables
         var table = $('<table>'),
             header = $('<thead>'),
             body = $('<tbody>'),
-            row;
+            row,
+            values = [],
+            vlen = 0,
+            i,
+            dataKey,
+            td,
+            datum,
+            input,
+            result;
         
+        //   Construct the Header   //
         row = $('<tr>');
         
+        // Add the actions column
+        row.append('<th> </th>');
+        // Add the headers
         $.each(layout, function(index, value) {
             row.append($('<th>').text(index));
+            values.push(value);
+            vlen++;
         });
-        
         header.append(row);
+        
+        //    Construct the Body    //
+        if (data) {
+            // Add the data
+            $.each(data, function(index, value) {
+                row = $('<tr>');
+                // Attach the delete row button
+                row.append(
+                    $('<td>').append(
+                        $('<img>')
+                            .attr({
+                                src   : '',// TODO
+                                alt   : 'Delete',
+                                class : 'ch-delete'
+                            })
+                            .click(function(event){
+                                console.log(event);
+                                console.log(this);
+                            })
+                    )
+                );
+
+                // Loop through the layout values
+                for (i=0; i<vlen; i++) {
+                    td = $('<td>');
+                    input = $('<input>');
+                    dataKey = values[i];
+
+                    if (typeof dataKey === 'object') {
+                        datum = $.extend({}, {
+                            // Defaults
+                            type  : 'text',
+                            data  : '',
+                            value : ''
+                        }, dataKey);
+                        console.log(datum);
+
+                        input.attr('type', datum.type);
+
+                        if (typeof datum.value === 'function') {
+                            result = datum.value(value[datum.data]);
+                        } else {
+                            result = value[datum.value];
+                        }
+
+                        console.log(result);
+
+                        if (datum.type === 'checkbox') {
+                            // Checkbox type
+                            input.prop('checked', result);
+                        } else {
+                            // Assume string type
+                            input.attr('value', result);
+                        }
+                    } else {
+                        // Assume a simple text field
+                        input.attr({
+                            type : 'text',
+                            value: value[dataKey]
+                        });
+                    }
+
+                    td.append(input);
+                    row.append(td);
+                }
+
+                body.append(row);
+            });
+        }
+        
+        // Put it all together and attach to the page
         table.append(header);
         table.append(body);
         
@@ -367,6 +439,20 @@ var ch_m = function($) {
 		}
 		return hash;
 	}
+    
+    /**
+     * Merges each of the objects in the data array with the provided defaults.
+     * @param {array} data
+     * @param {object} defaults
+     * @returns {array}
+     */
+    function mergeDefaults(data, defaults) {
+        var merged = [];
+        for (var i=0; i<data.length; i++) {
+            merged[i] = $.extend({}, defaults, data[i]);
+        }
+        return merged;
+    }
     
     /**
      * Notifies the user of important events by opening a new window.
@@ -594,36 +680,41 @@ var ch_m = function($) {
     });
     
     // Build the tab contents
-    buildTable('ch-filters', get('filters'), {
-        'Match'  : 'regex',
-        'Match All' : {
-            type  : 'checkbox',
-            value : function(data) {
-                if (data && data.indexOf('g') > -1) {
-                    return true;
-                } else {
-                    return false;
-                }
+    buildTable(
+        'ch-filters',
+        mergeDefaults(get('filters'), filterDefaults),
+        {
+            'Match'  : 'regex',
+            'Match All' : {
+                type  : 'checkbox',
+                value : function(data) {
+                    if (data && data.indexOf('g') > -1) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                },
+                data  : 'modifiers'
             },
-            data  : 'modifiers'
-        },
-        'Ignore Case': {
-            type  : 'checkbox',
-            value : function(data) {
-                if (data && data.indexOf('i') > -1) {
-                    return true;
-                } else {
-                    return false;
-                }
+            'Ignore Case' : {
+                type  : 'checkbox',
+                value : function(data) {
+                    if (data && data.indexOf('i') > -1) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                },
+                data  : 'modifiers'
             },
-            data  : 'modifiers'
-        },
-        'Alert' : {
-            type: 'checkbox',
-            value: 'alert'
-        },
-        'Count' : 'count'
-    });
+            'Replace' : 'replace',
+            'Alert' : {
+                type  : 'checkbox',
+                value : 'alert'
+            },
+            'Count' : 'count'
+        }
+    );
     buildTable('ch-pcmnds', get('pcmnds'), commandTableLayout);
     buildTable('ch-gcmnds', get('gcmnds'), commandTableLayout);
     buildTable('ch-qcmnds', get('qcmnds'), commandTableLayout);
