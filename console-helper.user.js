@@ -216,7 +216,7 @@ var ch_m = function($) {
      * @param {string} tableId The HTML id of the element.
      * @param {object} data The data to put into the table.
      * @param {object} layout The table headers and content definitions. Used
-     * to map the data to the table. Consists of labels : datakey
+     * to map the data to the table. Consists of labels : column definition.
      * @returns {undefined}
      */
     function buildTable(tableId, data, layout) {
@@ -259,7 +259,7 @@ var ch_m = function($) {
 				'alt'   : 'Add',
 				'class' : 'ch-add-new'
 	        })
-            .data('columns', values)
+            .data('columns', definitions)
 	        .click(function(event) {
                 var jThis = $(this);
 	        	var tr = jThis.parent().parent(),
@@ -278,6 +278,14 @@ var ch_m = function($) {
         $("#" + tableId).append(table);
     }
     
+    /**
+     * Builds a row for the console helper manager interface's tables.
+     * @param {array} columnDefinitions An array containing definitions for
+     * each of the columns in the row.
+     * @param {mixed} data The data to be inserted into the row. Optional, when
+     * not set the default values for the inputs are used.
+     * @returns {jQuery} The jQuery HTML element for the row.
+     */
     function buildRow(columnDefinitions, data) {
         var row = $('<tr>'),
             td,
@@ -295,11 +303,7 @@ var ch_m = function($) {
                     'alt'   : 'Delete',
                     'class' : 'ch-delete'
                 })
-                .click(function(event){
-                    // TODO confirm and remove the row
-                    console.log(event);
-                    console.log(this);
-                })
+                .click(removeRow)
             )
         );
 
@@ -523,6 +527,16 @@ var ch_m = function($) {
         }
         
         return text;
+    }
+    
+    /**
+     * Click event handler for delete buttons.
+     */
+    function removeRow() {
+        // TODO confirm and remove the row
+        console.log(event);
+        console.log(this);
+        console.log($(this).parent().parent());// This should be the row that is being removed.
     }
     
     /**
