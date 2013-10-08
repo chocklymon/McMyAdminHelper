@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.22
+// @version 0.1.23
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -257,7 +257,7 @@ var ch_m = function($) {
                     $('<td>').append(
                         $('<img>')
                             .attr({
-                                'src'   : '',// TODO
+                                'src'   : 'http://c.lan/personal/chat-helper/minus.png',// Modified Fuque Icon
                                 'alt'   : 'Delete',
                                 'class' : 'ch-delete'
                             })
@@ -322,6 +322,17 @@ var ch_m = function($) {
                 body.append(row);
             });
         }
+        
+        // Attach the add new row
+        row = $('<tr>');
+        td = $('<td>').attr('colspan', vlen+1);
+        td.append($('<img>').attr({
+            'src'   : 'http://c.lan/personal/chat-helper/plus.png',// Modified Fuque Icon
+            'alt'   : 'Add',
+            'class' : 'ch-add-new'
+        }));
+        body.append(row.append(td));
+        
         
         // Put it all together and attach to the page
         table.append(header);
@@ -554,7 +565,7 @@ var ch_m = function($) {
     
     // Attach the CSS to the page
     $('head').append($("<link>").attr({
-        href  : 'http://chockly.org/ch/console-helper.css',
+        href  : 'http://c.lan/personal/chat-helper/console-helper.css',
         type  : 'text/css',
         rel   : 'stylesheet',
         media : 'screen'
