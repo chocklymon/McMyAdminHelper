@@ -654,17 +654,17 @@ var ch_m = function($) {
     $('body').append(
 "<div id='ch-manager' class='modalbg modalnormal'>"
 +   "<div class='modalpanel'>"
-+       "<ul class='ch-tab-navigation'>"
-+           "<li><a href='#ch-filters'>Filters</a></li>"
-+           "<li><a href='#ch-pcmnds'>Player Commands</a></li>"
-+           "<li><a href='#ch-gcmnds'>General Commands</a></li>"
-+           "<li><a href='#ch-qcmnds'>Quick Commands</a></li>"
-+       "</ul>"
 +       "<div class='ch-tabs'>"
-+           "<div id='ch-filters'></div>"
-+           "<div id='ch-pcmnds'></div>"
-+           "<div id='ch-gcmnds'></div>"
-+           "<div id='ch-qcmnds'></div>"
++           "<div class='subtabhead'>"
++               "<a href='#ch-filters' class='subtab picked'>Filters</a>"
++               "<a href='#ch-pcmnds'  class='subtab'>Player Commands</a>"
++               "<a href='#ch-gcmnds'  class='subtab'>General Commands</a>"
++               "<a href='#ch-qcmnds'  class='subtab'>Quick Commands</a>"
++           "</div>"
++           "<div id='ch-filters' class='subtabcontainer' style='display:block'></div>"
++           "<div id='ch-pcmnds'  class='subtabcontainer'></div>"
++           "<div id='ch-gcmnds'  class='subtabcontainer'></div>"
++           "<div id='ch-qcmnds'  class='subtabcontainer'></div>"
 +       "</div>"
 +       "<div class='modalbuttons'>"
 +           "<button id='ch-save'>Save</button>"
@@ -674,23 +674,15 @@ var ch_m = function($) {
 +"</div>"
     );
     
-    $("#ch-manager ul.ch-tab-navigation a").click(function(event) {
-        $("#ch-manager .picked").removeClass('picked');
-        var t = $(this);
-        t.parent().addClass('picked');
-        var id = t.attr('href');
-        // Switch which tab is displayed
-        $("#ch-manager .ch-active").removeClass('ch-active');
-        $(id).addClass('ch-active');
-        event.preventDefault();
-    });
-    
     // Build the tab contents
     buildTable(
         'ch-filters',
         mergeDefaults(get(storageKeys.filters), filterDefaults),
         {
-            'Match'  : 'regex',
+            'Match'  : {
+                value : 'regex',
+                class : 'ch-large'
+            },
             'Match All' : {
                 type  : 'checkbox',
                 value : function(data) {

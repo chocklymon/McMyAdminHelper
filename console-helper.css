@@ -42,51 +42,34 @@ Console chat helper styles
 #ch-manager {
     display:none;
 }
-.ch-tab-navigation {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    min-height: 25px;
-}
-.ch-tab-navigation li {
-    float: left;
-    padding: 0;
-    margin: 0;
-    border-left: 4px solid transparent;
-}
-.ch-tab-navigation .picked {
-    border-left-color: #5EA8DE;
-}
-.ch-tab-navigation a {
-    text-decoration: none;
-    padding: 6px 12px 6px 6px;
-    min-width: 25px;
-    display: block;
-    color: #7AC5FF;
-}
-.ch-tab-navigation a:hover {
-    color: #7AC5FF;
-}
-.ch-tab-navigation li:hover {
-    background-color: rgba(255,255,255,0.2);
-}
 .ch-tabs {
     clear:both;
     overflow:auto;
-    min-height:200px;
-    border-top: 1px solid #515151;
+    min-height:300px;
+    max-height:600px;
     color: #d0d0d0;
     background-color: #333;
 }
-.ch-tabs div {
+.ch-tabs .subtabcontainer {
     display: none;
+    border: none;
+    border-top: 1px solid #555;
 }
-div.ch-active {
-    display: block;
+.ch-tabs table {
+    border-collapse: collapse;
+}
+.ch-tabs td, .ch-tabs th {
+    padding: 4px;
+}
+.ch-tabs input[type="checkbox"] {
+    margin-left: 30%;
 }
 input.ch-tiny {
     width: 30px;
 }
 input.ch-medium {
     width: 100px;
+}
+input.ch-large {
+    width: 230px
 }
