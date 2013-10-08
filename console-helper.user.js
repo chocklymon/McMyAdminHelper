@@ -257,7 +257,7 @@ var ch_m = function($) {
                     $('<td>').append(
                         $('<img>')
                             .attr({
-                                'src'   : 'http://c.lan/personal/chat-helper/minus.png',// Modified Fuque Icon
+                                'src'   : 'http://chockly.org/ch/minus.png',// Modified Fuque Icon
                                 'alt'   : 'Delete',
                                 'class' : 'ch-delete'
                             })
@@ -327,7 +327,7 @@ var ch_m = function($) {
         row = $('<tr>');
         td = $('<td>').attr('colspan', vlen+1);
         td.append($('<img>').attr({
-            'src'   : 'http://c.lan/personal/chat-helper/plus.png',// Modified Fuque Icon
+            'src'   : 'http://chockly.org/ch/plus.png',// Modified Fuque Icon
             'alt'   : 'Add',
             'class' : 'ch-add-new'
         }));
@@ -565,7 +565,7 @@ var ch_m = function($) {
     
     // Attach the CSS to the page
     $('head').append($("<link>").attr({
-        href  : 'http://c.lan/personal/chat-helper/console-helper.css',
+        href  : 'http://chockly.org/ch/console-helper.css',
         type  : 'text/css',
         rel   : 'stylesheet',
         media : 'screen'
