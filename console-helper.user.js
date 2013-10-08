@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.23
+// @version 0.1.24
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -225,14 +225,8 @@ var ch_m = function($) {
             header = $('<thead>'),
             body = $('<tbody>'),
             row,
-            values = [],
-            vlen = 0,
-            i,
-            dataKey,
-            td,
-            datum,
-            input,
-            result;
+            definitions = [],
+            td;
         
         //   Construct the Header   //
         row = $('<tr>');
@@ -241,9 +235,8 @@ var ch_m = function($) {
         row.append('<th> </th>');
         // Add the headers
         $.each(layout, function(index, value) {
-            row.append($('<th>').text(index).data(index, value));
-            values.push(value);
-            vlen++;
+            row.append($('<th>').text(index));
+            definitions.push(value);
         });
         header.append(row);
         
@@ -251,86 +244,28 @@ var ch_m = function($) {
         if (data) {
             // Add the data
             $.each(data, function(index, value) {
-                row = $('<tr>');
-                // Attach the delete row button
-                row.append(getDeleteCell());
-
-                // Loop through the layout values
-                for (i=0; i<vlen; i++) {
-                    td = $('<td>');
-                    input = $('<input>');
-                    dataKey = values[i];
-
-                    if (typeof dataKey === 'object') {
-                        datum = $.extend({}, {
-                            // Defaults
-                            'type'   : 'text',
-                            'data'   : '',
-                            'value'  : '',
-                            'append' : '',
-                            'class'  : false
-                        }, dataKey);
-
-                        input.attr('type', datum.type);
-
-                        if (typeof datum.value === 'function') {
-                            result = datum.value(value[datum.data]);
-                        } else {
-                            result = value[datum.value];
-                        }
-
-                        if (datum.type === 'checkbox') {
-                            // Checkbox type
-                            input.prop('checked', result);
-                        } else {
-                            // Assume string type
-                            input.attr('value', result);
-                        }
-                        
-                        // Append the pre-message
-                        td.text(datum.append);
-                        
-                        // Attach the input class
-                        if (datum.class) {
-                            input.addClass(datum.class);
-                        }
-                    } else {
-                        // Assume a simple text field
-                        input.attr({
-                            type : 'text',
-                            value: value[dataKey]
-                        });
-                    }
-
-                    td.append(input);
-                    row.append(td);
-                }
-
-                body.append(row);
+                body.append(
+                    buildRow(definitions, value)
+                );
             });
         }
         
         // Attach the add new row
         row = $('<tr>');
-        td = $('<td>').attr('colspan', vlen+1);
+        td = $('<td>').attr('colspan', definitions.length + 1);
         td.append(
         	$('<img>').attr({
 				'src'   : 'http://chockly.org/ch/plus.png',// Modified Fuque Icon
 				'alt'   : 'Add',
 				'class' : 'ch-add-new'
 	        })
+            .data('columns', values)
 	        .click(function(event) {
-	        	var tr = $(this).parent().parent();
-	        	// Get the data from the headers
-	        	var headers = tr.parent().siblings().find('th');
-	        	
-	        	var newRow = $('<tr>');
-	        	newRow.append(getDeleteCell());
-	        	
-	        	for (var i=1; i<headers.length; i++) {
-	        		console.log(headers[i].data();
-	        	}
-	        	tr.before(newRow);
+                var jThis = $(this);
+	        	var tr = jThis.parent().parent(),
+                    columns = jThis.data('columns'); 
+               
+	        	tr.before(buildRow(columns));
 	        })
 	    );
         body.append(row.append(td));
@@ -341,6 +276,112 @@ var ch_m = function($) {
         table.append(body);
         
         $("#" + tableId).append(table);
+    }
+    
+    function buildRow(columnDefinitions, data) {
+        var row = $('<tr>'),
+            td,
+            input,
+            numColumns = columnDefinitions.length,
+            definition,
+            column,
+            result;
+    
+        // Attach the delete row button
+        row.append($('<td>').append(
+            $('<img>')
+                .attr({
+                    'src'   : 'http://chockly.org/ch/minus.png',// Modified Fuque Icon
+                    'alt'   : 'Delete',
+                    'class' : 'ch-delete'
+                })
+                .click(function(event){
+                    // TODO confirm and remove the row
+                    console.log(event);
+                    console.log(this);
+                })
+            )
+        );
+
+        // Loop through the layout values
+        for (var i=0; i<numColumns; i++) {
+            td = $('<td>');
+            input = $('<input>');
+            definition = columnDefinitions[i];
+
+            if (typeof definition === 'object') {
+                column = $.extend({}, {
+                    // Defaults
+                    'type'   : 'text',
+                    'data'   : '',
+                    'value'  : '',
+                    'append' : '',
+                    'class'  : false,
+                    'default': false
+                }, definition);
+
+                input.attr('type', column.type);
+
+                // Get the value for the input field //
+                if (data) {
+                    // Value from the provided data
+                    if (typeof column.value === 'function') {
+                        result = column.value(data[column.data]);
+                    } else {
+                        result = data[column.value];
+                    }
+                    
+                // No value provided, get the default value
+                } else if (column['default']) {
+                    // Use the default
+                    result = column['default'];
+                    
+                // No default provided
+                } else if (column.type === 'checkbox') {
+                    // Checkboxes default to false
+                    result = false;
+                } else {
+                    // Other inputs default to an empty value
+                    result = '';
+                }
+
+                if (column.type === 'checkbox') {
+                    // Checkbox type
+                    input.prop('checked', result);
+                } else {
+                    // Assume string type
+                    input.attr('value', result);
+                }
+
+                // Append the pre-message
+                td.text(column.append);
+
+                // Attach the input class
+                if (column.class) {
+                    input.addClass(column.class);
+                }
+            } else {
+                // Simple text field
+                
+                // Get the value
+                if (data) {
+                    // Use the provided value
+                    result = data[definition];
+                } else {
+                    // Set the value to empty
+                    result = '';
+                }
+                
+                input.attr({
+                    type : 'text',
+                    value: result
+                });
+            }
+            td.append(input);
+            row.append(td);
+        }
+
+        return row;
     }
     
     /**
@@ -403,21 +444,6 @@ var ch_m = function($) {
             val -= menu_height;
         }
         return val + "px";
-    }
-    
-    function getDeleteCell() {
-    	return $('<td>').append(
-					$('<img>')
-						.attr({
-							'src'   : 'http://chockly.org/ch/minus.png',// Modified Fuque Icon
-							'alt'   : 'Delete',
-							'class' : 'ch-delete'
-						})
-						.click(function(event){
-							console.log(event);
-							console.log(this);
-						})
-				);
     }
     
     /**
