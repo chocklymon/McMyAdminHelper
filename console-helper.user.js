@@ -241,7 +241,7 @@ var ch_m = function($) {
         row.append('<th> </th>');
         // Add the headers
         $.each(layout, function(index, value) {
-            row.append($('<th>').text(index));
+            row.append($('<th>').text(index).data(index, value));
             values.push(value);
             vlen++;
         });
@@ -253,20 +253,7 @@ var ch_m = function($) {
             $.each(data, function(index, value) {
                 row = $('<tr>');
                 // Attach the delete row button
-                row.append(
-                    $('<td>').append(
-                        $('<img>')
-                            .attr({
-                                'src'   : 'http://chockly.org/ch/minus.png',// Modified Fuque Icon
-                                'alt'   : 'Delete',
-                                'class' : 'ch-delete'
-                            })
-                            .click(function(event){
-                                console.log(event);
-                                console.log(this);
-                            })
-                    )
-                );
+                row.append(getDeleteCell());
 
                 // Loop through the layout values
                 for (i=0; i<vlen; i++) {
@@ -277,11 +264,11 @@ var ch_m = function($) {
                     if (typeof dataKey === 'object') {
                         datum = $.extend({}, {
                             // Defaults
-                            type   : 'text',
-                            data   : '',
-                            value  : '',
-                            append : '',
-                            class  : false
+                            'type'   : 'text',
+                            'data'   : '',
+                            'value'  : '',
+                            'append' : '',
+                            'class'  : false
                         }, dataKey);
 
                         input.attr('type', datum.type);
@@ -326,11 +313,26 @@ var ch_m = function($) {
         // Attach the add new row
         row = $('<tr>');
         td = $('<td>').attr('colspan', vlen+1);
-        td.append($('<img>').attr({
-            'src'   : 'http://chockly.org/ch/plus.png',// Modified Fuque Icon
-            'alt'   : 'Add',
-            'class' : 'ch-add-new'
-        }));
+        td.append(
+        	$('<img>').attr({
+				'src'   : 'http://chockly.org/ch/plus.png',// Modified Fuque Icon
+				'alt'   : 'Add',
+				'class' : 'ch-add-new'
+	        })
+	        .click(function(event) {
+	        	var tr = $(this).parent().parent();
+	        	// Get the data from the headers
+	        	var headers = tr.parent().siblings().find('th');
+	        	
+	        	var newRow = $('<tr>');
+	        	newRow.append(getDeleteCell());
+	        	
+	        	for (var i=1; i<headers.length; i++) {
+	        		console.log(headers[i].data();
+	        	}
+	        	tr.before(newRow);
+	        })
+	    );
         body.append(row.append(td));
         
         
@@ -401,6 +403,21 @@ var ch_m = function($) {
             val -= menu_height;
         }
         return val + "px";
+    }
+    
+    function getDeleteCell() {
+    	return $('<td>').append(
+					$('<img>')
+						.attr({
+							'src'   : 'http://chockly.org/ch/minus.png',// Modified Fuque Icon
+							'alt'   : 'Delete',
+							'class' : 'ch-delete'
+						})
+						.click(function(event){
+							console.log(event);
+							console.log(this);
+						})
+				);
     }
     
     /**
@@ -610,7 +627,7 @@ var ch_m = function($) {
     
     //   Context Menu   //
     // Attach the commands to the player context menu
-    attachCommands(contextMenu, get(storageKeys.playerCommands), runPlayerCommand, '<div>');
+    attachCommands(contextMenu, get(storageKeys.playerCommands, []), runPlayerCommand, '<div>');
     
     // Attach the context menu to the page
     contextMenu.appendTo('body');
@@ -653,12 +670,12 @@ var ch_m = function($) {
     );
     
     // Attach the commands
-    attachCommands($("#ch-cmnds"), get(storageKeys.generalCommands), runGeneralCommand);
-    if (get(storageKeys.generalCommands).length > 0 && get(storageKeys.quickCommands).length > 0) {
+    attachCommands($("#ch-cmnds"), get(storageKeys.generalCommands, []), runGeneralCommand);
+    if (get(storageKeys.generalCommands, []).length > 0 && get(storageKeys.quickCommands, []).length > 0) {
         // Insert a spacer between the two command types
         $("#ch-cmnds").append($('<div>').addClass('ch-h-spacer'));
     }
-    attachCommands($("#ch-cmnds"), get(storageKeys.quickCommands), runQuickCommand);
+    attachCommands($("#ch-cmnds"), get(storageKeys.quickCommands, []), runQuickCommand);
     
     
     //  Helper Manager Interface  //
@@ -688,58 +705,60 @@ var ch_m = function($) {
     // Build the tab contents
     buildTable(
         'ch-filters',
-        mergeDefaults(get(storageKeys.filters), filterDefaults),
+        mergeDefaults(get(storageKeys.filters, []), filterDefaults),
         {
             'Match'  : {
-                value : 'regex',
-                class : 'ch-large'
+                'value' : 'regex',
+                'class' : 'ch-large'
             },
             'Match All' : {
-                type  : 'checkbox',
-                value : function(data) {
+                'type'    : 'checkbox',
+                'value'   : function(data) {
                     if (data && data.indexOf('g') > -1) {
                         return true;
                     } else {
                         return false;
                     }
                 },
-                data  : 'modifiers'
+                'data'    : 'modifiers',
+                'default' : true
             },
             'Ignore Case' : {
-                type  : 'checkbox',
-                value : function(data) {
+                'type'    : 'checkbox',
+                'value'   : function(data) {
                     if (data && data.indexOf('i') > -1) {
                         return true;
                     } else {
                         return false;
                     }
                 },
-                data  : 'modifiers'
+                'data'    : 'modifiers',
+                'default' : true
             },
             'Replace' : {
-                value : 'replace',
-                class : 'ch-medium'
+                'value' : 'replace',
+                'class' : 'ch-medium'
             },
             'Alert' : {
                 type  : 'checkbox',
                 value : 'alert'
             },
             'Count' : {
-                value : function(data) {
+                'value' : function(data) {
                     if (data) {
                         return data;
                     } else {
                         return '';
                     }
                 },
-                data  : 'count',
-                class : 'ch-tiny'
+                'data'  : 'count',
+                'class' : 'ch-tiny'
             }
         }
     );
-    buildTable('ch-pcmnds', get(storageKeys.playerCommands),  commandTableLayout);
-    buildTable('ch-gcmnds', get(storageKeys.generalCommands), commandTableLayout);
-    buildTable('ch-qcmnds', get(storageKeys.quickCommands),   commandTableLayout);
+    buildTable('ch-pcmnds', get(storageKeys.playerCommands,  []), commandTableLayout);
+    buildTable('ch-gcmnds', get(storageKeys.generalCommands, []), commandTableLayout);
+    buildTable('ch-qcmnds', get(storageKeys.quickCommands,   []), commandTableLayout);
     
     // Save/Cancel
     $("#ch-save").click(function(event) {
