@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.25
+// @version 0.1.26
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -845,8 +845,9 @@ var ch_m = function($) {
         $("#ch-manager").hide();
     });
     $("#ch-cancel").click(function(event) {
-        // TODO reset any changed fields.
         $("#ch-manager").hide();
+        // Rebuild the tabs so that any changes are lost
+        buildTabContents();
     });
     
     
