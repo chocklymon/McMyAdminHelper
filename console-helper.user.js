@@ -19,6 +19,7 @@
  *              // Code for previous command here
  *         }
  *     });
+ *    - Idea: have this be an actual object.
  * - Prevent chat message parsing when first loading?
  */
 
@@ -71,6 +72,18 @@ var ch_m = function($) {
     
     /** Stores how long counts should be stored in seconds. */
     countDuration = 300, // 5 minutes
+    
+    /** Stores what command in the sent commands is currently being looked at. */
+    currentCommand = 0,
+    
+    /** Used to store any text currently in the input box. */
+    tempCommand,
+    
+    /** The maximum number of commands to store. */
+    maxCommands = 20,
+    
+    /** Store commands and messages that have been sent to the server. */
+    sentCommands = [],
     
     /** The key used to retrieve and set data from the local storage object. */
     localStorageKey = "cdata",
@@ -180,6 +193,35 @@ var ch_m = function($) {
         {
             hist.scrollTop = hist.scrollHeight;
         }
+    }
+    
+    /**
+     * Add a command to the list of used commands.
+     * @param {string} command The command to add.
+     */
+    function addCommand(command) {
+        // Don't store a command that is the same as the last one.
+    	if (sentCommands[sentCommands.length-1] == command)
+    	    return;
+        
+        // Store the command
+        sentCommands.push(command);
+        
+        // Remove old commands as needed
+        if (sentCommands.length > maxCommands) {
+            sentCommands.shift();
+        }
+        
+        // Reset the current command pointer
+        currentCommand = sentCommands.length;
+    }
+    
+    function prevCommand() {
+    	// TODO
+    }
+    
+    function nextCommand() {
+    	// TODO
     }
     
     /**
