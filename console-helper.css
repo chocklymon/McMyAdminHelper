@@ -38,10 +38,15 @@ Console chat helper styles
     margin: 6px 5px 4px 4px;
 }
 
+/* Override the z-index so the confirmation dialog is above the management interface */
+#modalbg {
+	z-index: 150 !important;
+}
+
 /* Helper Management Interface */
 #ch-manager {
     display:none;
-    z-index: 90;
+    z-index: 110;
 }
 .ch-tabs {
     clear:both;
@@ -55,6 +60,11 @@ Console chat helper styles
     display: none;
     border: none;
     border-top: 1px solid #555;
+}
+.ch-tabs p {
+	margin: 0 8px 5px;
+	padding: 0;
+	font-size: 0.8em;
 }
 .ch-tabs table {
     border-collapse: collapse;

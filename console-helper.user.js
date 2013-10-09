@@ -212,6 +212,79 @@ var ch_m = function($) {
     }
     
     /**
+     * Builds each of the contents of the tabs.
+     */
+    function buildTabContents() {
+    	// Filters tab
+    	$("#ch-filters").empty().append("<p>Create regular expression filters that are applied to the console messages.<br/>Help with regular expressions: <a href='http://net.tutsplus.com/tutorials/javascript-ajax/you-dont-know-anything-about-regular-expressions/' target='_blank'>Regular Expression Tutorial</a> &mdash; <a href='http://regexpal.com/' target='_blank'>Regular Expression Tester</a></p>");
+    	buildTable(
+			'ch-filters',
+			mergeDefaults(get(storageKeys.filters, []), filterDefaults),
+			{
+				'Match'  : {
+					'value' : 'regex',
+					'class' : 'ch-large'
+				},
+				'Match All' : {
+					'type'    : 'checkbox',
+					'value'   : function(data) {
+						if (data && data.indexOf('g') > -1) {
+							return true;
+						} else {
+							return false;
+						}
+					},
+					'data'    : 'modifiers',
+					'default' : true
+				},
+				'Ignore Case' : {
+					'type'    : 'checkbox',
+					'value'   : function(data) {
+						if (data && data.indexOf('i') > -1) {
+							return true;
+						} else {
+							return false;
+						}
+					},
+					'data'    : 'modifiers',
+					'default' : true
+				},
+				'Replace' : {
+					'value' : 'replace',
+					'class' : 'ch-medium'
+				},
+				'Alert' : {
+					type  : 'checkbox',
+					value : 'alert'
+				},
+				'Count' : {
+					'value' : function(data) {
+						if (data) {
+							return data;
+						} else {
+							return '';
+						}
+					},
+					'data'  : 'count',
+					'class' : 'ch-tiny'
+				}
+			}
+		);
+		
+		// Player commands tab
+    	$("#ch-pcmnds").empty().append("<p>These commands are available when right clicking on a player name in the sidebar. The player's name is added after the command.</p>");
+    	buildTable('ch-pcmnds', get(storageKeys.playerCommands,  []), commandTableLayout);
+    	
+		// General commands tab
+    	$("#ch-gcmnds").empty().append("<p>These commands are added as buttons below the console input box.</p>");
+    	buildTable('ch-gcmnds', get(storageKeys.generalCommands, []), commandTableLayout);
+    	
+		// Quick commands tab
+    	$("#ch-qcmnds").empty().append("<p>These commands are added as buttons below the console input box and run when they are clicked on.</p>");
+    	buildTable('ch-qcmnds', get(storageKeys.quickCommands,   []), commandTableLayout);
+    }
+    
+    /**
      * Builds a table into the given component.
      * @param {string} tableId The HTML id of the element.
      * @param {object} data The data to put into the table.
@@ -764,62 +837,7 @@ var ch_m = function($) {
     );
     
     // Build the tab contents
-    buildTable(
-        'ch-filters',
-        mergeDefaults(get(storageKeys.filters, []), filterDefaults),
-        {
-            'Match'  : {
-                'value' : 'regex',
-                'class' : 'ch-large'
-            },
-            'Match All' : {
-                'type'    : 'checkbox',
-                'value'   : function(data) {
-                    if (data && data.indexOf('g') > -1) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                },
-                'data'    : 'modifiers',
-                'default' : true
-            },
-            'Ignore Case' : {
-                'type'    : 'checkbox',
-                'value'   : function(data) {
-                    if (data && data.indexOf('i') > -1) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                },
-                'data'    : 'modifiers',
-                'default' : true
-            },
-            'Replace' : {
-                'value' : 'replace',
-                'class' : 'ch-medium'
-            },
-            'Alert' : {
-                type  : 'checkbox',
-                value : 'alert'
-            },
-            'Count' : {
-                'value' : function(data) {
-                    if (data) {
-                        return data;
-                    } else {
-                        return '';
-                    }
-                },
-                'data'  : 'count',
-                'class' : 'ch-tiny'
-            }
-        }
-    );
-    buildTable('ch-pcmnds', get(storageKeys.playerCommands,  []), commandTableLayout);
-    buildTable('ch-gcmnds', get(storageKeys.generalCommands, []), commandTableLayout);
-    buildTable('ch-qcmnds', get(storageKeys.quickCommands,   []), commandTableLayout);
+    buildTabContents();
     
     // Save/Cancel
     $("#ch-save").click(function(event) {
