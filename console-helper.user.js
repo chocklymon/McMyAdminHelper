@@ -217,85 +217,85 @@ var ch_m = function($) {
      * and player context menu.
      */
     function buildCommands() {
-    	// Attach the context menu commands
-    	contextMenu.empty();
-    	attachCommands(contextMenu, get(storageKeys.playerCommands, []), runPlayerCommand, '<div>');
-    	
-		// Attach the below chat input commands
-		var cmndDiv = $("#ch-cmnds");
-		cmndDiv.empty();
-		attachCommands(cmndDiv, get(storageKeys.generalCommands, []), runGeneralCommand);
-		if (get(storageKeys.generalCommands, []).length > 0 && get(storageKeys.quickCommands, []).length > 0) {
-			// Insert a spacer between the two command types
-			cmndDiv.append($('<div>').addClass('ch-h-spacer'));
-		}
-		attachCommands(cmndDiv, get(storageKeys.quickCommands, []), runQuickCommand);
+        // Attach the context menu commands
+        contextMenu.empty();
+        attachCommands(contextMenu, get(storageKeys.playerCommands, []), runPlayerCommand, '<div>');
+        
+        // Attach the below chat input commands
+        var cmndDiv = $("#ch-cmnds");
+        cmndDiv.empty();
+        attachCommands(cmndDiv, get(storageKeys.generalCommands, []), runGeneralCommand);
+        if (get(storageKeys.generalCommands, []).length > 0 && get(storageKeys.quickCommands, []).length > 0) {
+            // Insert a spacer between the two command types
+            cmndDiv.append($('<div>').addClass('ch-h-spacer'));
+        }
+        attachCommands(cmndDiv, get(storageKeys.quickCommands, []), runQuickCommand);
     }
     
     /**
      * Builds each of the contents of the tabs.
      */
     function buildTabContents() {
-    	// Filters tab
-    	buildTable(
-			'ch-filters',
-			mergeDefaults(get(storageKeys.filters, []), filterDefaults),
-			{
-				'Match'  : {
-					'value' : 'regex',
-					'class' : 'ch-large'
-				},
-				'Match All' : {
-					'type'    : 'checkbox',
-					'value'   : function(data) {
-						if (data && data.indexOf('g') > -1) {
-							return true;
-						} else {
-							return false;
-						}
-					},
-					'data'    : 'modifiers',
-					'default' : true,
-					'class'   : 'ch-global-mod-flag'
-				},
-				'Ignore Case' : {
-					'type'    : 'checkbox',
-					'value'   : function(data) {
-						if (data && data.indexOf('i') > -1) {
-							return true;
-						} else {
-							return false;
-						}
-					},
-					'data'    : 'modifiers',
-					'default' : true
-				},
-				'Replace' : {
-					'value' : 'replace',
-					'class' : 'ch-medium'
-				},
-				'Alert' : {
-					type  : 'checkbox',
-					value : 'alert'
-				},
-				'Count' : {
-					'value' : function(data) {
-						if (data) {
-							return data;
-						} else {
-							return '';
-						}
-					},
-					'data'  : 'count',
-					'class' : 'ch-tiny'
-				}
-			}
-		);
-		
-		// Command Tabs
-		buildTable('ch-pcmnds', get(storageKeys.playerCommands,  []), commandTableLayout);
-    	buildTable('ch-gcmnds', get(storageKeys.generalCommands, []), commandTableLayout);
-    	buildTable('ch-qcmnds', get(storageKeys.quickCommands,   []), commandTableLayout);
+        // Filters tab
+        buildTable(
+            'ch-filters',
+            mergeDefaults(get(storageKeys.filters, []), filterDefaults),
+            {
+                'Match'  : {
+                    'value' : 'regex',
+                    'class' : 'ch-large'
+                },
+                'Match All' : {
+                    'type'    : 'checkbox',
+                    'value'   : function(data) {
+                        if (data && data.indexOf('g') > -1) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    },
+                    'data'    : 'modifiers',
+                    'default' : true,
+                    'class'   : 'ch-global-mod-flag'
+                },
+                'Ignore Case' : {
+                    'type'    : 'checkbox',
+                    'value'   : function(data) {
+                        if (data && data.indexOf('i') > -1) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    },
+                    'data'    : 'modifiers',
+                    'default' : true
+                },
+                'Replace' : {
+                    'value' : 'replace',
+                    'class' : 'ch-medium'
+                },
+                'Alert' : {
+                    type  : 'checkbox',
+                    value : 'alert'
+                },
+                'Count' : {
+                    'value' : function(data) {
+                        if (data) {
+                            return data;
+                        } else {
+                            return '';
+                        }
+                    },
+                    'data'  : 'count',
+                    'class' : 'ch-tiny'
+                }
+            }
+        );
+        
+        // Command Tabs
+        buildTable('ch-pcmnds', get(storageKeys.playerCommands,  []), commandTableLayout);
+        buildTable('ch-gcmnds', get(storageKeys.generalCommands, []), commandTableLayout);
+        buildTable('ch-qcmnds', get(storageKeys.quickCommands,   []), commandTableLayout);
     }
     
     /**
@@ -342,21 +342,21 @@ var ch_m = function($) {
         row = $('<tr>');
         td = $('<td>').attr('colspan', definitions.length + 1);
         td.append(
-        	$('<img>').attr({
-				'src'   : 'http://chockly.org/ch/plus.png',// Modified Fuque Icon
-				'alt'   : 'Add',
-				'class' : 'ch-add-new',
-				'title' : 'Add'
-	        })
+            $('<img>').attr({
+                'src'   : 'http://chockly.org/ch/plus.png',// Modified Fuque Icon
+                'alt'   : 'Add',
+                'class' : 'ch-add-new',
+                'title' : 'Add'
+            })
             .data('columns', definitions)
-	        .click(function(event) {
+            .click(function(event) {
                 var jThis = $(this);
-	        	var tr = jThis.parent().parent(),
-                    columns = jThis.data('columns'); 
+                var tr = jThis.parent().parent(),
+                    columns = jThis.data('columns');
                
-	        	tr.before(buildRow(columns));
-	        })
-	    );
+                tr.before(buildRow(columns));
+            })
+        );
         body.append(row.append(td));
         
         
@@ -442,8 +442,8 @@ var ch_m = function($) {
                 }
                 
                 input.attr(
-                	'name',
-                	(typeof column.value === 'function') ? column.data : column.value
+                    'name',
+                    (typeof column.value === 'function') ? column.data : column.value
                 );
 
                 if (column.type === 'checkbox') {
@@ -554,17 +554,17 @@ var ch_m = function($) {
      * @param {string} input The string to get the has for.
      */
     function hash(input) {
-		var hash = 0,
-			l = input.length,
-			character;
-		
-		for (var i = 0; i < l; i++) {
-			character = input.charCodeAt(i);
-			hash = ((hash<<5)-hash) + character;
-			hash |= 0; // Convert to 32bit integer
-		}
-		return hash;
-	}
+        var hash = 0,
+            l = input.length,
+            character;
+        
+        for (var i = 0; i < l; i++) {
+            character = input.charCodeAt(i);
+            hash = ((hash<<5)-hash) + character;
+            hash |= 0; // Convert to 32bit integer
+        }
+        return hash;
+    }
     
     /**
      * Merges each of the objects in the data array with the provided defaults.
@@ -585,7 +585,7 @@ var ch_m = function($) {
      * @param {string} message The message to display in the notification.
      */
     function notify(message) {
-    	var id = hash(message);
+        var id = hash(message);
         window.open(
             'http://chockly.org/ch/?m=' + encodeURIComponent(message),
             'notify-'+id,
@@ -602,12 +602,12 @@ var ch_m = function($) {
         var filters = get(storageKeys.filters, []),
             filter,
             regex;
-		
-		// Escape any HTML entities
-		text = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-		
-		// Process any message notifications.
-        for (var i=0; i<filters.length; i++) {            
+        
+        // Escape any HTML entities
+        text = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        
+        // Process any message notifications.
+        for (var i=0; i<filters.length; i++) {
             filter = $.extend({}, filterDefaults, filters[i]);
             
             regex = new RegExp(filter.regex, filter.modifiers);
@@ -634,28 +634,28 @@ var ch_m = function($) {
      * When passed in this row will be removed without confirmation.
      */
     function removeRow(event, row) {
-    	if (!row) {
-    		// No row provided, get the row from the image
-			row = $(this).parent().parent();
-			
-			// If the row's first input method has data in it, confirm the deletion.
-			if (row.find('input').first().val() != '') {
-				// Use the show modal method from McMyAdmin for the confirmation
-				showModal(
-					'Confirm Delete',
-					'Are you sure you wish to delete this row?',
-					Icons.Question,
-					function() {
-						removeRow(null, row);
-						hideModal();
-					},
-					hideModal
-				);
-				return;
-			}
-    	}
-    	// Remove the row
-    	row.remove();
+        if (!row) {
+            // No row provided, get the row from the image
+            row = $(this).parent().parent();
+            
+            // If the row's first input method has data in it, confirm the deletion.
+            if (row.find('input').first().val() != '') {
+                // Use the show modal method from McMyAdmin for the confirmation
+                showModal(
+                    'Confirm Delete',
+                    'Are you sure you wish to delete this row?',
+                    Icons.Question,
+                    function() {
+                        removeRow(null, row);
+                        hideModal();
+                    },
+                    hideModal
+                );
+                return;
+            }
+        }
+        // Remove the row
+        row.remove();
     }
     
     /**
@@ -863,66 +863,66 @@ var ch_m = function($) {
         
         // Loop through each tab
         $.each(storageKeys, function(i, key) {
-        	contents = [];
-        	
-        	// Loop through each row
-        	$.each($("#ch-" + key + " tr"), function(i, row) {
-        		obj = {};
-        		
-        		// Loop through each input on the row
-        		$.each($(row).find('input'), function(i, input) {
-        			jobj = $(input);
-        			name = jobj.attr('name');
-        			
-        			// Get the value of the input box
-        			if (jobj.attr('type') == 'checkbox') {
-						value = jobj.prop('checked');
-					} else {
-						value = jobj.val();
-					}
-					
-        			if (key == 'filters') {
-        				// Filters have special serialization needs
-        				
-        				if (name == 'count') {
-        					// Count should be a number or false
-        					value = (value == '') ? false : value*1;
-        					if (isNaN(value) || value <= 0) {
-        						value = false;
-        					}
-        				} else if (name == 'modifiers' && value) {
-        					// Regex Modifier Flag
-        					if (jobj.hasClass('ch-global-mod-flag')) {
-        						// Global
-        						modifiers += 'g';
-        					} else {
-        						// Case Insensitive
-        						modifiers += 'i';
-        					}
-        					// Modifiers are handled later, exit for now
-        					return;
-        				}
-        				
-        				// If the value is the same as the default, don't store it.
-        				if (filterDefaults[name] == value) {
-        					return;
-        				}
-        			}
-        			// Store the value
-        			obj[name] = value;
-        		});
-        		if (!$.isEmptyObject(obj)) {
-        			if (key == 'filters' && modifiers != filterDefaults.modifiers) {
-        				// Merge in the modifiers now
-        				obj.modifiers = modifiers;
-        			}
-        			contents.push(obj);
-        		}
-        		modifiers = '';
-        	});
-        	
-        	// Store the serialized tab
-        	set(key, contents);
+            contents = [];
+            
+            // Loop through each row
+            $.each($("#ch-" + key + " tr"), function(i, row) {
+                obj = {};
+                
+                // Loop through each input on the row
+                $.each($(row).find('input'), function(i, input) {
+                    jobj = $(input);
+                    name = jobj.attr('name');
+                    
+                    // Get the value of the input box
+                    if (jobj.attr('type') == 'checkbox') {
+                        value = jobj.prop('checked');
+                    } else {
+                        value = jobj.val();
+                    }
+                    
+                    if (key == 'filters') {
+                        // Filters have special serialization needs
+                        
+                        if (name == 'count') {
+                            // Count should be a number or false
+                            value = (value == '') ? false : value*1;
+                            if (isNaN(value) || value <= 0) {
+                                value = false;
+                            }
+                        } else if (name == 'modifiers' && value) {
+                            // Regex Modifier Flag
+                            if (jobj.hasClass('ch-global-mod-flag')) {
+                                // Global
+                                modifiers += 'g';
+                            } else {
+                                // Case Insensitive
+                                modifiers += 'i';
+                            }
+                            // Modifiers are handled later, exit for now
+                            return;
+                        }
+                        
+                        // If the value is the same as the default, don't store it.
+                        if (filterDefaults[name] == value) {
+                            return;
+                        }
+                    }
+                    // Store the value
+                    obj[name] = value;
+                });
+                if (!$.isEmptyObject(obj)) {
+                    if (key == 'filters' && modifiers != filterDefaults.modifiers) {
+                        // Merge in the modifiers now
+                        obj.modifiers = modifiers;
+                    }
+                    contents.push(obj);
+                }
+                modifiers = '';
+            });
+            
+            // Store the serialized tab
+            set(key, contents);
         });
         
         // Rebuild the commands incase they have changed
