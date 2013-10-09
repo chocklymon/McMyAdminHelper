@@ -2,15 +2,12 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.31
+// @version 0.1.33
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
 
 /* TODO:
- * - Add a count so if a message filter is triggered repeatedly in a short enough time it can trigger an alert.
- *    - Will need a variable to store the filter ID (What to use for the ID? the array index? some sort of hash? the regex?)
- *    - Will need a configurable variable to specify how long the count should be stored before being cleared.
  * - Store the last 10 (configurable) commands, have pressing up trigger the message
  * to be entered into the input box.
  *     This will require a way to hook into the command being sent from the input box, before the input boxes value is cleared (possibly unbind keypress and use custom version of McMyAdmin's on keypress enter event code)
@@ -22,10 +19,7 @@
  *              // Code for previous command here
  *         }
  *     });
- * - Add interface for editing, removing, and adding filters.
- * - Add an interface for editing, removing, and adding buttons.
- *    - Will store the current commands into local storage, have defaults for when absent to first populate the local storage.
- * - Prevent chat message parsing for previous ones?
+ * - Prevent chat message parsing when first loading?
  */
 
 /*
@@ -71,6 +65,12 @@ var ch_m = function($) {
     
     /** Create the context menu HTML element used for the player commands. */
     contextMenu = $('<div>').attr('id', 'ch-contextmenu'),
+    
+    /** Stores the counts for counted filters. */
+    count = {},
+    
+    /** Stores how long counts should be stored in seconds. */
+    countDuration = 300, // 5 minutes
     
     /** The key used to retrieve and set data from the local storage object. */
     localStorageKey = "cdata",
@@ -567,6 +567,43 @@ var ch_m = function($) {
     }
     
     /**
+     * Increments the count for the provided message filter.
+     * @param {object} filter The message filter.
+     * @param {string} message The message causing the increment.
+     */
+    function incrementCount(filter, message) {
+        // Use the hexadecimal hash of the regex as the key
+        var key = hash(filter.regex).toString(16),
+            // Get the current timestamp in seconds.
+            now = Math.round(Date.now() / 1000);
+        
+        // Make sure we have an array.
+        if (!count[key]) {
+            count[key] = [];
+        }
+        
+        count[key].push({msg:message, time: now});
+        
+        // Remove old values
+        $.each(count, function(index, value) {
+            for (var i=0; i<value.length; i++) {
+                if (value[i].time < now - countDuration) {
+                    // Remove the value
+                    value.splice(i,1);
+                }
+            }
+        });
+        
+        // Notify the user if the count for the filter has been met or exceeded.
+        if (count[key].length >= filter.count) {
+            notify("<b>Count Alert:</b><br>" + message);
+            
+            // Remove the first element to help prevent message spamming.
+            count[key].shift();
+        }
+    }
+    
+    /**
      * Merges each of the objects in the data array with the provided defaults.
      * @param {array} data
      * @param {object} defaults
@@ -613,13 +650,17 @@ var ch_m = function($) {
             regex = new RegExp(filter.regex, filter.modifiers);
             
             // See if we have a match
-            if (text.match(regex) !== null) {
+            if (regex.test(text)) {
                 // Replace the text
                 text = text.replace(regex, filter.replace);
                 
                 // Pop a notification if needed
                 if (filter.alert) {
                     notify("<b>Chat Message Alert:</b><br>" + text);
+                }
+                // Increment the count of this filter if needed.
+                if(filter.count) {
+                    incrementCount(filter, text);
                 }
             }
         }
