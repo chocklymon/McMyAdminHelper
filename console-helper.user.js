@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.29
+// @version 0.1.30
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -216,7 +216,6 @@ var ch_m = function($) {
      */
     function buildTabContents() {
     	// Filters tab
-    	$("#ch-filters").empty().append("<p>Create regular expression filters that are applied to the console messages.<br/>Help with regular expressions: <a href='http://net.tutsplus.com/tutorials/javascript-ajax/you-dont-know-anything-about-regular-expressions/' target='_blank'>Regular Expression Tutorial</a> &mdash; <a href='http://regexpal.com/' target='_blank'>Regular Expression Tester</a></p>");
     	buildTable(
 			'ch-filters',
 			mergeDefaults(get(storageKeys.filters, []), filterDefaults),
@@ -272,21 +271,15 @@ var ch_m = function($) {
 			}
 		);
 		
-		// Player commands tab
-    	$("#ch-pcmnds").empty().append("<p>These commands are available when right clicking on a player name in the sidebar. The player's name is added after the command.</p>");
-    	buildTable('ch-pcmnds', get(storageKeys.playerCommands,  []), commandTableLayout);
-    	
-		// General commands tab
-    	$("#ch-gcmnds").empty().append("<p>These commands are added as buttons below the console input box.</p>");
+		// Command Tabs
+		buildTable('ch-pcmnds', get(storageKeys.playerCommands,  []), commandTableLayout);
     	buildTable('ch-gcmnds', get(storageKeys.generalCommands, []), commandTableLayout);
-    	
-		// Quick commands tab
-    	$("#ch-qcmnds").empty().append("<p>These commands are added as buttons below the console input box and run when they are clicked on.</p>");
     	buildTable('ch-qcmnds', get(storageKeys.quickCommands,   []), commandTableLayout);
     }
     
     /**
-     * Builds a table into the given component.
+     * Builds a table into the given component. Note: any existing tables inside of the
+     * html element will be removed and replaced with this one.
      * @param {string} tableId The HTML id of the element.
      * @param {object} data The data to put into the table.
      * @param {object} layout The table headers and content definitions. Used
@@ -350,6 +343,7 @@ var ch_m = function($) {
         table.append(header);
         table.append(body);
         
+        $("#" + tableId).find('table').remove();
         $("#" + tableId).append(table);
     }
     
@@ -823,6 +817,7 @@ var ch_m = function($) {
     
     
     //  Helper Manager Interface  //
+    // Insert the helper manager interface into the page, with the filters tab selected by default.
     $('body').append(
 "<div id='ch-manager' class='modalbg modalnormal'>"
 +   "<div class='modalpanel'>"
@@ -833,10 +828,10 @@ var ch_m = function($) {
 +               "<a href='#ch-gcmnds'  class='subtab'>General Commands</a>"
 +               "<a href='#ch-qcmnds'  class='subtab'>Quick Commands</a>"
 +           "</div>"
-+           "<div id='ch-filters' class='subtabcontainer' style='display:block'></div>"
-+           "<div id='ch-pcmnds'  class='subtabcontainer'></div>"
-+           "<div id='ch-gcmnds'  class='subtabcontainer'></div>"
-+           "<div id='ch-qcmnds'  class='subtabcontainer'></div>"
++           "<div id='ch-filters' class='subtabcontainer' style='display:block'><p>Create regular expression filters that are applied to the console messages.<br/>Help with regular expressions: <a href='http://net.tutsplus.com/tutorials/javascript-ajax/you-dont-know-anything-about-regular-expressions/' target='_blank'>Regular Expression Tutorial</a> &mdash; <a href='http://regexpal.com/' target='_blank'>Regular Expression Tester</a></p></div>"
++           "<div id='ch-pcmnds'  class='subtabcontainer'><p>These commands are available when right clicking on a player name in the sidebar. The player's name is added after the command.</p></div>"
++           "<div id='ch-gcmnds'  class='subtabcontainer'><p>These commands are added as buttons below the console input box.</p></div>"
++           "<div id='ch-qcmnds'  class='subtabcontainer'><p>These commands are added as buttons below the console input box and run when they are clicked on.</p></div>"
 +       "</div>"
 +       "<div class='modalbuttons'>"
 +           "<button id='ch-save'>Save</button>"
