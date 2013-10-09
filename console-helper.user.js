@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.26
+// @version 0.1.29
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -235,7 +235,8 @@ var ch_m = function($) {
 						}
 					},
 					'data'    : 'modifiers',
-					'default' : true
+					'default' : true,
+					'class'   : 'ch-global-mod-flag'
 				},
 				'Ignore Case' : {
 					'type'    : 'checkbox',
@@ -364,6 +365,7 @@ var ch_m = function($) {
         var row = $('<tr>'),
             td,
             input,
+            name,
             numColumns = columnDefinitions.length,
             definition,
             column,
@@ -423,6 +425,11 @@ var ch_m = function($) {
                     // Other inputs default to an empty value
                     result = '';
                 }
+                
+                input.attr(
+                	'name',
+                	(typeof column.value === 'function') ? column.data : column.value
+                );
 
                 if (column.type === 'checkbox') {
                     // Checkbox type
@@ -453,7 +460,8 @@ var ch_m = function($) {
                 
                 input.attr({
                     type : 'text',
-                    value: result
+                    value: result,
+                    name : definition
                 });
             }
             td.append(input);
@@ -843,7 +851,74 @@ var ch_m = function($) {
     
     // Save/Cancel
     $("#ch-save").click(function(event) {
-        // TODO save
+        // Serialize and store the tabs
+        var obj, contents, jobj, value, name, modifiers = '';
+        
+        // Loop through each tab
+        $.each(storageKeys, function(i, key) {
+        	contents = [];
+        	
+        	// Loop through each row
+        	$.each($("#ch-" + key + " tr"), function(i, row) {
+        		obj = {};
+        		
+        		// Loop through each input on the row
+        		$.each($(row).find('input'), function(i, input) {
+        			jobj = $(input);
+        			name = jobj.attr('name');
+        			
+        			// Get the value of the input box
+        			if (jobj.attr('type') == 'checkbox') {
+						value = jobj.prop('checked');
+					} else {
+						value = jobj.val();
+					}
+					
+        			if (key == 'filters') {
+        				// Filters have special serialization needs
+        				
+        				if (name == 'count') {
+        					// Count should be a number or false
+        					value = (value == '') ? false : value*1;
+        					if (isNaN(value) || value <= 0) {
+        						value = false;
+        					}
+        				} else if (name == 'modifiers' && value) {
+        					// Regex Modifier Flag
+        					if (jobj.hasClass('ch-global-mod-flag')) {
+        						// Global
+        						modifiers += 'g';
+        					} else {
+        						// Case Insensitive
+        						modifiers += 'i';
+        					}
+        					// Modifiers are handled later, exit for now
+        					return;
+        				}
+        				
+        				// If the value is the same as the default, don't store it.
+        				if (filterDefaults[name] == value) {
+        					return;
+        				}
+        			}
+        			// Store the value
+        			obj[name] = value;
+        		});
+        		if (!$.isEmptyObject(obj)) {
+        			if (key == 'filters' && modifiers != filterDefaults.modifiers) {
+        				// Merge in the modifiers now
+        				obj.modifiers = modifiers;
+        			}
+        			contents.push(obj);
+        		}
+        		modifiers = '';
+        	});
+        	
+        	// Store the serialized tab
+        	set(key, contents);
+        });
+        
+        
         $("#ch-manager").hide();
     });
     $("#ch-cancel").click(function(event) {
