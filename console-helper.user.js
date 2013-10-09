@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.30
+// @version 0.1.31
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -37,6 +37,7 @@ Message Filters
 {regex:"(fred|waffle|console)",replace:"<i>$1</i>",name:"Username"}
 
 See the default generator for more.
+Note that the name parameter is only to help categorize the filters and is not used.
 */
 
 // Wrap everything inside of an anymous function
@@ -209,6 +210,26 @@ var ch_m = function($) {
                     .click(callback)
             );
         }
+    }
+    
+    /**
+     * Attaches the commands to the page. Call this to build/rebuild the command buttons
+     * and player context menu.
+     */
+    function buildCommands() {
+    	// Attach the context menu commands
+    	contextMenu.empty();
+    	attachCommands(contextMenu, get(storageKeys.playerCommands, []), runPlayerCommand, '<div>');
+    	
+		// Attach the below chat input commands
+		var cmndDiv = $("#ch-cmnds");
+		cmndDiv.empty();
+		attachCommands(cmndDiv, get(storageKeys.generalCommands, []), runGeneralCommand);
+		if (get(storageKeys.generalCommands, []).length > 0 && get(storageKeys.quickCommands, []).length > 0) {
+			// Insert a spacer between the two command types
+			cmndDiv.append($('<div>').addClass('ch-h-spacer'));
+		}
+		attachCommands(cmndDiv, get(storageKeys.quickCommands, []), runQuickCommand);
     }
     
     /**
@@ -764,12 +785,8 @@ var ch_m = function($) {
     
     
     //   Context Menu   //
-    // Attach the commands to the player context menu
-    attachCommands(contextMenu, get(storageKeys.playerCommands, []), runPlayerCommand, '<div>');
-    
     // Attach the context menu to the page
     contextMenu.appendTo('body');
-    
     
     // Attach additional functionality to clicking on the player names
     $("#chatNames").click(function(event) {
@@ -806,14 +823,7 @@ var ch_m = function($) {
     $("#chatArea").append(
         $('<div>').attr('id', 'ch-cmnds')
     );
-    
-    // Attach the commands
-    attachCommands($("#ch-cmnds"), get(storageKeys.generalCommands, []), runGeneralCommand);
-    if (get(storageKeys.generalCommands, []).length > 0 && get(storageKeys.quickCommands, []).length > 0) {
-        // Insert a spacer between the two command types
-        $("#ch-cmnds").append($('<div>').addClass('ch-h-spacer'));
-    }
-    attachCommands($("#ch-cmnds"), get(storageKeys.quickCommands, []), runQuickCommand);
+    buildCommands();
     
     
     //  Helper Manager Interface  //
@@ -844,8 +854,10 @@ var ch_m = function($) {
     // Build the tab contents
     buildTabContents();
     
-    // Save/Cancel
+    // Save/Cancel button click event handlers
     $("#ch-save").click(function(event) {
+        $("#ch-manager").hide();
+        
         // Serialize and store the tabs
         var obj, contents, jobj, value, name, modifiers = '';
         
@@ -913,11 +925,12 @@ var ch_m = function($) {
         	set(key, contents);
         });
         
-        
-        $("#ch-manager").hide();
+        // Rebuild the commands incase they have changed
+        buildCommands();
     });
     $("#ch-cancel").click(function(event) {
         $("#ch-manager").hide();
+        
         // Rebuild the tabs so that any changes are lost
         buildTabContents();
     });
