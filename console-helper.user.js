@@ -330,7 +330,8 @@ var ch_m = function($) {
         	$('<img>').attr({
 				'src'   : 'http://chockly.org/ch/plus.png',// Modified Fuque Icon
 				'alt'   : 'Add',
-				'class' : 'ch-add-new'
+				'class' : 'ch-add-new',
+				'title' : 'Add'
 	        })
             .data('columns', definitions)
 	        .click(function(event) {
@@ -374,7 +375,8 @@ var ch_m = function($) {
                 .attr({
                     'src'   : 'http://chockly.org/ch/minus.png',// Modified Fuque Icon
                     'alt'   : 'Delete',
-                    'class' : 'ch-delete'
+                    'class' : 'ch-delete',
+                    'title' : 'Delete'
                 })
                 .click(removeRow)
             )

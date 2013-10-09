@@ -84,3 +84,6 @@ input.ch-medium {
 input.ch-large {
     width: 230px
 }
+.ch-add-new, .ch-delete {
+	cursor: pointer;
+}
