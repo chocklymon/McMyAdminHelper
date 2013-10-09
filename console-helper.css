@@ -41,6 +41,7 @@ Console chat helper styles
 /* Helper Management Interface */
 #ch-manager {
     display:none;
+    z-index: 90;
 }
 .ch-tabs {
     clear:both;

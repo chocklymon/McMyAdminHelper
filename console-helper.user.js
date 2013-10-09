@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.24
+// @version 0.1.25
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -530,13 +530,34 @@ var ch_m = function($) {
     }
     
     /**
-     * Click event handler for delete buttons.
+     * Click event handler for delete buttons. Removes the row.
+     * @param {object} event The event data.
+     * @param {object} row The jQuery object for the row to remove.
+     * When passed in this row will be removed without confirmation.
      */
-    function removeRow() {
-        // TODO confirm and remove the row
-        console.log(event);
-        console.log(this);
-        console.log($(this).parent().parent());// This should be the row that is being removed.
+    function removeRow(event, row) {
+    	if (!row) {
+    		// No row provided, get the row from the image
+			row = $(this).parent().parent();
+			
+			// If the row's first input method has data in it, confirm the deletion.
+			if (row.find('input').first().val() != '') {
+				// Use the show modal method from McMyAdmin for the confirmation
+				showModal(
+					'Confirm Delete',
+					'Are you sure you wish to delete this row?',
+					Icons.Question,
+					function() {
+						removeRow(null, row);
+						hideModal();
+					},
+					hideModal
+				);
+				return;
+			}
+    	}
+    	// Remove the row
+    	row.remove();
     }
     
     /**
