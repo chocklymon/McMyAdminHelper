@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.33
+// @version 0.1.34
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -486,6 +486,10 @@ var ch_m = function($) {
         return row;
     }
     
+    function closeManager() {
+        $("#ch-manager").hide();
+    }
+    
     /**
      * Closes the player context menu.
      */
@@ -887,6 +891,7 @@ var ch_m = function($) {
 +       "<div class='modalbuttons'>"
 +           "<button id='ch-save'>Save</button>"
 +           "<button id='ch-cancel'>Cancel</button>"
++           "<button id='ch-close'>Close</button>"
 +       "</div>"
 +   "</div>"
 +"</div>"
@@ -897,7 +902,7 @@ var ch_m = function($) {
     
     // Save/Cancel button click event handlers
     $("#ch-save").click(function(event) {
-        $("#ch-manager").hide();
+        closeManager();
         
         // Serialize and store the tabs
         var obj, contents, jobj, value, name, modifiers = '';
@@ -966,16 +971,17 @@ var ch_m = function($) {
             set(key, contents);
         });
         
-        // Rebuild the commands incase they have changed
+        // Rebuild the commands and tabs
         buildCommands();
+        buildTabContents();
     });
     $("#ch-cancel").click(function(event) {
-        $("#ch-manager").hide();
+        closeManager();
         
         // Rebuild the tabs so that any changes are lost
         buildTabContents();
     });
-    
+    $("#ch-close").click(closeManager);
     
     // Attach a user info link for opening the manager
     $("#userinfo")
