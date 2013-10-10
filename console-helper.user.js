@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.36
+// @version 0.1.37
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -800,12 +800,7 @@ var ch_m = function($) {
      * @param {Event} event The event triggering this function.
      */
     function runQuickCommand(event) {
-        runCommand(this);
-        
-        // Fire the 'onenter' event for the chat entry box
-        var e = $.Event('keypress');
-        e.keyCode = '13';
-        $("#chatEntryBox").trigger(e);
+        sendCommand('/' + $(this).attr('data'));
     }
 
     /**
