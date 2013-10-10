@@ -73,18 +73,6 @@ var ch_m = function($) {
     /** Stores how long counts should be stored in seconds. */
     countDuration = 300, // 5 minutes
     
-    /** Stores what command in the sent commands is currently being looked at. */
-    currentCommand = 0,
-    
-    /** Used to store any text currently in the input box. */
-    tempCommand,
-    
-    /** The maximum number of commands to store. */
-    maxCommands = 20,
-    
-    /** Store commands and messages that have been sent to the server. */
-    sentCommands = [],
-    
     /** The key used to retrieve and set data from the local storage object. */
     localStorageKey = "cdata",
     
@@ -103,6 +91,88 @@ var ch_m = function($) {
         quickCommands : 'qcmnds',
         playerCommands : 'pcmnds',
         filters : 'filters'
+    },
+            
+    history = {
+
+        /** Stores what command in the sent commands is currently being looked at. */
+        current : 0,
+
+        /** Used to store any text currently in the input box. */
+        tempCommand : '',
+
+        /** The maximum number of commands to store. */
+        maxCommands : 20,
+
+        /** Store commands and messages that have been sent to the server. */
+        sentCommands : [],
+        
+        /**
+         * Add a command to the list of used commands.
+         * @param {string} command The command to add.
+         */
+        add : function(command) {
+            // Don't store a command that is the same as the last one.
+            if (history.sentCommands[history.sentCommands.length-1] == command)
+                return;
+
+            // Store the command
+            history.sentCommands.push(command);
+
+            // Remove old commands as needed
+            if (history.sentCommands.length > history.maxCommands) {
+                history.sentCommands.shift();
+            }
+
+            // Reset the current command pointer
+            history.current = history.sentCommands.length;
+        },
+        
+        /**
+         * Indicates if the history has a previous command.
+         * @returns {Boolean} True if there is a previous command.
+         */
+        hasPrev : function() {
+            return history.current > 0;
+        },
+        
+        /**
+         * Incdicates if the history has a next command.
+         * @returns {Boolean} True if the history has a next command
+         */
+        hasNext : function() {
+            return history.current < history.sentCommands.length;
+        },
+
+        /**
+         * The previous entered command.
+         * @returns {string} The previous command.
+         */
+        prev: function() {
+            if (history.current == history.sentCommands.length) {
+                // Store the current command into history
+                history.tempCommand = $("#chatEntryBox").val();
+            }
+            
+            if (history.hasPrev())
+                history.current--;
+            
+            return history.sentCommands[history.current];
+        },
+
+        /**
+         * The next command that was entered.
+         * @returns {string} The next command.
+         */
+        next : function() {
+            if (history.hasNext())
+                history.current++;
+            
+            if (history.current == history.sentCommands.length)
+                return history.tempCommand;
+            
+            return history.sentCommands[history.current];
+        }
     };
     
     
@@ -193,35 +263,6 @@ var ch_m = function($) {
         {
             hist.scrollTop = hist.scrollHeight;
         }
-    }
-    
-    /**
-     * Add a command to the list of used commands.
-     * @param {string} command The command to add.
-     */
-    function addCommand(command) {
-        // Don't store a command that is the same as the last one.
-    	if (sentCommands[sentCommands.length-1] == command)
-    	    return;
-        
-        // Store the command
-        sentCommands.push(command);
-        
-        // Remove old commands as needed
-        if (sentCommands.length > maxCommands) {
-            sentCommands.shift();
-        }
-        
-        // Reset the current command pointer
-        currentCommand = sentCommands.length;
-    }
-    
-    function prevCommand() {
-    	// TODO
-    }
-    
-    function nextCommand() {
-    	// TODO
     }
     
     /**
@@ -1047,20 +1088,9 @@ var ch_m = function($) {
     window.set = set;
     window.get = get;
     window.clear = clear;
-    window.addFilter = function(filter) {
-        var filters = get(storageKeys.filters);
-        filters.push(filter);
-        set(storageKeys.filters, filters);
-    };
-    window.updateFilter = function(index, value, key) {
-        var filters = get(storageKeys.filters);
-        if (key) {
-            filters[index][key] = value;
-        } else {
-            filters[index] = value;
-        }
-        set(storageKeys.filters, filters);
-    };
+    
+    // Expose the history object for testing
+    window.ch = history;
 };
 
 // Inserts the main method into the page so that JQuery works.
