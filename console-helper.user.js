@@ -2,24 +2,14 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.34
+// @version 0.1.36
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
 
 /* TODO:
- * - Store the last 10 (configurable) commands, have pressing up trigger the message
- * to be entered into the input box.
- *     This will require a way to hook into the command being sent from the input box, before the input boxes value is cleared (possibly unbind keypress and use custom version of McMyAdmin's on keypress enter event code)
- *     $("#chatEntryBox").keyup(function(event) {
- *         if (event.keyCode == 38) {// 38 is the keycode for the up arrow
- *              // Code for commands here
- *              // This should store any text into a temporary variable, so that arrow down can bring it back up.
- *         } else if (event.keyCode == 40) {// 40 is keycode for down arrow
- *              // Code for previous command here
- *         }
- *     });
- *    - Idea: have this be an actual object.
+ * - Detect if the user has modified history and reset the history pointer in this situation?
+ *   - Should investigate what other programs do.
  * - Prevent chat message parsing when first loading?
  */
 
@@ -840,6 +830,15 @@ var ch_m = function($) {
     }
     
     /**
+     * Send a command to the server.
+     * @param {string} message The message to send to the server.
+     */
+    function sendCommand(message) {
+        // Use the McMyAdmin requestData function
+        requestData(APICommands.SendChat, { Message: message }, null);
+    }
+    
+    /**
      * Sets the input text.
      * @param {string} text The text to put into the input box.
      * @param {boolean} append When true the text is placed at the beginning of
@@ -1079,6 +1078,34 @@ var ch_m = function($) {
             .text('Console Helper')
         );
     
+    
+    // Replace the chat entry box event handler with our own
+    $("#chatEntryBox").unbind('keypress').keypress(function (event) {
+        // This is a modified version of McMyAdmins event handler for this
+        // input box (v 2.4.4.0).
+        if (event.keyCode == '13') {
+            event.preventDefault();
+
+            var message = $(this).val();
+
+            sendCommand(message);
+            history.add(message);
+
+            $(this).val("");
+
+            if (message[0] == "/") {
+                addChatEntry("Server", message, true);
+            }
+        }
+    }).keyup(function(event) {
+        if (event.keyCode == 38) {// Up Arrow
+            if (history.hasPrev()) {
+                $(this).val(history.prev());
+            }
+        } else if (event.keyCode == 40) {// Down Arrow
+            $(this).val(history.next());
+        }
+    });
     
     // Replace the current add chat row function with the modified one
     window.addChatEntry = addChatEntry;
