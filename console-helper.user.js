@@ -10,6 +10,7 @@
 /* TODO:
  * - Detect if the user has modified history and reset the history pointer in this situation?
  *   - Should investigate what other programs do.
+ *     - BASH: The command location is not modified. Edited commands are stored in history.
  * - Prevent chat message parsing when first loading?
  */
 
@@ -102,8 +103,11 @@ var ch_m = function($) {
          * @param {string} command The command to add.
          */
         add : function(command) {
+            // Reset the current command pointer
+            history.current = history.sentCommands.length;
+            
             // Don't store a command that is the same as the last one.
-            if (history.sentCommands[history.sentCommands.length-1] == command)
+            if (history.sentCommands[history.sentCommands.length-1] === command)
                 return;
 
             // Store the command
@@ -113,9 +117,6 @@ var ch_m = function($) {
             if (history.sentCommands.length > history.maxCommands) {
                 history.sentCommands.shift();
             }
-
-            // Reset the current command pointer
-            history.current = history.sentCommands.length;
         },
         
         /**
@@ -139,7 +140,7 @@ var ch_m = function($) {
          * @returns {string} The previous command.
          */
         prev: function() {
-            if (history.current == history.sentCommands.length) {
+            if (history.current === history.sentCommands.length) {
                 // Store the current command into history
                 history.tempCommand = $("#chatEntryBox").val();
             }
@@ -158,7 +159,7 @@ var ch_m = function($) {
             if (history.hasNext())
                 history.current++;
             
-            if (history.current == history.sentCommands.length)
+            if (history.current === history.sentCommands.length)
                 return history.tempCommand;
             
             return history.sentCommands[history.current];
@@ -321,11 +322,7 @@ var ch_m = function($) {
                 'Match All' : {
                     'type'    : 'checkbox',
                     'value'   : function(data) {
-                        if (data && data.indexOf('g') > -1) {
-                            return true;
-                        } else {
-                            return false;
-                        }
+                        return (data && data.indexOf('g') > -1);
                     },
                     'data'    : 'modifiers',
                     'default' : true,
@@ -334,11 +331,7 @@ var ch_m = function($) {
                 'Ignore Case' : {
                     'type'    : 'checkbox',
                     'value'   : function(data) {
-                        if (data && data.indexOf('i') > -1) {
-                            return true;
-                        } else {
-                            return false;
-                        }
+                        return (data && data.indexOf('i') > -1);
                     },
                     'data'    : 'modifiers',
                     'default' : true
@@ -894,14 +887,14 @@ var ch_m = function($) {
         
         // Filters
         set(storageKeys.filters, [
-            {regex:"(hentai|ecchi|yaoi|yuri|futa|p[0o]rn|pr[0o]n|[e3]rot[i1]c|rape)",alert:true,name:"Pornographic Language"},
-            {regex:"(pussy|cunt|vag|b[0o]{2,}b|breast|p[e3]+n[i1]+s?|d[i1]ck|(?:\\s|^)ass(?:$|[^u])|arse|genital)",alert:true,name:"Anatomical Terms"},
-            {regex:"(b[i1]tch|wh[o0]re|jack[ \\-]*ass|n[i1]gger|sh[i1]+t|dam[mn]*(?:[^a])|fag|fuck|(?:\\s|^)f[ \\-]*(?:yo)?u+(?:\\s|$)|f[ \\-]*u{3,}|screw)",alert:true,name:"Curse Words"},
-            {regex:"((?:[^r]|^)God|Christ|Jesus|hell(?:$|[^o]))",alert:true,name:"Religious Language"},
-            {regex:"(h[ea]lp|st[oa]p)",name:"Help Words"},
-            {regex:"(gr[ei]+f|theft|th[ei]+f|stole|steal|cheat|hack|x[\\- ]*ray)",alert:true,name:"Grief Alert"},
-            {regex:"(moved wrongly)",count:3,name:"Bad Movement"},
-            {regex:"(https?://\\w+\\.\\w+\\S+)",replace:"<a target='_blank' href=\"$1\">$1</a>",name:"URL creator"}
+            {regex:"(hentai|ecchi|yaoi|yuri|futa|p[0o]rn|pr[0o]n|[e3]rot[i1]c|rape)",alert:true},// Pornographic Language
+            {regex:"(pussy|cunt|vag|b[0o]{2,}b|breast|(?:^|[^o])p[e3]+n[i1]+s?|d[i1]ck|(?:\\s|^)ass(?:$|[^u])|arse|genital)",alert:true},// Anatomical Terms
+            {regex:"(b[i1]tch|wh[o0]re|jack[ \\-]*ass|n[i1]gger|sh[i1]+t|dam[mn]*(?:[^a])|fag|fuck|(?:\\s|^)f[ \\-]*(?:yo)?u+(?:\\s|$)|f[ \\-]*u{3,}|screw)",alert:true},// Curse Words
+            {regex:"((?:[^r]|^)God|Christ|Jesus|hell(?:$|[^o]))",alert:true},// Religious Language
+            {regex:"(h[ea]lp|st[oa]p)"},// Help Words
+            {regex:"(gr[ei]+f|theft|th[ei]+f|stole|steal|cheat|hack|x[\\- ]*ray)",alert:true},// Grief Alert
+            {regex:"(moved wrongly)",count:3},// Bad Movement
+            {regex:"(https?://\\w+\\.\\w+\\S+)",replace:"<a target='_blank' href=\"$1\">$1</a>"}// URL creator
         ]);
     }
     
@@ -1074,6 +1067,7 @@ var ch_m = function($) {
         );
     
     
+    // Modify McMyAdmin Functionality //
     // Replace the chat entry box event handler with our own
     $("#chatEntryBox").unbind('keypress').keypress(function (event) {
         // This is a modified version of McMyAdmins event handler for this
@@ -1110,9 +1104,6 @@ var ch_m = function($) {
     window.set = set;
     window.get = get;
     window.clear = clear;
-    
-    // Expose the history object for testing
-    window.ch = history;
 };
 
 // Inserts the main method into the page so that JQuery works.
