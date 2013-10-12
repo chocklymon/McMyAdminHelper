@@ -2,28 +2,24 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.37
+// @version 0.2.0
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
 
 /* TODO:
- * - Detect if the user has modified history and reset the history pointer in this situation?
- *   - Should investigate what other programs do.
- *     - BASH: The command location is not modified. Edited commands are stored in history.
  * - Prevent chat message parsing when first loading?
  */
 
 /*
 Message Filters
 - Template -
-{regex:"",modifiers:"",replace:"",alert:false,name:""}
+{regex:"",modifiers:"",replace:"",alert:false,count:false}
 
-- Name -
-{regex:"(fred|waffle|console)",replace:"<i>$1</i>",name:"Username"}
+- My User Name -
+{regex:"(fred|waffle|console)",replace:"<i>$1</i>"}
 
 See the default generator for more.
-Note that the name parameter is only to help categorize the filters and is not used.
 */
 
 // Wrap everything inside of an anymous function
@@ -668,8 +664,8 @@ var ch_m = function($) {
         if (count[key].length >= filter.count) {
             notify("<b>Count Alert:</b><br>" + message);
             
-            // Remove the first element to help prevent message spamming.
-            count[key].shift();
+            // Remove all values for the count so the count resets to 0
+            delete count[key];
         }
     }
     
