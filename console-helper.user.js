@@ -520,8 +520,8 @@ var ch_m = function($) {
                 td.text(column.append);
 
                 // Attach the input class
-                if (column.class) {
-                    input.addClass(column.class);
+                if (column['class']) {
+                    input.addClass(column['class']);
                 }
             } else {
                 // Simple text field
