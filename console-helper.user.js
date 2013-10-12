@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.2.0
+// @version 0.2.1
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -1064,46 +1064,64 @@ var ch_m = function($) {
     
     
     // Modify McMyAdmin Functionality //
-    // Replace the chat entry box event handler with our own
-    $("#chatEntryBox").unbind('keypress').keypress(function (event) {
-        // This is a modified version of McMyAdmins event handler for this
-        // input box (v 2.4.4.0).
-        if (event.keyCode == '13') {
-            event.preventDefault();
-
-            var message = $(this).val();
-
-            sendCommand(message);
-            history.add(message);
-
-            $(this).val("");
-
-            if (message[0] == "/") {
-                addChatEntry("Server", message, true);
-            }
-        }
-    }).keyup(function(event) {
-        if (event.keyCode == 38) {// Up Arrow
-            if (history.hasPrev()) {
-                $(this).val(history.prev());
-            }
-        } else if (event.keyCode == 40) {// Down Arrow
-            $(this).val(history.next());
-        }
-    });
+    function modifyMcMyAdmin() {
+        // Make sure that the add chat entry function is defined before trying to replace it.
+        if (typeof window.addChatEntry === 'function') {
+		    // Replace the chat entry box event handler with our own
+		    $("#chatEntryBox").unbind('keypress').keypress(function (event) {
+		    	// This is a modified version of McMyAdmins event handler for this
+		    	// input box (v 2.4.4.0).
+		    	if (event.keyCode == '13') {
+		    		event.preventDefault();
+    
+		    		var message = $(this).val();
+    
+		    		sendCommand(message);
+		    		history.add(message);
+    
+		    		$(this).val("");
+    
+		    		if (message[0] == "/") {
+		    			addChatEntry("Server", message, true);
+		    		}
+		    	}
+		    }).keyup(function(event) {
+		    	if (event.keyCode == 38) {// Up Arrow
+		    		if (history.hasPrev()) {
+		    			$(this).val(history.prev());
+		    		}
+		    	} else if (event.keyCode == 40) {// Down Arrow
+		    		$(this).val(history.next());
+		    	}
+		    });
+	    
+		    // Replace the current add chat row function with the modified one
+		    window.addChatEntry = addChatEntry;
+		} else {
+		    // Wait half a second and try again
+			setTimeout(modifyMcMyAdmin, 500);
+		}
+    }
+    // This timeout is to help prevent the keypress event not being correctly unbound
+    setTimeout(modifyMcMyAdmin, 500);
     
-    // Replace the current add chat row function with the modified one
-    window.addChatEntry = addChatEntry;
-    
+    /*
     // Debugging helpers //
+    // Uncomment for additional help with debugging.
+    
     // Expose the local storage helpers
     window.set = set;
     window.get = get;
     window.clear = clear;
+    
+    // History
+    window.chatHistory = history;
+    
+    // */
 };
 
 // Inserts the main method into the page so that JQuery works.
 var chathelper = document.createElement('script');
 chathelper.type = "text/javascript";
-chathelper.textContent = '(' + ch_m.toString() + ')(jQuery);';
+chathelper.textContent = 'jQuery(' + ch_m.toString() + ');';
 document.body.appendChild(chathelper);
