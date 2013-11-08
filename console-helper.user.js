@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.2.1
+// @version 0.2.2
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -1065,8 +1065,8 @@ var ch_m = function($) {
     
     // Modify McMyAdmin Functionality //
     function modifyMcMyAdmin() {
-        // Make sure that the add chat entry function is defined before trying to replace it.
-        if (typeof window.addChatEntry === 'function') {
+        // Make sure that the add chat entry box has an event tied to it
+        if ($._data($('#chatEntryBox')[0]).events) {
 		    // Replace the chat entry box event handler with our own
 		    $("#chatEntryBox").unbind('keypress').keypress(function (event) {
 		    	// This is a modified version of McMyAdmins event handler for this
@@ -1103,7 +1103,7 @@ var ch_m = function($) {
 		}
     }
     // This timeout is to help prevent the keypress event not being correctly unbound
-    setTimeout(modifyMcMyAdmin, 500);
+    setTimeout(modifyMcMyAdmin, 1500);
     
     /*
     // Debugging helpers //
