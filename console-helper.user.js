@@ -689,10 +689,25 @@ var ch_m = function($) {
      */
     function notify(message) {
         var id = hash(message);
-        window.open(
-            'http://chockly.org/ch/?m=' + encodeURIComponent(message),
+        // Generate the popup window
+        var popup = window.open(
+            '',
             'notify-'+id,
             'width=300,height=150,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0'
+        );
+        
+        // Write the notification
+        popup.document.write('<!DOCTYPE HTML>'
+            + '<html>'
+            + '<head>'
+            + '<title>Alert</title><link href="http://chockly.org/ch/notify.css" rel="stylesheet" type="text/css" />'
+            + '</head>'
+            + '<body>'
+            + '<div class="wrapper"><div class="message">'
+            + message
+            + '</div></div>'
+            + '</body>'
+            + '</html>'
         );
     }
     
