@@ -1067,40 +1067,40 @@ var ch_m = function($) {
     function modifyMcMyAdmin() {
         // Make sure that the add chat entry box has an event tied to it
         if ($._data($('#chatEntryBox')[0]).events) {
-		    // Replace the chat entry box event handler with our own
-		    $("#chatEntryBox").unbind('keypress').keypress(function (event) {
-		    	// This is a modified version of McMyAdmins event handler for this
-		    	// input box (v 2.4.4.0).
-		    	if (event.keyCode == '13') {
-		    		event.preventDefault();
-    
-		    		var message = $(this).val();
-    
-		    		sendCommand(message);
-		    		history.add(message);
-    
-		    		$(this).val("");
-    
-		    		if (message[0] == "/") {
-		    			addChatEntry("Server", message, true);
-		    		}
-		    	}
-		    }).keyup(function(event) {
-		    	if (event.keyCode == 38) {// Up Arrow
-		    		if (history.hasPrev()) {
-		    			$(this).val(history.prev());
-		    		}
-		    	} else if (event.keyCode == 40) {// Down Arrow
-		    		$(this).val(history.next());
-		    	}
-		    });
-	    
-		    // Replace the current add chat row function with the modified one
-		    window.addChatEntry = addChatEntry;
-		} else {
-		    // Wait half a second and try again
-			setTimeout(modifyMcMyAdmin, 500);
-		}
+            // Replace the chat entry box event handler with our own
+            $("#chatEntryBox").unbind('keypress').keypress(function (event) {
+                // This is a modified version of McMyAdmins event handler for this
+                // input box (v 2.4.4.0).
+                if (event.keyCode == '13') {
+                    event.preventDefault();
+
+                    var message = $(this).val();
+
+                    sendCommand(message);
+                    history.add(message);
+
+                    $(this).val("");
+
+                    if (message[0] == "/") {
+                        addChatEntry("Server", message, true);
+                    }
+                }
+            }).keyup(function(event) {
+                if (event.keyCode == 38) {// Up Arrow
+                    if (history.hasPrev()) {
+                        $(this).val(history.prev());
+                    }
+                } else if (event.keyCode == 40) {// Down Arrow
+                    $(this).val(history.next());
+                }
+            });
+
+            // Replace the current add chat row function with the modified one
+            window.addChatEntry = addChatEntry;
+        } else {
+            // Wait half a second and try again
+            setTimeout(modifyMcMyAdmin, 500);
+        }
     }
     // This timeout is to help prevent the keypress event not being correctly unbound
     setTimeout(modifyMcMyAdmin, 1500);
