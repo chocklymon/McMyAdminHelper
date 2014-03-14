@@ -1,0 +1,89 @@
+/*
+Console chat helper styles
+*/
+
+/* Player Commands Context Menu */
+#ch-contextmenu {
+    display: none;
+    position: absolute;
+    width: 100px;
+    background-color: #F0F0F0;
+    font-family: Segoe UI, Sans-Serif;
+    font-size: 10pt;
+    border: 1px solid #555;
+    border-radius: 2px;
+    padding: 5px;
+}
+#ch-contextmenu div {
+    border-bottom: 1px solid #DDD;
+    padding: 4px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+#ch-contextmenu div:hover {
+    background-color: #DFDFDF;
+}
+
+/* General and Quick Commands */
+.ch-h-spacer {
+    display: inline-block;
+    width: 1px;
+    background-color: #888;
+    margin: 1px 5px;
+    padding: 0;
+    height: 10px;
+}
+
+#ch-cmnds button {
+    margin: 6px 5px 4px 4px;
+}
+
+/* Override the z-index so the confirmation dialog is above the management interface */
+#modalbg {
+	z-index: 150 !important;
+}
+
+/* Helper Management Interface */
+#ch-manager {
+    display:none;
+    z-index: 110;
+}
+.ch-tabs {
+    clear:both;
+    overflow:auto;
+    min-height:300px;
+    max-height:600px;
+    color: #d0d0d0;
+    background-color: #333;
+}
+.ch-tabs .subtabcontainer {
+    display: none;
+    border: none;
+    border-top: 1px solid #555;
+}
+.ch-tabs p {
+	margin: 0 8px 5px;
+	padding: 0;
+	font-size: 0.8em;
+}
+.ch-tabs table {
+    border-collapse: collapse;
+}
+.ch-tabs td, .ch-tabs th {
+    padding: 4px;
+}
+.ch-tabs input[type="checkbox"] {
+    margin-left: 30%;
+}
+input.ch-tiny {
+    width: 30px;
+}
+input.ch-medium {
+    width: 100px;
+}
+input.ch-large {
+    width: 230px
+}
+.ch-add-new, .ch-delete {
+	cursor: pointer;
+}
