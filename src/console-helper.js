@@ -867,15 +867,6 @@ var ch_m = function($) {
      * ----------------------------- */
 
 
-    // Attach the CSS to the page
-    $('head').append($("<link>").attr({
-        href  : 'http://chockly.org/ch/console-helper.css',
-        type  : 'text/css',
-        rel   : 'stylesheet',
-        media : 'screen'
-    }));
-
-
     // Build the default commands and filters if needed
     if (!get()) {
         // Nothing stored, build the defaults

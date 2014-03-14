@@ -1,3 +1,8 @@
+body {
+    font-family: sans-serif;
+    font-size: 14px;
+}
+
 h1 {
     font-size: 2em;
 }
@@ -41,4 +46,38 @@ p {
     height: 70px;
     line-height: 2.5em;
     border-bottom: 1px #DFDFDF solid;
+}
+
+.delete {
+    display: inline-block;
+    height: 16px;
+    padding: 5px;
+    width: 50px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    background: linear-gradient(to bottom, #ff3019 0%,#cf0404 100%);
+    border: 1px solid red;
+    border-radius: 1px;
+    position: absolute;
+    right: 0;
+    -webkit-transition: -webkit-transform 0.25s ease-in-out;
+    transition: transform 0.25s ease-in-out;
+}
+
+.row {
+    padding: 5px;
+    margin: 5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.row input {
+    width: 490px;
+    margin-right: 4px;
+    margin-top: 4px;
+}
+
+.hide {
+    display: none;
 }
