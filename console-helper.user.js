@@ -99,9 +99,6 @@ var ch_m = function($) {
          * @param {string} command The command to add.
          */
         add : function(command) {
-            // Reset the current command pointer
-            history.current = history.sentCommands.length;
-            
             // Don't store a command that is the same as the last one.
             if (history.sentCommands[history.sentCommands.length-1] === command)
                 return;
@@ -113,6 +110,9 @@ var ch_m = function($) {
             if (history.sentCommands.length > history.maxCommands) {
                 history.sentCommands.shift();
             }
+            
+            // Reset the current command pointer
+            history.current = history.sentCommands.length;
         },
         
         /**
@@ -1120,7 +1120,7 @@ var ch_m = function($) {
     // This timeout is to help prevent the keypress event not being correctly unbound
     setTimeout(modifyMcMyAdmin, 1500);
     
-    /*
+    //*
     // Debugging helpers //
     // Uncomment for additional help with debugging.
     
