@@ -1,8 +1,9 @@
 {
     "manifest_version" : 2,
 
-    "name" : "McMyAdmin Helper",
-    "description" : "Adds additional functionality to the McMyAdmin console page.",
+    "name" : "McMyAdmin Console Helper",
+    "short_name" : "Console Help",
+    "description" : "Adds additional functionality to the McMyAdmin console tab.",
     "version" : "0.1",
     "icons" : {
         "16"  : "icon16.png",
@@ -14,8 +15,8 @@
     "permissions": [
         "tabs",
         "storage",
-        "http://*/",
-        "https://*/"
+        "http://*/*",
+        "https://*/*"
     ],
 
     "background" : {
