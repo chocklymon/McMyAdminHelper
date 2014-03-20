@@ -1105,6 +1105,12 @@ var ch_m = function($) {
 
             // Replace the current add chat row function with the modified one
             window.addChatEntry = addChatEntry;
+
+            // Bind the console helper's tabs to use McMyAdmins' tabbing functionality
+            $("#ch-manager .subtab").mousedown(window.subTabClick);
+            $("#ch-manager .subtab").click(window.nopFalse);
+
+
         } else {
             // Wait half a second and try again
             setTimeout(modifyMcMyAdmin, 500);
