@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.2.2
+// @version 0.1.2
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -27,7 +27,7 @@ var ch_m = function($) {
 
     // Create the console helper object
     var ch = {
-        
+
         /* ----------------------------- *
          *  VARIABLES AND CONFIGURATION  *
          * ----------------------------- */
@@ -49,12 +49,6 @@ var ch_m = function($) {
             'Name' : 'text'
         },
 
-        /** Stores if the custom context menu is open. */
-        contextMenuOpen : false,
-
-        /** Create the context menu HTML element used for the player commands. */
-        contextMenu : $('<div>').attr('id', 'ch-contextmenu'),
-
         /** Stores the counts for counted filters. */
         count : {},
 
@@ -66,8 +60,8 @@ var ch_m = function($) {
          * menu commands.
          */
         player : '',
-        
-        
+
+
         /* ----------------------------- *
          *            OBJECTS            *
          * ----------------------------- */
@@ -153,12 +147,12 @@ var ch_m = function($) {
                 return ch.history.sentCommands[ch.history.current];
             }
         },
-        
+
         data : {
-            
+
             /** The key used to retrieve and set data from the local storage object. */
             localStorageKey : "cdata",
-            
+
             /** Stores the names of keys used to get and set data from localStorage. */
             key : {
                 generalCommands: 'gcmnds',
@@ -166,7 +160,7 @@ var ch_m = function($) {
                 playerCommands : 'pcmnds',
                 filters : 'filters'
             },
-            
+
             /**
              * Clears a value from local storage.
              * @param {string} key Optional, deletes the key and it's value from local
@@ -184,7 +178,7 @@ var ch_m = function($) {
                    localStorage.setItem(ch.data.localStorageKey, JSON.stringify(data));
                }
             },
-            
+
             /**
              * Gets a piece of data from local storage.
              * @param {string} key The key for the data. If not provided then this returns
@@ -202,7 +196,7 @@ var ch_m = function($) {
                     return data[key];
                 }
             },
-            
+
             /**
              * Sets a value to local storage.
              * @param {string} key The key for the value.
@@ -217,17 +211,102 @@ var ch_m = function($) {
                 localStorage.setItem(ch.data.localStorageKey, JSON.stringify(data));
             }
         },
-        
-        
+
+        menu : {
+
+            /** Create the context menu HTML element used for the player commands. */
+            _m : $('<div>').attr('id', 'ch-contextmenu'),
+
+            /**
+             * Closes the player context menu.
+             */
+            close : function() {
+                ch.menu._m.hide();
+
+                // Unbind the on click listener
+                $('body').off('mousedown.ch.menu');
+            },
+
+            /**
+             * Gets the left position for the player context menu.
+             * @param {event} evt The event object that triggered the context menu to be
+             * opened, used to get the position of the mouse.
+             * @returns {String} The left position for the context menu in pixels.
+             */
+            getLeft : function(evt) {
+                var val = 0;
+                if (evt.pageX) {
+                    val = evt.pageX;
+                } else if (evt.clientX) {
+                   val = evt.clientX + (
+                        // Compensate for horizontal scrolling
+                        document.documentElement.scrollLeft
+                            ? document.documentElement.scrollLeft
+                            : document.body.scrollLeft
+                    );
+                }
+                // Make sure val is not off the edge of the page
+                var page_width = $('body').width();
+                var menu_width = ch.menu._m.width();
+                if (val + menu_width > page_width) {
+                    val -= menu_width;
+                }
+                return val + "px";
+            },
+
+            /**
+             * Gets the top position for the player context menu.
+             * @param {event} evt The event object that triggered the context menu to be
+             * opened, used to get the position of the mouse.
+             * @returns {String} The top position for the context menu in pixels.
+             */
+            getTop : function(evt) {
+                var val = 0;
+                if (evt.pageY) {
+                    val = evt.pageY;
+                } else if (evt.clientY) {
+                    val = evt.clientY + (
+                        // Compensate for vertical scrolling
+                        document.documentElement.scrollTop
+                            ? document.documentElement.scrollTop
+                            : document.body.scrollTop
+                    );
+                }
+                // Make sure val is not off the bottom of the page
+                var page_height = $('body').height();
+                var menu_height = ch.menu._m.height();
+                if (val + menu_height > page_height) {
+                    val -= menu_height;
+                }
+                return val + "px";
+            },
+
+            open : function(event) {
+                ch.menu._m.css({
+                    left    : ch.menu.getLeft(event),
+                    top     : ch.menu.getTop(event),
+                    display : 'block'
+                });
+
+                // Hide the context menu when it is open and the user clicks anything.
+                $('body').on('mousedown.ch.menu', function(event){
+                        if ($(event.target).parents('#ch-contextmenu').length === 0) {
+                            ch.menu.close();
+                        }
+                    });
+            }
+        },
+
+
         /* ----------------------------- *
          *           FUNCTIONS           *
          * ----------------------------- */
-        
+
         addChatEntry : function(name, message, time, isChat) {
             // This is a modified verion of the addChatEntry function found in
             // MyMcAdmin.js (version 2.4.9.4).
             message = ch.processMessage(message);
-            
+
             if (message !== '') {
                 var dateString = parseDate(time).toLocaleTimeString();
 
@@ -258,7 +337,7 @@ var ch_m = function($) {
                 }
             }
         },
-        
+
         /**
          * Appends a series of HTML elements to run the supplied commands to a
          * jQuery HTML Element.
@@ -274,7 +353,7 @@ var ch_m = function($) {
          */
         attachCommands : function(el, commands, callback, type) {
             if (!callback) {
-                callback = runGeneralCommand;
+                callback = ch.runGeneralCommand;
             }
             if (!type) {
                 type = '<button>';
@@ -288,7 +367,7 @@ var ch_m = function($) {
                 );
             }
         },
-        
+
         /**
          * Attach the commands to the page. Call this to build/rebuild the command buttons
          * and player context menu.
@@ -297,7 +376,7 @@ var ch_m = function($) {
             // Attach the context menu commands
             ch.contextMenu.empty();
             ch.attachCommands(
-                ch.contextMenu,
+                ch.menu._m,
                 ch.data.get(ch.data.key.playerCommands, []),
                 ch.runPlayerCommand,
                 '<div>'
@@ -306,21 +385,21 @@ var ch_m = function($) {
             // Attach the commands
             var cmndDiv = $("#ch-cmnds");
             cmndDiv.empty();
-            
+
             // General Commands
             ch.attachCommands(
                 cmndDiv,
                 ch.data.get(ch.data.key.generalCommands, []),
                 ch.runGeneralCommand
             );
-    
+
             // Insert a spacer between the two command types if we have both types of commands
             if (ch.data.get(ch.data.key.generalCommands, []).length > 0
                 && ch.data.get(ch.data.key.quickCommands, []).length > 0
             ) {
                 cmndDiv.append($('<div>').addClass('ch-h-spacer'));
             }
-            
+
             // Quick Commands
             ch.attachCommands(
                 cmndDiv,
@@ -328,7 +407,7 @@ var ch_m = function($) {
                 ch.runQuickCommand
             );
         },
-        
+
         /**
          * Builds each of the contents of the tabs.
          */
@@ -386,7 +465,7 @@ var ch_m = function($) {
             ch.buildTable('ch-gcmnds', ch.data.get(ch.data.key.generalCommands, []), ch.commandTableLayout);
             ch.buildTable('ch-qcmnds', ch.data.get(ch.data.key.quickCommands,   []), ch.commandTableLayout);
         },
-        
+
         /**
          * Builds a table into the given component. Note: any existing tables inside of the
          * html element will be removed and replaced with this one.
@@ -456,7 +535,7 @@ var ch_m = function($) {
             $("#" + tableId).find('table').remove();
             $("#" + tableId).append(table);
         },
-        
+
         /**
          * Builds a row for the console helper manager interface's tables.
          * @param {array} columnDefinitions An array containing definitions for
@@ -573,73 +652,11 @@ var ch_m = function($) {
 
             return row;
         },
-        
+
         closeManager : function() {
             $("#ch-manager").hide();
         },
-        
-        /**
-         * Closes the player context menu.
-         */
-        closeMenu : function() {
-           ch.contextMenu.hide();
-           ch.contextMenuOpen = false;
-        },
-        
-        /**
-         * Gets the left position for the player context menu.
-         * @param {event} evt The event object that triggered the context menu to be
-         * opened, used to get the position of the mouse.
-         * @returns {String} The left position for the context menu in pixels.
-         */
-        getContextMenuLeft : function(evt) {
-            var val = 0;
-            if (evt.pageX) {
-                val = evt.pageX;
-            } else if (evt.clientX) {
-               val = evt.clientX + (
-                    // Compensate for horizontal scrolling
-                    document.documentElement.scrollLeft
-                        ? document.documentElement.scrollLeft
-                        : document.body.scrollLeft
-                );
-            }
-            // Make sure val is not off the edge of the page
-            var page_width = $('body').width();
-            var menu_width = ch.contextMenu.width();
-            if (val + menu_width > page_width) {
-                val -= menu_width;
-            }
-            return val + "px";
-        },
-        
-        /**
-         * Gets the top position for the player context menu.
-         * @param {event} evt The event object that triggered the context menu to be
-         * opened, used to get the position of the mouse.
-         * @returns {String} The top position for the context menu in pixels.
-         */
-        getContextMenuTop : function(evt) {
-            var val = 0;
-            if (evt.pageY) {
-                val = evt.pageY;
-            } else if (evt.clientY) {
-                val = evt.clientY + (
-                    // Compensate for vertical scrolling
-                    document.documentElement.scrollTop
-                        ? document.documentElement.scrollTop
-                        : document.body.scrollTop
-                );
-            }
-            // Make sure val is not off the bottom of the page
-            var page_height = $('body').height();
-            var menu_height = ch.contextMenu.height();
-            if (val + menu_height > page_height) {
-                val -= menu_height;
-            }
-            return val + "px";
-        },
-        
+
         /**
          * Creates a hash from a string. This is not a cryptographically safe,
          * just a very basic hash generation function.
@@ -657,7 +674,7 @@ var ch_m = function($) {
             }
             return hash;
         },
-        
+
         /**
          * Increments the count for the provided message filter.
          * @param {object} filter The message filter.
@@ -694,7 +711,7 @@ var ch_m = function($) {
                 delete ch.count[key];
             }
         },
-        
+
         /**
          * Merges each of the objects in the data array with the provided defaults.
          * @param {array} data
@@ -708,7 +725,7 @@ var ch_m = function($) {
             }
             return merged;
         },
-        
+
         /**
          * Notifies the user of important events by opening a new window.
          * @param {string} message The message to display in the notification.
@@ -741,7 +758,7 @@ var ch_m = function($) {
                 );
             }
         },
-        
+
         /**
          * Proccess a chat message for input into a row.
          * @param {string} text The message to process
@@ -770,7 +787,7 @@ var ch_m = function($) {
                     if (filter.alert) {
                         ch.notify("<b>Chat Message Alert:</b><br>" + text);
                     }
-                    
+
                     // Increment the count of this filter if needed.
                     if(filter.count) {
                         ch.incrementCount(filter, text);
@@ -779,7 +796,7 @@ var ch_m = function($) {
             }
             return text;
         },
-        
+
         /**
          * Click event handler for delete buttons. Removes the row.
          * @param {object} event The event data.
@@ -807,7 +824,7 @@ var ch_m = function($) {
                     return;
                 }
             }
-            
+
             // Remove the row
             row.remove();
         },
@@ -857,10 +874,10 @@ var ch_m = function($) {
             ch.runCommand(cmnd + ' ' + ch.player);
 
             // Close the context menu
-            ch.closeMenu();
+            ch.menu.close();
         },
-        
-        
+
+
         /**
          * Send a command to the server.
          * @param {string} message The message to send to the server.
@@ -869,7 +886,7 @@ var ch_m = function($) {
             // Use the McMyAdmin requestData function
             requestData(APICommands.SendChat, { Message: message }, null);
         },
-        
+
         /**
          * Sets the input text.
          * @param {string} text The text to put into the input box.
@@ -903,14 +920,14 @@ var ch_m = function($) {
 
         // General Commands
         ch.data.set(ch.data.key.generalCommands, [
-            {cmnd : 'say', text : 'Say'},
+            {cmnd : 'say', text : 'Say'}
         ]);
-        
+
         // Quick Commands
         ch.data.set(ch.data.key.quickCommands, [
             {cmnd : 'who', text : 'Who'}
         ]);
-        
+
         // Player Commands
         ch.data.set(ch.data.key.playerCommands, [
             {cmnd : 'ban',    text : 'Ban'},
@@ -927,7 +944,7 @@ var ch_m = function($) {
 
     //   Context Menu   //
     // Attach the context menu to the page
-    ch.contextMenu.appendTo('body');
+    ch.menu._m.appendTo('body');
 
     // Attach additional functionality to clicking on the player names
     $("#chatNames").click(function(event) {
@@ -941,29 +958,16 @@ var ch_m = function($) {
             var player_div = $(event.target);
             if (player_div.hasClass('chatName')) {
                 ch.player = player_div.text();
-                ch.contextMenu.css({
-                    left    : ch.getContextMenuLeft(event),
-                    top     : ch.getContextMenuTop(event),
-                    display : 'block'
-                });
+                ch.menu.open(event);
                 event.preventDefault();
-                ch.contextMenuOpen = true;
             }
         });
-
-    // Hide the context menu when it is open and the user clicks anything.
-    $('body').mousedown(function(event){
-        if (ch.contextMenuOpen && $(event.target).parents('#ch-contextmenu').length === 0) {
-            ch.closeMenu();
-        }
-    });
-
 
     //   Command Buttons   //
     // Attach the command button holder
     $("#chatArea").append(
-        $('<div>').attr('id', 'ch-cmnds')
-    );
+            $('<div>').attr('id', 'ch-cmnds')
+        );
     ch.buildCommands();
 
 
