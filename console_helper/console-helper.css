@@ -48,13 +48,12 @@ Console chat helper styles
     display:none;
     z-index: 110;
 }
-.ch-tabs {
+div.ch-tabs {
     clear:both;
     overflow:auto;
+    width: 616px;
     min-height:300px;
     max-height:600px;
-    color: #d0d0d0;
-    background-color: #333;
 }
 .ch-tabs .subtabcontainer {
     display: none;
