@@ -308,7 +308,7 @@ var ch_m = function($) {
             message = ch.processMessage(message);
 
             if (message !== '') {
-                var dateString = parseDate(time).toLocaleTimeString();
+                var dateString = (typeof time === 'string') ? parseDate(time).toLocaleTimeString() : (new Date()).toLocaleTimeString();
 
                 var newLine = $("<div class=\"chatEntry\"></div>");
                 newLine.data("isChat", parseBool(isChat));
@@ -1117,8 +1117,7 @@ var ch_m = function($) {
                         $(this).val("");
 
                         if (message[0] === "/") {
-                            var date = '/Date(' + new Date().getTime() + ')';
-                            ch.addChatEntry("Server", message, date, true);
+                            ch.addChatEntry("Server", message, null, true);
                         }
                     }
                 }).keyup(function(event) {
