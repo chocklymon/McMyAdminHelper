@@ -374,7 +374,7 @@ var ch_m = function($) {
          */
         buildCommands : function() {
             // Attach the context menu commands
-            ch.contextMenu.empty();
+            ch.menu._m.empty();
             ch.attachCommands(
                 ch.menu._m,
                 ch.data.get(ch.data.key.playerCommands, []),
