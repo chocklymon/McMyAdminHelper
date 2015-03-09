@@ -14,7 +14,7 @@
 See console-helper.user.js for some example filters.
 */
 
-// Wrap everything inside of an anymous function
+// Wrap everything inside of an anonymous function
 var ch_m = function($) {
 
 
@@ -281,7 +281,7 @@ var ch_m = function($) {
     }
     
     /**
-     * Proccess a chat message for input into a row.
+     * Process a chat message for input into a row.
      */
     function processMessage(message) {
         // Get the text from the message in it's properly encoded format

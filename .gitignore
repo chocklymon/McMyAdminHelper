@@ -1,3 +1,13 @@
+# Build and package manager generated files
+node_modules/
+
+# IDE Files
 nbproject/
 project.properties
 project.xml
+.idea/
+
+# Misc Files
+*.log
+*.swp
+.DS_Store

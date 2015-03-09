@@ -9,6 +9,8 @@
 
 /* TODO:
  * - Prevent chat message parsing when first loading?
+ *
+ * - Notification API http://davidwalsh.name/notifications-api
  */
 
 /*
@@ -22,7 +24,7 @@ Message Filters
 See the default generator for more.
 */
 
-// Wrap everything inside of an anymous function
+// Wrap everything inside of an anonymous function
 var ch_m = function($) {
 
     // Create the console helper object
@@ -32,7 +34,7 @@ var ch_m = function($) {
          *  VARIABLES AND CONFIGURATION  *
          * ----------------------------- */
 
-        /** The defaults for message filter proccessing. */
+        /** The defaults for message filter processing. */
         filterDefaults : {
             modifiers : 'gi',
             alert     : false,
@@ -303,7 +305,7 @@ var ch_m = function($) {
          * ----------------------------- */
 
         addChatEntry : function(name, message, time, isChat) {
-            // This is a modified verion of the addChatEntry function found in
+            // This is a modified version of the addChatEntry function found in
             // MyMcAdmin.js (version 2.4.9.4).
             message = ch.processMessage(message);
 
@@ -760,7 +762,7 @@ var ch_m = function($) {
         },
 
         /**
-         * Proccess a chat message for input into a row.
+         * Process a chat message for input into a row.
          * @param {string} text The message to process
          * @return {string} The message ready for input as an HTML message.
          */
@@ -916,7 +918,7 @@ var ch_m = function($) {
      * ----------------------------- */
 
     if (!ch.data.get()) {
-        // Initalize Defaults
+        // Initialize Defaults
 
         // General Commands
         ch.data.set(ch.data.key.generalCommands, [

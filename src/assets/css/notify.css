@@ -12,7 +12,7 @@ html, body, div {
 /* PAGE STYLES */
 body {
     color: #101010;
-    background: #FFD573 url(notify-bg.png);
+    background: #FFD573 url(../images/notify-bg.png);
     font: 16px/150% Georgia, "Times New Roman", Times, serif;
 }
 

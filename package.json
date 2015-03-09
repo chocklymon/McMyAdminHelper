@@ -1,0 +1,19 @@
+{
+  "name": "McMyAdminHelper",
+  "version": "0.1.2",
+  "description": "Adds additional functionality to the McMyAdmin console",
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@hs.chockly.org:1104/~/web/fs-chat"
+  },
+  "keywords": [
+    "McMyAdmin",
+    "Console"
+  ],
+  "author": "Curtis Oakley",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "~0.4.5"
+  }
+}
