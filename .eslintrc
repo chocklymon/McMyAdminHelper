@@ -1,0 +1,12 @@
+{
+  "env": {
+    "browser": true
+  },
+  "globals": {
+    "jQuery": false
+  },
+  "rules": {
+    "camelcase": 1,
+    "global-strict": 0
+  }
+}
