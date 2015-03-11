@@ -7,6 +7,7 @@
   },
   "rules": {
     "camelcase": 1,
-    "global-strict": 0
+    "global-strict": 0,
+    "quotes": [1, "double", "avoid-escape"]
   }
 }
