@@ -6,8 +6,14 @@
     "jQuery": false
   },
   "rules": {
+    "brace-style": [2, "1tbs"],
     "camelcase": 1,
+    "comma-style": [2, "last"],
+    "dot-notation": [2, {"allowKeywords": false}],
+    "eqeqeq": 1,
     "global-strict": 0,
-    "quotes": [1, "double", "avoid-escape"]
+    "indent": [2, 4],
+    "quotes": [1, "double", "avoid-escape"],
+    "spaced-line-comment": [2, "always", {"exceptions": ["*", "-", "+", "="]}]
   }
 }

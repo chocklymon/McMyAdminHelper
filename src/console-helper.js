@@ -24,8 +24,11 @@ Message Filters
 See the default generator for more.
 */
 
+// Globals from McMyAdmin JS
+/*global parseDate parseBool ScrollChat showModal Icons hideModal requestData APICommands */
 // Wrap everything inside of an anonymous function
-var ch_m = function($) {
+var chMain = function($) {
+    "use strict";
 
     // Create the console helper object
     var ch = {
@@ -35,61 +38,62 @@ var ch_m = function($) {
          * ----------------------------- */
 
         /** The defaults for message filter processing. */
-        filterDefaults : {
-            modifiers : 'gi',
-            alert     : false,
-            count     : false,
-            replace   : "<b>$1</b>"
+        filterDefaults: {
+            modifiers: "gi",
+            alert: false,
+            count: false,
+            replace: "<b>$1</b>"
         },
 
         /** Defines the tables layout used to display commands. */
-        commandTableLayout : {
-            'Command' : {
-                value  : 'cmnd',
-                append : '/'
+        commandTableLayout: {
+            "Command": {
+                value: "cmnd",
+                append: "/"
             },
-            'Name' : 'text'
+            "Name": "text"
         },
 
         /** Stores the counts for counted filters. */
-        count : {},
+        count: {},
 
         /** Stores how long counts should be stored in seconds. */
-        countDuration : 300, // 5 minutes
+        countDuration: 300, // 5 minutes
 
         /**
          * Stores the name of the player that is being used for the player context
          * menu commands.
          */
-        player : '',
+        player: "",
 
 
         /* ----------------------------- *
          *            OBJECTS            *
          * ----------------------------- */
 
-        history : {
+        history: {
 
             /** Stores what command in the sent commands is currently being looked at. */
-            current : 0,
+            current: 0,
 
             /** Used to store any text currently in the input box. */
-            tempCommand : '',
+            tempCommand: "",
 
             /** The maximum number of commands to store. */
-            maxCommands : 20,
+            maxCommands: 20,
 
             /** Store commands and messages that have been sent to the server. */
-            sentCommands : [],
+            sentCommands: [],
 
             /**
              * Add a command to the list of used commands.
              * @param {string} command The command to add.
              */
-            add : function(command) {
+            add: function(command) {
                 // Don't store a command that is the same as the last one.
-                if (ch.history.sentCommands[ch.history.sentCommands.length-1] === command)
+                if (ch.history.sentCommands[ch.history.sentCommands.length - 1] === command) {
                     return;
+                }
 
                 // Store the command
                 ch.history.sentCommands.push(command);
@@ -107,7 +111,7 @@ var ch_m = function($) {
              * Indicates if the history has a previous command.
              * @returns {Boolean} True if there is a previous command.
              */
-            hasPrev : function() {
+            hasPrev: function() {
                 return ch.history.current > 0;
             },
 
@@ -115,7 +119,7 @@ var ch_m = function($) {
              * Incdicates if the history has a next command.
              * @returns {Boolean} True if the history has a next command
              */
-            hasNext : function() {
+            hasNext: function() {
                 return ch.history.current < ch.history.sentCommands.length;
             },
 
@@ -129,8 +133,9 @@ var ch_m = function($) {
                     ch.history.tempCommand = $("#chatEntryBox").val();
                 }
 
-                if (ch.history.hasPrev())
+                if (ch.history.hasPrev()) {
                     ch.history.current--;
+                }
 
                 return ch.history.sentCommands[ch.history.current];
             },
@@ -139,46 +144,48 @@ var ch_m = function($) {
              * The next command that was entered.
              * @returns {string} The next command.
              */
-            next : function() {
-                if (ch.history.hasNext())
+            next: function() {
+                if (ch.history.hasNext()) {
                     ch.history.current++;
+                }
 
-                if (ch.history.current === ch.history.sentCommands.length)
+                if (ch.history.current === ch.history.sentCommands.length) {
                     return ch.history.tempCommand;
+                }
 
                 return ch.history.sentCommands[ch.history.current];
             }
         },
 
-        data : {
+        data: {
 
             /** The key used to retrieve and set data from the local storage object. */
-            localStorageKey : "cdata",
+            localStorageKey: "cdata",
 
             /** Stores the names of keys used to get and set data from localStorage. */
-            key : {
-                generalCommands: 'gcmnds',
-                quickCommands : 'qcmnds',
-                playerCommands : 'pcmnds',
-                filters : 'filters'
+            key: {
+                generalCommands: "gcmnds",
+                quickCommands: "qcmnds",
+                playerCommands: "pcmnds",
+                filters: "filters"
             },
 
             /**
              * Clears a value from local storage.
              * @param {string} key Optional, deletes the key and it's value from local
              */
-            clear : function(key) {
-               if (!key) {
-                   localStorage.removeItem(ch.data.localStorageKey);
-               } else {
-                   var data = ch.data.get();
-                   if (!data) {
-                       // Do nothing if there is no data
-                       return;
-                   }
-                   delete data[key];
-                   localStorage.setItem(ch.data.localStorageKey, JSON.stringify(data));
-               }
+            clear: function(key) {
+                if (!key) {
+                    localStorage.removeItem(ch.data.localStorageKey);
+                } else {
+                    var data = ch.data.get();
+                    if (!data) {
+                        // Do nothing if there is no data
+                        return;
+                    }
+                    delete data[key];
+                    localStorage.setItem(ch.data.localStorageKey, JSON.stringify(data));
+                }
             },
 
             /**
@@ -188,7 +195,7 @@ var ch_m = function($) {
              * @param {mixed} defaultValue The value to return if the key has no value.
              * @returns {mixed}
              */
-            get : function(key, defaultValue) {
+            get: function(key, defaultValue) {
                 var data = JSON.parse(localStorage.getItem(ch.data.localStorageKey));
                 if (!key) {
                     return data;
@@ -204,7 +211,7 @@ var ch_m = function($) {
              * @param {string} key The key for the value.
              * @param {mixed} value The data to store.
              */
-            set : function(key, value) {
+            set: function(key, value) {
                 var data = ch.data.get();
                 if (!data) {
                     data = {};
@@ -214,19 +221,19 @@ var ch_m = function($) {
             }
         },
 
-        menu : {
+        menu: {
 
             /** Create the context menu HTML element used for the player commands. */
-            _m : $('<div>').attr('id', 'ch-contextmenu'),
+            _m: $("<div>").attr("id", "ch-contextmenu"),
 
             /**
              * Closes the player context menu.
              */
-            close : function() {
+            close: function() {
                 ch.menu._m.hide();
 
                 // Unbind the on click listener
-                $('body').off('mousedown.ch.menu');
+                $("body").off("mousedown.ch.menu");
             },
 
             /**
@@ -235,12 +242,12 @@ var ch_m = function($) {
              * opened, used to get the position of the mouse.
              * @returns {String} The left position for the context menu in pixels.
              */
-            getLeft : function(evt) {
+            getLeft: function(evt) {
                 var val = 0;
                 if (evt.pageX) {
                     val = evt.pageX;
                 } else if (evt.clientX) {
-                   val = evt.clientX + (
+                    val = evt.clientX + (
                         // Compensate for horizontal scrolling
                         document.documentElement.scrollLeft
                             ? document.documentElement.scrollLeft
@@ -248,10 +255,10 @@ var ch_m = function($) {
                     );
                 }
                 // Make sure val is not off the edge of the page
-                var page_width = $('body').width();
-                var menu_width = ch.menu._m.width();
-                if (val + menu_width > page_width) {
-                    val -= menu_width;
+                var pageWidth = $("body").width();
+                var menuWidth = ch.menu._m.width();
+                if (val + menuWidth > pageWidth) {
+                    val -= menuWidth;
                 }
                 return val + "px";
             },
@@ -262,7 +269,7 @@ var ch_m = function($) {
              * opened, used to get the position of the mouse.
              * @returns {String} The top position for the context menu in pixels.
              */
-            getTop : function(evt) {
+            getTop: function(evt) {
                 var val = 0;
                 if (evt.pageY) {
                     val = evt.pageY;
@@ -275,27 +282,27 @@ var ch_m = function($) {
                     );
                 }
                 // Make sure val is not off the bottom of the page
-                var page_height = $('body').height();
-                var menu_height = ch.menu._m.height();
-                if (val + menu_height > page_height) {
-                    val -= menu_height;
+                var pageHeight = $("body").height();
+                var menuHeight = ch.menu._m.height();
+                if (val + menuHeight > pageHeight) {
+                    val -= menuHeight;
                 }
                 return val + "px";
             },
 
-            open : function(event) {
+            open: function(event) {
                 ch.menu._m.css({
-                    left    : ch.menu.getLeft(event),
-                    top     : ch.menu.getTop(event),
-                    display : 'block'
+                    left: ch.menu.getLeft(event),
+                    top: ch.menu.getTop(event),
+                    display: "block"
                 });
 
                 // Hide the context menu when it is open and the user clicks anything.
-                $('body').on('mousedown.ch.menu', function(event){
-                        if ($(event.target).parents('#ch-contextmenu').length === 0) {
-                            ch.menu.close();
-                        }
-                    });
+                $("body").on("mousedown.ch.menu", function(bodyClickEvent){
+                    if ($(bodyClickEvent.target).parents("#ch-contextmenu").length === 0) {
+                        ch.menu.close();
+                    }
+                });
             }
         },
 
@@ -304,13 +311,13 @@ var ch_m = function($) {
          *           FUNCTIONS           *
          * ----------------------------- */
 
-        addChatEntry : function(name, message, time, isChat) {
+        addChatEntry: function(name, message, time, isChat) {
             // This is a modified version of the addChatEntry function found in
             // MyMcAdmin.js (version 2.4.9.4).
             message = ch.processMessage(message);
 
-            if (message !== '') {
-                var dateString = (typeof time === 'string') ? parseDate(time).toLocaleTimeString() : (new Date()).toLocaleTimeString();
+            if (message !== "") {
+                var dateString = (typeof time === "string") ? parseDate(time).toLocaleTimeString() : (new Date()).toLocaleTimeString();
 
                 var newLine = $("<div class=\"chatEntry\"></div>");
                 newLine.data("isChat", parseBool(isChat));
@@ -333,8 +340,7 @@ var ch_m = function($) {
 
                 var hist = document.getElementById("chatHistory");
 
-                if (ScrollChat)
-                {
+                if (ScrollChat) {
                     hist.scrollTop = hist.scrollHeight;
                 }
             }
@@ -351,20 +357,20 @@ var ch_m = function($) {
          * @param {function} callback The function to call when the command element
          * is clicked. Defaults to runGeneralCommand
          * @param {string} type The html element type to use when appending.
-         * Defaults to '&lt;button&gt;'.
+         * Defaults to "&lt;button&gt;".
          */
-        attachCommands : function(el, commands, callback, type) {
+        attachCommands: function(el, commands, callback, type) {
             if (!callback) {
                 callback = ch.runGeneralCommand;
             }
             if (!type) {
-                type = '<button>';
+                type = "<button>";
             }
-            for (var i=0; i<commands.length; i++) {
+            for (var i = 0; i < commands.length; i++) {
                 el.append(
                     $(type)
                         .text(commands[i].text)
-                        .attr('data', commands[i].cmnd)
+                        .attr("data", commands[i].cmnd)
                         .click(callback)
                 );
             }
@@ -374,14 +380,14 @@ var ch_m = function($) {
          * Attach the commands to the page. Call this to build/rebuild the command buttons
          * and player context menu.
          */
-        buildCommands : function() {
+        buildCommands: function() {
             // Attach the context menu commands
             ch.menu._m.empty();
             ch.attachCommands(
                 ch.menu._m,
                 ch.data.get(ch.data.key.playerCommands, []),
                 ch.runPlayerCommand,
-                '<div>'
+                "<div>"
             );
 
             // Attach the commands
@@ -399,7 +405,7 @@ var ch_m = function($) {
             if (ch.data.get(ch.data.key.generalCommands, []).length > 0
                 && ch.data.get(ch.data.key.quickCommands, []).length > 0
             ) {
-                cmndDiv.append($('<div>').addClass('ch-h-spacer'));
+                cmndDiv.append($("<div>").addClass("ch-h-spacer"));
             }
 
             // Quick Commands
@@ -413,59 +419,59 @@ var ch_m = function($) {
         /**
          * Builds each of the contents of the tabs.
          */
-        buildTabContents : function() {
+        buildTabContents: function() {
             // Filters tab
             ch.buildTable(
-                'ch-filters',
+                "ch-filters",
                 ch.mergeDefaults(ch.data.get(ch.data.key.filters, []), ch.filterDefaults),
                 {
-                    'Match'  : {
-                        'value' : 'regex',
-                        'class' : 'ch-large'
+                    "Match": {
+                        "value": "regex",
+                        "class": "ch-large"
                     },
-                    'Match All' : {
-                        'type'    : 'checkbox',
-                        'value'   : function(data) {
-                            return (data && data.indexOf('g') > -1);
+                    "Match All": {
+                        "type": "checkbox",
+                        "value": function(data) {
+                            return (data && data.indexOf("g") > -1);
                         },
-                        'data'    : 'modifiers',
-                        'default' : true,
-                        'class'   : 'ch-global-mod-flag'
+                        "data": "modifiers",
+                        "default": true,
+                        "class": "ch-global-mod-flag"
                     },
-                    'Ignore Case' : {
-                        'type'    : 'checkbox',
-                        'value'   : function(data) {
-                            return (data && data.indexOf('i') > -1);
+                    "Ignore Case": {
+                        "type": "checkbox",
+                        "value": function(data) {
+                            return (data && data.indexOf("i") > -1);
                         },
-                        'data'    : 'modifiers',
-                        'default' : true
+                        "data": "modifiers",
+                        "default": true
                     },
-                    'Replace' : {
-                        'value' : 'replace',
-                        'class' : 'ch-medium'
+                    "Replace": {
+                        "value": "replace",
+                        "class": "ch-medium"
                     },
-                    'Alert' : {
-                        type  : 'checkbox',
-                        value : 'alert'
+                    "Alert": {
+                        type: "checkbox",
+                        value: "alert"
                     },
-                    'Count' : {
-                        'value' : function(data) {
+                    "Count": {
+                        "value": function(data) {
                             if (data) {
                                 return data;
                             } else {
-                                return '';
+                                return "";
                             }
                         },
-                        'data'  : 'count',
-                        'class' : 'ch-tiny'
+                        "data": "count",
+                        "class": "ch-tiny"
                     }
                 }
             );
 
             // Command Tabs
-            ch.buildTable('ch-pcmnds', ch.data.get(ch.data.key.playerCommands,  []), ch.commandTableLayout);
-            ch.buildTable('ch-gcmnds', ch.data.get(ch.data.key.generalCommands, []), ch.commandTableLayout);
-            ch.buildTable('ch-qcmnds', ch.data.get(ch.data.key.quickCommands,   []), ch.commandTableLayout);
+            ch.buildTable("ch-pcmnds", ch.data.get(ch.data.key.playerCommands, []), ch.commandTableLayout);
+            ch.buildTable("ch-gcmnds", ch.data.get(ch.data.key.generalCommands, []), ch.commandTableLayout);
+            ch.buildTable("ch-qcmnds", ch.data.get(ch.data.key.quickCommands, []), ch.commandTableLayout);
         },
 
         /**
@@ -477,23 +483,23 @@ var ch_m = function($) {
          * to map the data to the table. Consists of labels : column definition.
          * @returns {undefined}
          */
-        buildTable : function(tableId, data, layout) {
+        buildTable: function(tableId, data, layout) {
             // Initialize the variables
-            var table = $('<table>'),
-                header = $('<thead>'),
-                body = $('<tbody>'),
+            var table = $("<table>"),
+                header = $("<thead>"),
+                body = $("<tbody>"),
                 row,
                 definitions = [],
                 td;
 
             //   Construct the Header   //
-            row = $('<tr>');
+            row = $("<tr>");
 
             // Add the actions column
-            row.append('<th> </th>');
+            row.append("<th> </th>");
             // Add the headers
             $.each(layout, function(index, value) {
-                row.append($('<th>').text(index));
+                row.append($("<th>").text(index));
                 definitions.push(value);
             });
             header.append(row);
@@ -509,20 +515,20 @@ var ch_m = function($) {
             }
 
             // Attach the add new row
-            row = $('<tr>');
-            td = $('<td>').attr('colspan', definitions.length + 1);
+            row = $("<tr>");
+            td = $("<td>").attr("colspan", definitions.length + 1);
             td.append(
-                $('<img>').attr({
-                    'src'   : 'http://chockly.org/ch/plus.png',// Modified Fuque Icon
-                    'alt'   : 'Add',
-                    'class' : 'ch-add-new',
-                    'title' : 'Add'
+                $("<img>").attr({
+                    "src": "http://chockly.org/ch/plus.png",// Modified Fuque Icon
+                    "alt": "Add",
+                    "class": "ch-add-new",
+                    "title": "Add"
                 })
-                .data('columns', definitions)
-                .click(function(event) {
+                .data("columns", definitions)
+                .click(function() {
                     var jThis = $(this);
                     var tr = jThis.parent().parent(),
-                        columns = jThis.data('columns');
+                        columns = jThis.data("columns");
 
                     tr.before(ch.buildRow(columns));
                 })
@@ -534,7 +540,7 @@ var ch_m = function($) {
             table.append(header);
             table.append(body);
 
-            $("#" + tableId).find('table').remove();
+            $("#" + tableId).find("table").remove();
             $("#" + tableId).append(table);
         },
 
@@ -546,8 +552,8 @@ var ch_m = function($) {
          * not set the default values for the inputs are used.
          * @returns {jQuery} The jQuery HTML element for the row.
          */
-        buildRow : function(columnDefinitions, data) {
-            var row = $('<tr>'),
+        buildRow: function(columnDefinitions, data) {
+            var row = $("<tr>"),
                 td,
                 input,
                 numColumns = columnDefinitions.length,
@@ -556,79 +562,79 @@ var ch_m = function($) {
                 result;
 
             // Attach the delete row button
-            row.append($('<td>').append(
-                $('<img>')
+            row.append($("<td>").append(
+                $("<img>")
                     .attr({
-                        'src'   : 'http://chockly.org/ch/minus.png',// Modified Fuque Icon
-                        'alt'   : 'Delete',
-                        'class' : 'ch-delete',
-                        'title' : 'Delete'
+                        "src": "http://chockly.org/ch/minus.png",// Modified Fuque Icon
+                        "alt": "Delete",
+                        "class": "ch-delete",
+                        "title": "Delete"
                     })
                     .click(ch.removeRow)
                 )
             );
 
             // Loop through the layout values
-            for (var i=0; i<numColumns; i++) {
-                td = $('<td>');
-                input = $('<input>');
+            for (var i = 0; i < numColumns; i++) {
+                td = $("<td>");
+                input = $("<input>");
                 definition = columnDefinitions[i];
 
-                if (typeof definition === 'object') {
+                if (typeof definition === "object") {
                     column = $.extend({}, {
                         // Defaults
-                        'type'   : 'text',
-                        'data'   : '',
-                        'value'  : '',
-                        'append' : '',
-                        'class'  : false,
-                        'default': false
+                        "type": "text",
+                        "data": "",
+                        "value": "",
+                        "append": "",
+                        "class": false,
+                        "default": false
                     }, definition);
 
-                    input.attr('type', column.type);
+                    input.attr("type", column.type);
 
                     // Get the value for the input field //
                     if (data) {
                         // Value from the provided data
-                        if (typeof column.value === 'function') {
+                        if (typeof column.value === "function") {
                             result = column.value(data[column.data]);
                         } else {
                             result = data[column.value];
                         }
 
                     // No value provided, get the default value
-                    } else if (column['default']) {
+                    } else if (column["default"]) {
                         // Use the default
-                        result = column['default'];
+                        result = column["default"];
 
                     // No default provided
-                    } else if (column.type === 'checkbox') {
+                    } else if (column.type === "checkbox") {
                         // Checkboxes default to false
                         result = false;
                     } else {
                         // Other inputs default to an empty value
-                        result = '';
+                        result = "";
                     }
 
                     input.attr(
-                        'name',
-                        (typeof column.value === 'function') ? column.data : column.value
+                        "name",
+                        (typeof column.value === "function") ? column.data : column.value
                     );
 
-                    if (column.type === 'checkbox') {
+                    if (column.type === "checkbox") {
                         // Checkbox type
-                        input.prop('checked', result);
+                        input.prop("checked", result);
                     } else {
                         // Assume string type
-                        input.attr('value', result);
+                        input.attr("value", result);
                     }
 
                     // Append the pre-message
                     td.text(column.append);
 
                     // Attach the input class
-                    if (column['class']) {
-                        input.addClass(column['class']);
+                    if (column["class"]) {
+                        input.addClass(column["class"]);
                     }
                 } else {
                     // Simple text field
@@ -639,13 +645,13 @@ var ch_m = function($) {
                         result = data[definition];
                     } else {
                         // Set the value to empty
-                        result = '';
+                        result = "";
                     }
 
                     input.attr({
-                        type : 'text',
+                        type: "text",
                         value: result,
-                        name : definition
+                        name: definition
                     });
                 }
                 td.append(input);
@@ -655,7 +661,7 @@ var ch_m = function($) {
             return row;
         },
 
-        closeManager : function() {
+        closeManager: function() {
             $("#ch-manager").hide();
         },
 
@@ -664,14 +670,14 @@ var ch_m = function($) {
          * just a very basic hash generation function.
          * @param {string} input The string to get the has for.
          */
-        hash : function(input) {
+        hash: function(input) {
             var hash = 0,
                 l = input.length,
                 character;
 
             for (var i = 0; i < l; i++) {
                 character = input.charCodeAt(i);
-                hash = ((hash<<5)-hash) + character;
+                hash = ((hash << 5) - hash) + character;
                 hash |= 0; // Convert to 32bit integer
             }
             return hash;
@@ -682,7 +688,7 @@ var ch_m = function($) {
          * @param {object} filter The message filter.
          * @param {string} message The message causing the increment.
          */
-        incrementCount : function(filter, message) {
+        incrementCount: function(filter, message) {
             // Use the hexadecimal hash of the regex as the key
             var key = ch.hash(filter.regex).toString(16),
                 // Get the current timestamp in seconds.
@@ -693,14 +699,14 @@ var ch_m = function($) {
                 ch.count[key] = [];
             }
 
-            ch.count[key].push({msg:message, time: now});
+            ch.count[key].push({msg: message, time: now});
 
             // Remove old values
             $.each(ch.count, function(index, value) {
-                for (var i=0; i<value.length; i++) {
-                    if (value[i].time < now - ch.countDuration) {
+                for (var i = 0; i < value.length; i++) {
+                    if (value[i].time < (now - ch.countDuration)) {
                         // Remove the value
-                        value.splice(i,1);
+                        value.splice(i, 1);
                     }
                 }
             });
@@ -720,9 +726,9 @@ var ch_m = function($) {
          * @param {object} defaults
          * @returns {array}
          */
-        mergeDefaults : function(data, defaults) {
+        mergeDefaults: function(data, defaults) {
             var merged = [];
-            for (var i=0; i<data.length; i++) {
+            for (var i = 0; i < data.length; i++) {
                 merged[i] = $.extend({}, defaults, data[i]);
             }
             return merged;
@@ -732,31 +738,31 @@ var ch_m = function($) {
          * Notifies the user of important events by opening a new window.
          * @param {string} message The message to display in the notification.
          */
-        notify : function(message) {
+        notify: function(message) {
             // TODO chrome notifications, play sound, popup option.
             // TODO have a better way to ID notifications to prevent duplicates?
             var id = ch.hash(message);
 
             // Generate the popup window
             var popup = window.open(
-                '',
-                'notify-'+id,
-                'width=300,height=150,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0'
+                "",
+                "notify-" + id,
+                "width=300,height=150,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0"
             );
 
             // Write the notification
             if (popup && popup.document) {
-                popup.document.write('<!DOCTYPE HTML>'
-                    + '<html>'
-                    + '<head>'
-                    + '<title>Alert</title><link href="http://chockly.org/ch/notify.css" rel="stylesheet" type="text/css" />'
-                    + '</head>'
-                    + '<body>'
-                    + '<div class="wrapper"><div class="message">'
+                popup.document.write("<!DOCTYPE HTML>"
+                    + "<html>"
+                    + "<head>"
+                    + "<title>Alert</title><link href='http://chockly.org/ch/notify.css' rel='stylesheet' type='text/css' />"
+                    + "</head>"
+                    + "<body>"
+                    + "<div class='wrapper'><div class='message'>"
                     + message
-                    + '</div></div>'
-                    + '</body>'
-                    + '</html>'
+                    + "</div></div>"
+                    + "</body>"
+                    + "</html>"
                 );
             }
         },
@@ -766,16 +772,16 @@ var ch_m = function($) {
          * @param {string} text The message to process
          * @return {string} The message ready for input as an HTML message.
          */
-        processMessage : function(text) {
+        processMessage: function(text) {
             var filters = ch.data.get(ch.data.key.filters, []),
                 filter,
                 regex;
 
             // Escape any HTML entities
-            text = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            text = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
             // Process any message notifications.
-            for (var i=0; i < filters.length; i++) {
+            for (var i = 0; i < filters.length; i++) {
                 filter = $.extend({}, ch.filterDefaults, filters[i]);
 
                 regex = new RegExp(filter.regex, filter.modifiers);
@@ -805,17 +811,17 @@ var ch_m = function($) {
          * @param {object} row The jQuery object for the row to remove.
          * When passed in this row will be removed without confirmation.
          */
-        removeRow : function(event, row) {
+        removeRow: function(event, row) {
             if (!row) {
                 // No row provided, get the row from the image
                 row = $(this).parent().parent();
 
                 // If the row's first input method has data in it, confirm the deletion.
-                if (row.find('input').first().val() !== '') {
+                if (row.find("input").first().val() !== "") {
                     // Use the show modal method from McMyAdmin for the confirmation
                     showModal(
-                        'Confirm Delete',
-                        'Are you sure you wish to delete this row?',
+                        "Confirm Delete",
+                        "Are you sure you wish to delete this row?",
                         Icons.Question,
                         function() {
                             ch.removeRow(null, row);
@@ -839,10 +845,10 @@ var ch_m = function($) {
          * @param {boolean} append When true the text is placed at the beginning of
          * any existing input text, otherwise the text is replaced. See setInputText.
          */
-        runCommand : function(cmnd, append) {
-            if (typeof cmnd === 'object') {
+        runCommand: function(cmnd, append) {
+            if (typeof cmnd === "object") {
                 // Try to get the command from the objects data attribute
-                cmnd = $(cmnd).attr('data');
+                cmnd = $(cmnd).attr("data");
             }
             ch.setInputText(cmnd, append, false);
 
@@ -854,15 +860,15 @@ var ch_m = function($) {
          * Sets a command into the input box, and then immediatly runs the command.
          * @param {Event} event The event triggering this function.
          */
-        runQuickCommand : function(event) {
-            ch.sendCommand('/' + $(this).attr('data'));
+        runQuickCommand: function() {
+            ch.sendCommand("/" + $(this).attr("data"));
         },
 
         /**
          * Sets a command into the input box, removing any current text.
          * @param {Event} event The event triggering this function.
          */
-        runGeneralCommand : function(event) {
+        runGeneralCommand: function() {
             ch.runCommand(this);
         },
 
@@ -871,9 +877,9 @@ var ch_m = function($) {
          * menu.
          * @param {Event} event The event triggering this function.
          */
-        runPlayerCommand : function(event) {
-            var cmnd = $(event.target).attr('data');
-            ch.runCommand(cmnd + ' ' + ch.player);
+        runPlayerCommand: function(event) {
+            var cmnd = $(event.target).attr("data");
+            ch.runCommand(cmnd + " " + ch.player);
 
             // Close the context menu
             ch.menu.close();
@@ -884,7 +890,7 @@ var ch_m = function($) {
          * Send a command to the server.
          * @param {string} message The message to send to the server.
          */
-        sendCommand : function(message) {
+        sendCommand: function(message) {
             // Use the McMyAdmin requestData function
             requestData(APICommands.SendChat, { Message: message }, null);
         },
@@ -898,16 +904,16 @@ var ch_m = function($) {
          * to the beginning of the text.
          * @returns {undefined}
          */
-        setInputText : function(text, append, notCommand) {
-            var chat_box = $("#chatEntryBox");
+        setInputText: function(text, append, notCommand) {
+            var chatBox = $("#chatEntryBox");
             if (!notCommand) {
-                text = '/' + text;
+                text = "/" + text;
             }
-            text += ' ';
+            text += " ";
             if (append) {
-                text += chat_box.val();
+                text += chatBox.val();
             }
-            chat_box.val(text);
+            chatBox.val(text);
         }
 
     };
@@ -922,44 +928,47 @@ var ch_m = function($) {
 
         // General Commands
         ch.data.set(ch.data.key.generalCommands, [
-            {cmnd : 'say', text : 'Say'}
+            {cmnd: "say", text: "Say"}
         ]);
 
         // Quick Commands
         ch.data.set(ch.data.key.quickCommands, [
-            {cmnd : 'who', text : 'Who'}
+            {cmnd: "who", text: "Who"}
         ]);
 
         // Player Commands
         ch.data.set(ch.data.key.playerCommands, [
-            {cmnd : 'ban',    text : 'Ban'},
-            {cmnd : 'kick',   text : 'Kick'},
-            {cmnd : 'mute',   text : 'Mute'}
+            {cmnd: "ban", text: "Ban"},
+            {cmnd: "kick", text: "Kick"},
+            {cmnd: "mute", text: "Mute"}
         ]);
 
         // Filters
         ch.data.set(ch.data.key.filters, [
-            {regex:"(https?://\\w+\\.\\w+\\S+)",replace:"<a target='_blank' href=\"$1\">$1</a>"}// URL creator
+            {   // URL creator
+                regex: "(https?://\\w+\\.\\w+\\S+)",
+                replace: "<a target='_blank' href=\"$1\">$1</a>"
+            }
         ]);
     }
 
 
     //   Context Menu   //
     // Attach the context menu to the page
-    ch.menu._m.appendTo('body');
+    ch.menu._m.appendTo("body");
 
     // Attach additional functionality to clicking on the player names
     $("#chatNames").click(function(event) {
             // Add the /msg command to the clicked on player
-            var player_div = $(event.target);
-            if (player_div.hasClass('chatName')) {
-                ch.runCommand("msg " + player_div.text(), true);// TODO make this configurable
+            var playerDiv = $(event.target);
+            if (playerDiv.hasClass("chatName")) {
+                ch.runCommand("msg " + playerDiv.text(), true);// TODO make this configurable
             }
         }).bind("contextmenu", function(event) {
             // Display the context menu
-            var player_div = $(event.target);
-            if (player_div.hasClass('chatName')) {
-                ch.player = player_div.text();
+            var playerDiv = $(event.target);
+            if (playerDiv.hasClass("chatName")) {
+                ch.player = playerDiv.text();
                 ch.menu.open(event);
                 event.preventDefault();
             }
@@ -968,85 +977,85 @@ var ch_m = function($) {
     //   Command Buttons   //
     // Attach the command button holder
     $("#chatArea").append(
-            $('<div>').attr('id', 'ch-cmnds')
+            $("<div>").attr("id", "ch-cmnds")
         );
     ch.buildCommands();
 
 
     //  Helper Manager Interface  //
     // Insert the helper manager interface into the page, with the filters tab selected by default.
-    $('body').append(
-"<div id='ch-manager' class='modalbg modalnormal'>"
-+   "<div class='modalpanel'>"
-+       "<div class='ch-tabs modalcontents'>"
-+           "<div class='subtabhead'>"
-+               "<a href='#ch-filters' class='subtab picked'>Filters</a>"
-+               "<a href='#ch-pcmnds'  class='subtab'>Player Commands</a>"
-+               "<a href='#ch-gcmnds'  class='subtab'>General Commands</a>"
-+               "<a href='#ch-qcmnds'  class='subtab'>Quick Commands</a>"
-+           "</div>"
-+           "<div id='ch-filters' class='subtabcontainer' style='display:block'><p>Create regular expression filters that are applied to the console messages. Checking alert will cause a window to popup when a message matches the filter. Count will cause an alert to display if the message is matched that many times in a five minute period.<br/>Help with regular expressions: <a href='http://net.tutsplus.com/tutorials/javascript-ajax/you-dont-know-anything-about-regular-expressions/' target='_blank'>Regular Expression Tutorial</a> &mdash; <a href='http://regexpal.com/' target='_blank'>Regular Expression Tester</a></p></div>"
-+           "<div id='ch-pcmnds'  class='subtabcontainer'><p>These commands are available when right clicking on a player name in the sidebar. The player's name is added after the command.</p></div>"
-+           "<div id='ch-gcmnds'  class='subtabcontainer'><p>These commands are added as buttons below the console input box.</p></div>"
-+           "<div id='ch-qcmnds'  class='subtabcontainer'><p>These commands are added as buttons below the console input box and run when they are clicked on.</p></div>"
-+       "</div>"
-+       "<div class='modalbuttons'>"
-+           "<button id='ch-save'>Save</button>"
-+           "<button id='ch-cancel'>Cancel</button>"
-+           "<button id='ch-close'>Close</button>"
-+       "</div>"
-+   "</div>"
-+"</div>"
+    $("body").append(
+  "<div id='ch-manager' class='modalbg modalnormal'>"
+    + "<div class='modalpanel'>"
+        + "<div class='ch-tabs modalcontents'>"
+            + "<div class='subtabhead'>"
+                + "<a href='#ch-filters' class='subtab picked'>Filters</a>"
+                + "<a href='#ch-pcmnds'  class='subtab'>Player Commands</a>"
+                + "<a href='#ch-gcmnds'  class='subtab'>General Commands</a>"
+                + "<a href='#ch-qcmnds'  class='subtab'>Quick Commands</a>"
+            + "</div>"
+            + "<div id='ch-filters' class='subtabcontainer' style='display:block'><p>Create regular expression filters that are applied to the console messages. Checking alert will cause a window to popup when a message matches the filter. Count will cause an alert to display if the message is matched that many times in a five minute period.<br/>Help with regular expressions: <a href='http://net.tutsplus.com/tutorials/javascript-ajax/you-dont-know-anything-about-regular-expressions/' target='_blank'>Regular Expression Tutorial</a> &mdash; <a href='http://regexpal.com/' target='_blank'>Regular Expression Tester</a></p></div>"
+            + "<div id='ch-pcmnds'  class='subtabcontainer'><p>These commands are available when right clicking on a player name in the sidebar. The player's name is added after the command.</p></div>"
+            + "<div id='ch-gcmnds'  class='subtabcontainer'><p>These commands are added as buttons below the console input box.</p></div>"
+            + "<div id='ch-qcmnds'  class='subtabcontainer'><p>These commands are added as buttons below the console input box and run when they are clicked on.</p></div>"
+        + "</div>"
+        + "<div class='modalbuttons'>"
+            + "<button id='ch-save'>Save</button>"
+            + "<button id='ch-cancel'>Cancel</button>"
+            + "<button id='ch-close'>Close</button>"
+        + "</div>"
+    + "</div>"
++ "</div>"
     );
 
     // Build the tab contents
     ch.buildTabContents();
 
     // Save/Cancel button click event handlers
-    $("#ch-save").click(function(event) {
+    $("#ch-save").click(function() {
         ch.closeManager();
 
         // Serialize and store the tabs
-        var obj, jobj, value, name, modifiers = '';
+        var obj, jobj, value, name, modifiers = "";
 
         // Loop through each tab
-        $.each(ch.data.key, function(i, key) {
+        $.each(ch.data.key, function(tabIndex, key) {
             var contents = [];
 
             // Loop through each row
-            $.each($("#ch-" + key + " tr"), function(i, row) {
+            $.each($("#ch-" + key + " tr"), function(rowIndex, row) {
                 obj = {};
 
                 // Loop through each input on the row
-                $.each($(row).find('input'), function(i, input) {
+                $.each($(row).find("input"), function(inputIndex, input) {
                     jobj = $(input);
-                    name = jobj.attr('name');
-                    // TODO check for empty, we don't need to store blank rows.
+                    name = jobj.attr("name");
+                    // TODO check for empty, we don"t need to store blank rows.
 
                     // Get the value of the input box
-                    if (jobj.attr('type') === 'checkbox') {
-                        value = jobj.prop('checked');
+                    if (jobj.attr("type") === "checkbox") {
+                        value = jobj.prop("checked");
                     } else {
                         value = jobj.val();
                     }
 
-                    if (key === 'filters') {
+                    if (key === "filters") {
                         // Filters have special serialization needs
 
-                        if (name === 'count') {
+                        if (name === "count") {
                             // Count should be a number or false
-                            value = (value === '') ? false : value*1;
+                            value = (value === "") ? false : value * 1;
                             if (isNaN(value) || value <= 0) {
                                 value = false;
                             }
-                        } else if (name === 'modifiers' && value) {
+                        } else if (name === "modifiers" && value) {
                             // Regex Modifier Flag
-                            if (jobj.hasClass('ch-global-mod-flag')) {
+                            if (jobj.hasClass("ch-global-mod-flag")) {
                                 // Global
-                                modifiers += 'g';
+                                modifiers += "g";
                             } else {
                                 // Case Insensitive
-                                modifiers += 'i';
+                                modifiers += "i";
                             }
                             // Modifiers are handled later, exit for now
                             return;
@@ -1061,13 +1070,13 @@ var ch_m = function($) {
                     obj[name] = value;
                 });
                 if (!$.isEmptyObject(obj)) {
-                    if (key === 'filters' && modifiers !== ch.filterDefaults.modifiers) {
+                    if (key === "filters" && modifiers !== ch.filterDefaults.modifiers) {
                         // Merge in the modifiers now
                         obj.modifiers = modifiers;
                     }
                     contents.push(obj);
                 }
-                modifiers = '';
+                modifiers = "";
             });
 
             // Store the serialized tab
@@ -1078,7 +1087,7 @@ var ch_m = function($) {
         ch.buildCommands();
         ch.buildTabContents();
     });
-    $("#ch-cancel").click(function(event) {
+    $("#ch-cancel").click(function() {
         ch.closeManager();
 
         // Rebuild the tabs so that any changes are lost
@@ -1088,27 +1097,27 @@ var ch_m = function($) {
 
     // Attach a user info link for opening the manager
     $("#userinfo")
-        .append($('<span>').text(" | "))
+        .append($("<span>").text(" | "))
         .append(
             $("<a>")
-            .attr('href', '#console-helper')
+            .attr("href", "#console-helper")
             .click(function(event){
                 $("#ch-manager").show();
                 event.preventDefault();
             })
-            .text('Console Helper')
+            .text("Console Helper")
         );
 
 
     // Modify McMyAdmin Functionality //
     function modifyMcMyAdmin() {
         // Make sure that the add chat entry box has an event tied to it
-        if ($._data($('#chatEntryBox')[0]).events) {
+        if ($._data($("#chatEntryBox")[0]).events) {
             // Replace the chat entry box event handler with our own
-            $("#chatEntryBox").unbind('keypress').keypress(function (event) {
+            $("#chatEntryBox").unbind("keypress").keypress(function (event) {
                     // This is a modified version of McMyAdmins event handler for this
                     // input box (v 2.4.4.0).
-                    if (event.keyCode == '13') {
+                    if (event.keyCode == "13") {
                         event.preventDefault();
 
                         var message = $(this).val();
@@ -1159,7 +1168,7 @@ var ch_m = function($) {
 
 // Inserts the main method into the page so that it can override javascript
 // functions on the page.
-var chathelper = document.createElement('script');
+var chathelper = document.createElement("script");
 chathelper.type = "application/javascript";
-chathelper.textContent = 'jQuery(' + ch_m.toString() + ');';
+chathelper.textContent = "jQuery(" + chMain.toString() + ");";
 document.body.appendChild(chathelper);
