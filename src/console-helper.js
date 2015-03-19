@@ -2,7 +2,7 @@
 // @name McMyAdmin Console Helper
 // @description Adds additional functionality to the McMyAdmin console page.
 // @author Curtis Oakley
-// @version 0.1.2
+// @version 0.2.3
 // @match http://72.249.124.178:25967/*
 // @namespace http://72.249.124.178:25967/
 // ==/UserScript==
@@ -221,90 +221,117 @@ var chMain = function($) {
             }
         },
 
-        menu: {
+        menu: (function() {
 
             /** Create the context menu HTML element used for the player commands. */
-            _m: $("<div>").attr("id", "ch-contextmenu"),
+            var contextMenu = $("<div>").attr("id", "ch-contextmenu"),
 
-            /**
-             * Closes the player context menu.
-             */
-            close: function() {
-                ch.menu._m.hide();
-
-                // Unbind the on click listener
-                $("body").off("mousedown.ch.menu");
-            },
-
-            /**
-             * Gets the left position for the player context menu.
-             * @param {event} evt The event object that triggered the context menu to be
-             * opened, used to get the position of the mouse.
-             * @returns {String} The left position for the context menu in pixels.
-             */
-            getLeft: function(evt) {
-                var val = 0;
-                if (evt.pageX) {
-                    val = evt.pageX;
-                } else if (evt.clientX) {
-                    val = evt.clientX + (
-                        // Compensate for horizontal scrolling
-                        document.documentElement.scrollLeft
-                            ? document.documentElement.scrollLeft
-                            : document.body.scrollLeft
-                    );
-                }
-                // Make sure val is not off the edge of the page
-                var pageWidth = $("body").width();
-                var menuWidth = ch.menu._m.width();
-                if (val + menuWidth > pageWidth) {
-                    val -= menuWidth;
-                }
-                return val + "px";
-            },
-
-            /**
-             * Gets the top position for the player context menu.
-             * @param {event} evt The event object that triggered the context menu to be
-             * opened, used to get the position of the mouse.
-             * @returns {String} The top position for the context menu in pixels.
-             */
-            getTop: function(evt) {
-                var val = 0;
-                if (evt.pageY) {
-                    val = evt.pageY;
-                } else if (evt.clientY) {
-                    val = evt.clientY + (
-                        // Compensate for vertical scrolling
-                        document.documentElement.scrollTop
-                            ? document.documentElement.scrollTop
-                            : document.body.scrollTop
-                    );
-                }
-                // Make sure val is not off the bottom of the page
-                var pageHeight = $("body").height();
-                var menuHeight = ch.menu._m.height();
-                if (val + menuHeight > pageHeight) {
-                    val -= menuHeight;
-                }
-                return val + "px";
-            },
-
-            open: function(event) {
-                ch.menu._m.css({
-                    left: ch.menu.getLeft(event),
-                    top: ch.menu.getTop(event),
-                    display: "block"
-                });
-
-                // Hide the context menu when it is open and the user clicks anything.
-                $("body").on("mousedown.ch.menu", function(bodyClickEvent){
-                    if ($(bodyClickEvent.target).parents("#ch-contextmenu").length === 0) {
-                        ch.menu.close();
+                /**
+                 * Gets the left position for the player context menu.
+                 * @param {event} event The event object that triggered the context menu to be
+                 * opened, used to get the position of the mouse.
+                 * @returns {String} The left position for the context menu in pixels.
+                 */
+                getLeft = function (event) {
+                    var val = 0;
+                    if (event.pageX) {
+                        val = event.pageX;
+                    } else if (event.clientX) {
+                        val = event.clientX + (
+                            // Compensate for horizontal scrolling
+                            document.documentElement.scrollLeft
+                                ? document.documentElement.scrollLeft
+                                : document.body.scrollLeft
+                        );
                     }
-                });
-            }
-        },
+                    // Make sure val is not off the edge of the page
+                    var pageWidth = $("body").width();
+                    var menuWidth = contextMenu.width();
+                    if (val + menuWidth > pageWidth) {
+                        val -= menuWidth;
+                    }
+                    return val + "px";
+                },
+
+                /**
+                 * Gets the top position for the player context menu.
+                 * @param {event} event The event object that triggered the context menu to be
+                 * opened, used to get the position of the mouse.
+                 * @returns {String} The top position for the context menu in pixels.
+                 */
+                getTop = function (event) {
+                    var val = 0;
+                    if (event.pageY) {
+                        val = event.pageY;
+                    } else if (event.clientY) {
+                        val = event.clientY + (
+                            // Compensate for vertical scrolling
+                            document.documentElement.scrollTop
+                                ? document.documentElement.scrollTop
+                                : document.body.scrollTop
+                        );
+                    }
+                    // Make sure val is not off the bottom of the page
+                    var pageHeight = $("body").height();
+                    var menuHeight = contextMenu.height();
+                    if (val + menuHeight > pageHeight) {
+                        val -= menuHeight;
+                    }
+                    return val + "px";
+                };
+
+            // Attach the context menu to the page
+            contextMenu.appendTo("body");
+
+            return {
+
+                /**
+                 * Appends a menu item into the menu.
+                 * @param content DOM element, array of elements, HTML string, or jQuery object to insert at the end of
+                 * the current context menu items.
+                 * @returns {jQuery}
+                 */
+                append: function (content) {
+                    return contextMenu.append(content);
+                },
+
+                /**
+                 * Closes the player context menu.
+                 */
+                close: function () {
+                    contextMenu.hide();
+
+                    // Unbind the on click listener
+                    $("body").off("mousedown.ch.menu");
+                },
+
+                /**
+                 * Removes all items from the context menu.
+                 */
+                empty: function () {
+                    contextMenu.empty();
+                },
+
+                /**
+                 * Open the player context menu
+                 * @param event
+                 */
+                open: function (event) {
+                    contextMenu.css({
+                        left: getLeft(event),
+                        top: getTop(event),
+                        display: "block"
+                    });
+
+                    // Hide the context menu when it is open and the user clicks anything.
+                    $("body").on("mousedown.ch.menu", function (bodyClickEvent) {
+                        if ($(bodyClickEvent.target).parents("#ch-contextmenu").length === 0) {
+                            ch.menu.close();
+                        }
+                    });
+                }
+            };
+        })(),
 
 
         /* ----------------------------- *
@@ -382,9 +409,9 @@ var chMain = function($) {
          */
         buildCommands: function() {
             // Attach the context menu commands
-            ch.menu._m.empty();
+            ch.menu.empty();
             ch.attachCommands(
-                ch.menu._m,
+                ch.menu,
                 ch.data.get(ch.data.key.playerCommands, []),
                 ch.runPlayerCommand,
                 "<div>"
@@ -923,6 +950,16 @@ var chMain = function($) {
      *              RUN              *
      * ----------------------------- */
 
+    // USER SCRIPT SPECIFIC
+    // Attach the CSS to the page
+    $("head").append($("<link>").attr({
+        href: "http://chockly.org/ch/console-helper.css",
+        type: "text/css",
+        rel: "stylesheet",
+        media: "screen"
+    }));
+    // END - USER SCRIPT SPECIFIC
+
     if (!ch.data.get()) {
         // Initialize Defaults
 
@@ -954,9 +991,6 @@ var chMain = function($) {
 
 
     //   Context Menu   //
-    // Attach the context menu to the page
-    ch.menu._m.appendTo("body");
-
     // Attach additional functionality to clicking on the player names
     $("#chatNames").click(function(event) {
             // Add the /msg command to the clicked on player
