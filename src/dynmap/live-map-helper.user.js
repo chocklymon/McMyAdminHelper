@@ -14,89 +14,92 @@
 See console-helper.user.js for some example filters.
 */
 
+// Globals from DynMap
+/* global dynmap getMinecraftHead chat_encoder */
 // Wrap everything inside of an anonymous function
-var ch_m = function($) {
+var chMain = function ($) {
+    "use strict";
 
 
     /* ----------------------------- *
      *  VARIABLES AND CONFIGURATION  *
      * ----------------------------- */
-    
+
     var
-    
-    /** The height of the controller trough. */
-    ctrlHeight = 30,
-    
-    /** The key used to retrieve and set data from the local storage object. */
-    localStorageKey = "cdata",
-    
-    /** The data object containing the local storage data. */
-    data = JSON.parse(localStorage.getItem(localStorageKey)),
-    
-    /** Handles a incoming chat message. */
-    handleChat = function(event, message) {
-        /* Modified version of the dynamp chat event handler.
-         * Changed to allow HTML in the text messages.
-         */
-        var playerName = message.name;
-        var playerAccount = message.account;
-        var messageRow = $('<div/>')
-                .addClass('messagerow');
+        /** The height of the controller trough. */
+        ctrlHeight = 30,
 
-        var playerIconContainer = $('<span/>')
-                .addClass('messageicon');
+        /** The key used to retrieve and set data from the local storage object. */
+        localStorageKey = "cdata",
 
-        if (message.source === 'player' && playerAccount) {
-            // Call the global function to get the players head
-            getMinecraftHead(playerAccount, 16, function(head) {
+        /** The data object containing the local storage data. */
+        data = JSON.parse(localStorage.getItem(localStorageKey)),
+
+        /** Handles a incoming chat message. */
+        handleChat = function (event, message) {
+            /* Modified version of the dynamp chat event handler.
+             * Changed to allow HTML in the text messages.
+             */
+            var playerName = message.name;
+            var playerAccount = message.account;
+            var messageRow = $("<div/>")
+                    .addClass("messagerow");
+
+            var playerIconContainer = $("<span/>")
+                    .addClass("messageicon");
+
+            if (message.source === "player" && playerAccount) {
+                // Call the global function to get the players head
+                getMinecraftHead(playerAccount, 16, function (head) {
                     messageRow.icon = $(head)
-                            .addClass('playerMessageIcon')
-                            .appendTo(playerIconContainer);
-            });
-        }
-        
-        var playerNameContainer = '';
-        if(playerName) {
-            playerNameContainer = $('<span/>').addClass('messagetext').text(' ' + playerName + ': ');
-        }
+                        .addClass("playerMessageIcon")
+                        .appendTo(playerIconContainer);
+                });
+            }
 
-        var playerMessageContainer = $('<span/>')
-                .addClass('messagetext')
-                .html(processMessage(message));
-        
-        var timeStamp = getTimeStamp();
+            var playerNameContainer = "";
+            if(playerName) {
+                playerNameContainer = $("<span/>").addClass("messagetext").text(" " + playerName + ": ");
+            }
 
-        messageRow.append(timeStamp,playerIconContainer,playerNameContainer,playerMessageContainer);
-        addrow(messageRow);
-    },
-    
-    /** Handles a player joining. */
-    handlePlayerJoin = function(event, playername) {
-        var text = dynmap.options.joinmessage.replace('%playername%', playername);
-        
-        // Check if we need to alert for this player
-        var players = get("player.alert", []);
-        if(players.indexOf(playername) != -1) {
-            // Player on the alert list, pop an alert.
-            notify(playername + " just logged in!");
-        }
-        
-        // Check for players on the highlight (warn) list
-        players = get("player.warn", []);
-        if (players.indexOf(playername) != -1) {
-            // Highlight the player
-            text = "<img src='http://c.lan/personal/imgs/control-record.png' />" + text;
-        }
-        
-        // From the dynmap playerjoin event handler, modified to output html
-        if (dynmap.options.joinmessage.length > 0) {
-            addrow($('<div/>')
-                    .addClass('messagerow')
-                    .append(getTimeStamp())
-                    .append($("<span/>").html(text))
-                    );
-        }
-    };
+            var playerMessageContainer = $("<span/>")
+                    .addClass("messagetext")
+                    .html(processMessage(message));
+
+            var timeStamp = getTimeStamp();
+
+            messageRow.append(timeStamp, playerIconContainer, playerNameContainer, playerMessageContainer);
+            addrow(messageRow);
+        },
+
+        /** Handles a player joining. */
+        handlePlayerJoin = function (event, playername) {
+            var text = dynmap.options.joinmessage.replace("%playername%", playername);
+
+            // Check if we need to alert for this player
+            var players = get("player.alert", []);
+            if(players.indexOf(playername) != -1) {
+                // Player on the alert list, pop an alert.
+                notify(playername + " just logged in!");
+            }
+
+            // Check for players on the highlight (warn) list
+            players = get("player.warn", []);
+            if (players.indexOf(playername) != -1) {
+                // Highlight the player
+                text = "<img src='http://c.lan/personal/imgs/control-record.png' />" + text;
+            }
+
+            // From the dynmap playerjoin event handler, modified to output html
+            if (dynmap.options.joinmessage.length > 0) {
+                addrow(
+                    $("<div/>")
+                        .addClass("messagerow")
+                        .append(getTimeStamp())
+                        .append($("<span/>").html(text))
+                );
+            }
+        };
 
 
 
@@ -106,10 +109,10 @@ var ch_m = function($) {
 
 
     //     Local Storage Helpers     //
-    
+
     /**
      * Clears a value from local storage.
-     * key - Optional, deletes the key and it's value from local storage. If
+     * key - Optional, deletes the key and it"s value from local storage. If
      * not provided removes all data from local storage.
      */
     function clear(key) {
@@ -117,7 +120,7 @@ var ch_m = function($) {
             data = null;
             localStorage.removeItem(localStorageKey);
         } else {
-            if(data == null){
+            if(data == null) {
                 // Do nothing if there is no data
                 return;
             }
@@ -125,18 +128,18 @@ var ch_m = function($) {
             localStorage.setItem(localStorageKey, JSON.stringify(data));
         }
     }
-    
+
     /**
      * Gets a piece of data from local storage.
      * key - the key for the data. If null returns all data stored.
      * defaultValue - Value to return if the key has no value.
      */
     function get(key, defaultValue) {
-        if(key == null){
+        if(key == null) {
             return data;
-        } else if(data == null){
+        } else if(data == null) {
             return defaultValue;
-        } else if(data[key] == null){
+        } else if(data[key] == null) {
             return defaultValue;
         } else {
             return data[key];
@@ -149,16 +152,16 @@ var ch_m = function($) {
      * value - The data to store.
      */
     function set(key, value) {
-        if(data == null){
+        if(data == null) {
             data = {};
         }
         data[key] = value;
         localStorage.setItem(localStorageKey, JSON.stringify(data));
     }
-    
-    
+
+
     //       Other Functions         //
-    
+
     /**
      * Adds a row to the dynmap chat box.
      * Removes older rows as needed.
@@ -168,16 +171,22 @@ var ch_m = function($) {
         var configuration = dynmap.options.components[2];// Is this consitent?
         var messagelist = $("div.messagelist");
         if (configuration.scrollback) {
-                var c = messagelist.children();
-                c.slice(0, Math.max(0, c.length-configuration.scrollback)).each(function(index, elem){ $(elem).remove(); });
+            var c = messagelist.children();
+            c.slice(0, Math.max(0, c.length - configuration.scrollback)).each(function (index, elem) {
+                $(elem).remove();
+            });
         } else {
-                setTimeout(function() { row.remove(); }, (configuration.messagettl * 1000));
+            setTimeout(function () {
+                    row.remove();
+                },
+                (configuration.messagettl * 1000)
+            );
         }
         messagelist.append(row);
         messagelist.show();
-        messagelist.scrollTop(messagelist.scrollHeight());// TODO don't scroll if the mouse is over the message box
+        messagelist.scrollTop(messagelist.scrollHeight());// TODO don"t scroll if the mouse is over the message box
     }
-    
+
     /**
      * Generates the table listing the messages.
      */
@@ -190,7 +199,7 @@ var ch_m = function($) {
             replace  : <string|The string to replace the regex with>
         }
         */
-        
+
         var table = $("<table>").attr("id", "cmt");// C Message Table
         var tbody = $("<tbody>");
         table.append(
@@ -201,14 +210,14 @@ var ch_m = function($) {
                 .append($("<th>").text("Alert"))
                 .append($("<th>").text(" "))// buttons column
             );
-        
-        $.each(get("messages", []), function(index, value){
+
+        $.each(get("messages", []), function (index, value) {
             // Create a new row for each message
             tbody.append(
-                $("<tr>").attr("id", "m" + index).dblclick(function(event){
+                $("<tr>").attr("id", "m" + index).dblclick(function (event) {
                     // Double click to go into edit mode
                     // this is the row.
-                    
+
                 })
                 .append($("<td>").text(value.regex))
                 .append($("<td>").text(value.modifiers))
@@ -217,39 +226,42 @@ var ch_m = function($) {
                 .append($("<td>").text(" "))
             );
         });
-        
+
         return table.append(tbody);
     }
-    
+
     function getTimeStamp() {
         var date = new Date();
-        
+
         var hour = date.getHours();
-        if (hour > 12)
+        if (hour > 12) {
             hour -= 12;
-        if (hour < 10)
+        }
+        if (hour < 10) {
             hour = "0" + hour;
-        
+        }
+
         var minute = date.getMinutes();
-        if (minute < 10)
+        if (minute < 10) {
             minute = "0" + minute;
-        
-        return $('<span/>')
-                .addClass('timestamp')
+        }
+
+        return $("<span/>")
+                .addClass("timestamp")
                 .text(hour + ":" + minute);
     }
-    
+
     /**
      * Takes a row of the message table and makes it editable
      */
     function editRow(id) {
         // Replace the text in each column of the row with a input field
         var columns = $("#" + id + " td");
-        for(var i=0; i<columns.length-2; i++) {
+        for(var i = 0; i < columns.length - 2; i++) {
             columns.eq(i).html("<input type='text' value='" + columns.eq(i).text() + "' />");
         }// TODO checkbox and save button
     }
-    
+
     /**
      * Adds a new row to the filter table
      */
@@ -257,12 +269,12 @@ var ch_m = function($) {
         // Attach a row to the table body
         $("#cmt tbody").append($("<tr>").attr("id", "cadd")
             // Attach columns for each of the input fields to the row
-            .append($("<td>").append($("<input>").attr({id:"ca-regex",type:"text"})))
-            .append($("<td>").append($("<input>").attr({id:"ca-modifiers",type:"text"})))
-            .append($("<td>").append($("<input>").attr({id:"ca-replace",type:"text"})))
-            .append($("<td>").append($("<input>").attr({id:"ca-alert",type:"checkbox"})))
+            .append($("<td>").append($("<input>").attr({id: "ca-regex", type: "text"})))
+            .append($("<td>").append($("<input>").attr({id: "ca-modifiers", type: "text"})))
+            .append($("<td>").append($("<input>").attr({id: "ca-replace", type: "text"})))
+            .append($("<td>").append($("<input>").attr({id: "ca-alert", type: "checkbox"})))
             // Attach the add new message filter button
-            .append($("<td>").append($("<button>").text("Add").click(function(){
+            .append($("<td>").append($("<button>").text("Add").click(function () {
                 var regex = $("#ca-regex").val();
                 var modifiers = $("#ca-modifiers").val();
                 var replace = $("#ca-replace").val();
@@ -271,99 +283,103 @@ var ch_m = function($) {
             })))
         );
     }
-    
+
     /**
      * Notifies the user of important events by opening a new window.
      */
     function notify(message) {
-        window.open('http://chockly.org/ch/?m=' + encodeURIComponent(message),
-            'notification','width=300,height=150,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0');
+        window.open(
+            "http://chockly.org/ch/?m=" + encodeURIComponent(message),
+            "notification",
+            "width=300,height=150,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0"
+        );
     }
-    
+
     /**
      * Process a chat message for input into a row.
      */
     function processMessage(message) {
-        // Get the text from the message in it's properly encoded format
+        // Get the text from the message in it"s properly encoded format
         var text = chat_encoder(message);
-		
-		// Escape any HTML entities
-		text = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-		
-		// Process any message notifications.
+
+        // Escape any HTML entities
+        text = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+        // Process any message notifications.
         var messages = get("messages", []);
-        
-        $.each(messages, function(index, m) {
-            
+
+        $.each(messages, function (index, m) {
             var regex = new RegExp(m.regex, m.modifiers);
-            
+
             if (text.match(regex) != null) {
                 // Text contains a match
-                
+
                 // Replace the text
                 text = text.replace(regex, m.replace);
-                
+
                 if (m.alert) {
                     notify("<b>Chat Message Alert:</b><br>" + message.name + ": " + text);
                 }
             }
         });
-        
+
         return text;
     }
-    
+
     function showDialog(contents) {
         $("#cdialog").html(contents);
         $("#coverlay").show();
     }
-    
-    
-    
+
+
+
     /* ----------------------------- *
      *              RUN              *
      * ----------------------------- */
-    
+
     // Delay running this so we can be sure that dynmap has finished setting up
-    setTimeout(function() {
+    setTimeout(function () {
         var messagelist = $("div.messagelist");
-        
+
         //  Unbind the dynamp events  //
-        $(dynmap).unbind('chat');
-        $(dynmap).unbind('playerjoin');
-        messagelist.unbind('click');// Remove the chat close function
+        $(dynmap).unbind("chat");
+        $(dynmap).unbind("playerjoin");
+        messagelist.unbind("click");// Remove the chat close function
 
 
         //     Bind into Dynamap     //
 
         // Bind to the chat event
-        $(dynmap).bind('chat', handleChat);
+        $(dynmap).bind("chat", handleChat);
 
         // Bind to the player join event
-        $(dynmap).bind('playerjoin', handlePlayerJoin);
-        
+        $(dynmap).bind("playerjoin", handlePlayerJoin);
+
         // Make the chat list only close on double click
-        messagelist.dblclick( function() { $(this).hide(); } );
-        
-        
+        messagelist.dblclick(function () {
+            $(this).hide();
+        });
+
+
         //      Import the CSS        //
-        $('head').append($("<link>").attr({
-            'href' : "http://chockly.org/ch/live-map-helper.css",
-            'type' : 'text/css',
-            'rel'  : 'stylesheet',
-            'media': 'screen'
+        $("head").append($("<link>").attr({
+            "href": "http://chockly.org/ch/live-map-helper.css",
+            "type": "text/css",
+            "rel": "stylesheet",
+            "media": "screen"
         }));
-        
-        
+
+
         //   Attach the controller   //
         $("<div>")
             .attr("id", "ctrough")
             .css("top", "-" + (ctrlHeight - 8) + "px") // Leave eight pixels of the controller visible
             // Animate the controller up and down
-            .mouseenter( function() {
-                $(this).animate( { top : "0" } );
+            .mouseenter( function () {
+                $(this).animate( { top: "0" } );
             })
-            .mouseleave( function() {
-                $(this).animate( { top : "-" + (ctrlHeight - 8) + "px" } );
+            .mouseleave( function () {
+                $(this).animate( { top: "-" + (ctrlHeight - 8) + "px" } );
             })
             // Attach the inner div
             .append(
@@ -373,57 +389,56 @@ var ch_m = function($) {
                 .append($("<div>").addClass("corner-left"))
                 .append($("<div>").addClass("corner-right"))
                 // Attach the controls trough
-                .append($("<div>").attr('id', 'cbuttons')
+                .append($("<div>").attr("id", "cbuttons")
                     // Attach the controls
                     // Message Alerts
                     .append($("<div>")
-                        .css('background-image', 'url(http://c.lan/personal/imgs/bell.png)')
+                        .css("background-image", "url(http://c.lan/personal/imgs/bell.png)")
                         .append($("<span>").text("Alerts"))
-                        .click(function(){
-                           showDialog(generateMessageTable());
+                        .click(function () {
+                            showDialog(generateMessageTable());
                         })
                     )
                     // Player Alerts
                     .append($("<div>")
                         .css({
-                            'background-image': 'url(http://c.lan/personal/imgs/user.png)',
-                            'margin-right'    : '0'
+                            "background-image": "url(http://c.lan/personal/imgs/user.png)",
+                            "margin-right": "0"
                         })
                         .append($("<span>").text("Players"))
-                        .click(function(){
+                        .click(function () {
                             // TODO
                         })
                     )
                 )
             )
             // Attach to the page
-            .appendTo('body');
-            
+            .appendTo("body");
+
         // Attach the dialog box //
         $("<div>")
-            .attr('id', 'coverlay')
-            .append($("<div>").addClass('inner')
+            .attr("id", "coverlay")
+            .append($("<div>").addClass("inner")
                 .append($("<div>")
                     .attr("id", "cdialog")
                     .css({
-                        'position' : 'fixed',
-                        'top'      : '40px'
+                        "position": "fixed",
+                        "top": "40px"
                     })
                 )
             )
-            .appendTo('body');
+            .appendTo("body");
 
     }, 500);
-    
 
-    
+
     // DEBUG:  reveal certain methods
     window.cset = set;
     window.cget = get;
 };
 
 // Inserts the main method into the header of the page so that JQuery works.
-var chathelper = document.createElement('script');
-chathelper.type = "text/javascript";
-chathelper.textContent = '(' + ch_m.toString() + ')(jQuery);';
-document.body.appendChild(chathelper);
+var chatHelper = document.createElement("script");
+chatHelper.type = "text/javascript";
+chatHelper.textContent = "(" + chMain.toString() + ")(jQuery);";
+document.body.appendChild(chatHelper);

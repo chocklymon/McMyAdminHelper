@@ -10,10 +10,16 @@
     "camelcase": 1,
     "comma-style": [2, "last"],
     "dot-notation": [2, {"allowKeywords": false}],
-    "eqeqeq": 1,
+    "eqeqeq": [1, "smart"],
     "global-strict": 0,
     "indent": [2, 4],
+    "no-console": 1,
+    "no-lonely-if": 1,
+    "no-nested-ternary": 2,
+    "no-underscore-dangle": 1,
     "quotes": [1, "double", "avoid-escape"],
+    "space-before-blocks": 2,
+    "space-before-function-parentheses": [2, {"anonymous": "always", "named": "never"}],
     "spaced-line-comment": [2, "always", {"exceptions": ["*", "-", "+", "="]}]
   }
 }

@@ -1,12 +1,15 @@
+// Globals from Chrome Extension JS API
+/* global chrome */
+chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+    "use strict";
 
-chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-    if (changeInfo['status'] === 'complete') {
+    if (changeInfo.status === "complete") {
         // Page has loaded
-        chrome.storage.sync.get("sites", function(items) {
+        chrome.storage.sync.get("sites", function (items) {
             // See if we need to inject the console helper into the page
             if (items && items.sites) {
                 var sites = items.sites;
-                for (var i=0; i<sites.length; i++) {
+                for (var i = 0; i < sites.length; i++) {
                     if (tab.url.indexOf(sites[i]) === 0) {
                         // Should run.
                         console.log("Injecting Content Script");

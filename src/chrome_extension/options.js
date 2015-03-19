@@ -1,22 +1,29 @@
-
-jQuery(function($){
+// Globals from Chrome Extension JS API
+/* global chrome */
+jQuery(function ($) {
+    "use strict";
 
     var sitesList = $("#sites"),
-        addRow = function(event) {
-            buildSite();
+        updateSites = function () {
+            var sites = [], temp;
+            $.each($("input", sitesList), function (index, value) {
+                temp = $(value).val().trim();
+                if (temp !== "") {
+                    sites.push(temp);
+                }
+            });
+            chrome.storage.sync.set({"sites": sites}, function () {
+                console.log("Enabled Sites Updated");
+            });
         },
-        showDelete = function(event) {
-            var del = $(this).addClass('hide').siblings('.delete');
-            del.css('transform', 'translate3d(0,0,0)');
+        showDelete = function () {
+            var del = $(this).addClass("hide").siblings(".delete");
+            del.css("transform", "translate3d(0,0,0)");
         },
-        removeRow = function(event) {
-            $(this).parent().remove();
-            updateSites();
-        },
-        updateRow = function(event) {
+        updateRow = function () {
             var $this = $(this);
             var value = $this.val().trim();
-            if (value !== '') {
+            if (value !== "") {
                 // Make sure it starts with an http protocol
                 if (value.indexOf("http") !== 0) {
                     value = "http://" + value;
@@ -26,39 +33,35 @@ jQuery(function($){
                 updateSites();
             }
         },
-        updateSites = function() {
-            var sites = [], temp;
-            $.each($('input', sitesList), function(index, value){
-                temp = $(value).val().trim();
-                if (temp !== '') {
-                    sites.push(temp);
-                }
-            });
-            chrome.storage.sync.set({"sites":sites}, function(){console.log("Enabled Sites Updated");});
+        removeRow = function () {
+            $(this).parent().remove();
+            updateSites();
         },
-        buildSite = function(value) {
-            $("<div>").addClass('row').append(
-                    $('<input>').attr({'type':'text', 'value':value}).on('change', updateRow)
+        buildSite = function (value) {
+            $("<div>").addClass("row").append(
+                    $("<input>").attr({"type": "text", "value": value}).on("change", updateRow)
                 )
                 .append(
-                    $('<img>').attr({'src':'minus.png', 'alt':'', 'title':'Remove'}).click(showDelete)
+                    $("<img>").attr({"src": "minus.png", "alt": "", "title": "Remove"}).click(showDelete)
                 )
                 .append(
-                    $('<span>').addClass('delete').css('transform', 'translate3d(62px,0,0)').text('Delete').click(removeRow)
+                    $("<span>").addClass("delete").css("transform", "translate3d(62px,0,0)").text("Delete").click(removeRow)
                 )
                 .appendTo(sitesList);
+        },
+        addRow = function () {
+            buildSite();
         };
 
     $("#site-add").click(addRow);
 
-    chrome.storage.sync.get("sites", function(items) {
+    chrome.storage.sync.get("sites", function (items) {
         // Add the existing sites
-        $.each(items['sites'], function(index, value) {
+        $.each(items.sites, function (index, value) {
             buildSite(value);
         });
 
         // Add a blank row on the end
         buildSite();
     });
-
 });

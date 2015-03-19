@@ -25,9 +25,9 @@ See the default generator for more.
 */
 
 // Globals from McMyAdmin JS
-/*global parseDate parseBool ScrollChat showModal Icons hideModal requestData APICommands */
+/* global parseDate parseBool ScrollChat showModal Icons hideModal requestData APICommands */
 // Wrap everything inside of an anonymous function
-var chMain = function($) {
+var chMain = function ($) {
     "use strict";
 
     // Create the console helper object
@@ -89,7 +89,7 @@ var chMain = function($) {
              * Add a command to the list of used commands.
              * @param {string} command The command to add.
              */
-            add: function(command) {
+            add: function (command) {
                 // Don't store a command that is the same as the last one.
                 if (ch.history.sentCommands[ch.history.sentCommands.length - 1] === command) {
                     return;
@@ -111,7 +111,7 @@ var chMain = function($) {
              * Indicates if the history has a previous command.
              * @returns {Boolean} True if there is a previous command.
              */
-            hasPrev: function() {
+            hasPrev: function () {
                 return ch.history.current > 0;
             },
 
@@ -119,7 +119,7 @@ var chMain = function($) {
              * Incdicates if the history has a next command.
              * @returns {Boolean} True if the history has a next command
              */
-            hasNext: function() {
+            hasNext: function () {
                 return ch.history.current < ch.history.sentCommands.length;
             },
 
@@ -127,7 +127,7 @@ var chMain = function($) {
              * The previous entered command.
              * @returns {string} The previous command.
              */
-            prev: function() {
+            prev: function () {
                 if (ch.history.current === ch.history.sentCommands.length) {
                     // Store the current command into history
                     ch.history.tempCommand = $("#chatEntryBox").val();
@@ -144,7 +144,7 @@ var chMain = function($) {
              * The next command that was entered.
              * @returns {string} The next command.
              */
-            next: function() {
+            next: function () {
                 if (ch.history.hasNext()) {
                     ch.history.current++;
                 }
@@ -174,7 +174,7 @@ var chMain = function($) {
              * Clears a value from local storage.
              * @param {string} key Optional, deletes the key and it's value from local
              */
-            clear: function(key) {
+            clear: function (key) {
                 if (!key) {
                     localStorage.removeItem(ch.data.localStorageKey);
                 } else {
@@ -195,7 +195,7 @@ var chMain = function($) {
              * @param {mixed} defaultValue The value to return if the key has no value.
              * @returns {mixed}
              */
-            get: function(key, defaultValue) {
+            get: function (key, defaultValue) {
                 var data = JSON.parse(localStorage.getItem(ch.data.localStorageKey));
                 if (!key) {
                     return data;
@@ -211,7 +211,7 @@ var chMain = function($) {
              * @param {string} key The key for the value.
              * @param {mixed} value The data to store.
              */
-            set: function(key, value) {
+            set: function (key, value) {
                 var data = ch.data.get();
                 if (!data) {
                     data = {};
@@ -221,7 +221,7 @@ var chMain = function($) {
             }
         },
 
-        menu: (function() {
+        menu: (function () {
 
             /** Create the context menu HTML element used for the player commands. */
             var contextMenu = $("<div>").attr("id", "ch-contextmenu"),
@@ -338,7 +338,7 @@ var chMain = function($) {
          *           FUNCTIONS           *
          * ----------------------------- */
 
-        addChatEntry: function(name, message, time, isChat) {
+        addChatEntry: function (name, message, time, isChat) {
             // This is a modified version of the addChatEntry function found in
             // MyMcAdmin.js (version 2.4.9.4).
             message = ch.processMessage(message);
@@ -386,7 +386,7 @@ var chMain = function($) {
          * @param {string} type The html element type to use when appending.
          * Defaults to "&lt;button&gt;".
          */
-        attachCommands: function(el, commands, callback, type) {
+        attachCommands: function (el, commands, callback, type) {
             if (!callback) {
                 callback = ch.runGeneralCommand;
             }
@@ -407,7 +407,7 @@ var chMain = function($) {
          * Attach the commands to the page. Call this to build/rebuild the command buttons
          * and player context menu.
          */
-        buildCommands: function() {
+        buildCommands: function () {
             // Attach the context menu commands
             ch.menu.empty();
             ch.attachCommands(
@@ -446,7 +446,7 @@ var chMain = function($) {
         /**
          * Builds each of the contents of the tabs.
          */
-        buildTabContents: function() {
+        buildTabContents: function () {
             // Filters tab
             ch.buildTable(
                 "ch-filters",
@@ -458,7 +458,7 @@ var chMain = function($) {
                     },
                     "Match All": {
                         "type": "checkbox",
-                        "value": function(data) {
+                        "value": function (data) {
                             return (data && data.indexOf("g") > -1);
                         },
                         "data": "modifiers",
@@ -467,7 +467,7 @@ var chMain = function($) {
                     },
                     "Ignore Case": {
                         "type": "checkbox",
-                        "value": function(data) {
+                        "value": function (data) {
                             return (data && data.indexOf("i") > -1);
                         },
                         "data": "modifiers",
@@ -482,7 +482,7 @@ var chMain = function($) {
                         value: "alert"
                     },
                     "Count": {
-                        "value": function(data) {
+                        "value": function (data) {
                             if (data) {
                                 return data;
                             } else {
@@ -510,7 +510,7 @@ var chMain = function($) {
          * to map the data to the table. Consists of labels : column definition.
          * @returns {undefined}
          */
-        buildTable: function(tableId, data, layout) {
+        buildTable: function (tableId, data, layout) {
             // Initialize the variables
             var table = $("<table>"),
                 header = $("<thead>"),
@@ -525,7 +525,7 @@ var chMain = function($) {
             // Add the actions column
             row.append("<th> </th>");
             // Add the headers
-            $.each(layout, function(index, value) {
+            $.each(layout, function (index, value) {
                 row.append($("<th>").text(index));
                 definitions.push(value);
             });
@@ -534,7 +534,7 @@ var chMain = function($) {
             //    Construct the Body    //
             if (data) {
                 // Add the data
-                $.each(data, function(index, value) {
+                $.each(data, function (index, value) {
                     body.append(
                         ch.buildRow(definitions, value)
                     );
@@ -552,7 +552,7 @@ var chMain = function($) {
                     "title": "Add"
                 })
                 .data("columns", definitions)
-                .click(function() {
+                .click(function () {
                     var jThis = $(this);
                     var tr = jThis.parent().parent(),
                         columns = jThis.data("columns");
@@ -579,7 +579,7 @@ var chMain = function($) {
          * not set the default values for the inputs are used.
          * @returns {jQuery} The jQuery HTML element for the row.
          */
-        buildRow: function(columnDefinitions, data) {
+        buildRow: function (columnDefinitions, data) {
             var row = $("<tr>"),
                 td,
                 input,
@@ -688,7 +688,7 @@ var chMain = function($) {
             return row;
         },
 
-        closeManager: function() {
+        closeManager: function () {
             $("#ch-manager").hide();
         },
 
@@ -697,7 +697,7 @@ var chMain = function($) {
          * just a very basic hash generation function.
          * @param {string} input The string to get the has for.
          */
-        hash: function(input) {
+        hash: function (input) {
             var hash = 0,
                 l = input.length,
                 character;
@@ -715,7 +715,7 @@ var chMain = function($) {
          * @param {object} filter The message filter.
          * @param {string} message The message causing the increment.
          */
-        incrementCount: function(filter, message) {
+        incrementCount: function (filter, message) {
             // Use the hexadecimal hash of the regex as the key
             var key = ch.hash(filter.regex).toString(16),
                 // Get the current timestamp in seconds.
@@ -729,7 +729,7 @@ var chMain = function($) {
             ch.count[key].push({msg: message, time: now});
 
             // Remove old values
-            $.each(ch.count, function(index, value) {
+            $.each(ch.count, function (index, value) {
                 for (var i = 0; i < value.length; i++) {
                     if (value[i].time < (now - ch.countDuration)) {
                         // Remove the value
@@ -753,7 +753,7 @@ var chMain = function($) {
          * @param {object} defaults
          * @returns {array}
          */
-        mergeDefaults: function(data, defaults) {
+        mergeDefaults: function (data, defaults) {
             var merged = [];
             for (var i = 0; i < data.length; i++) {
                 merged[i] = $.extend({}, defaults, data[i]);
@@ -765,7 +765,7 @@ var chMain = function($) {
          * Notifies the user of important events by opening a new window.
          * @param {string} message The message to display in the notification.
          */
-        notify: function(message) {
+        notify: function (message) {
             // TODO chrome notifications, play sound, popup option.
             // TODO have a better way to ID notifications to prevent duplicates?
             var id = ch.hash(message);
@@ -799,7 +799,7 @@ var chMain = function($) {
          * @param {string} text The message to process
          * @return {string} The message ready for input as an HTML message.
          */
-        processMessage: function(text) {
+        processMessage: function (text) {
             var filters = ch.data.get(ch.data.key.filters, []),
                 filter,
                 regex;
@@ -838,7 +838,7 @@ var chMain = function($) {
          * @param {object} row The jQuery object for the row to remove.
          * When passed in this row will be removed without confirmation.
          */
-        removeRow: function(event, row) {
+        removeRow: function (event, row) {
             if (!row) {
                 // No row provided, get the row from the image
                 row = $(this).parent().parent();
@@ -850,7 +850,7 @@ var chMain = function($) {
                         "Confirm Delete",
                         "Are you sure you wish to delete this row?",
                         Icons.Question,
-                        function() {
+                        function () {
                             ch.removeRow(null, row);
                             hideModal();
                         },
@@ -872,7 +872,7 @@ var chMain = function($) {
          * @param {boolean} append When true the text is placed at the beginning of
          * any existing input text, otherwise the text is replaced. See setInputText.
          */
-        runCommand: function(cmnd, append) {
+        runCommand: function (cmnd, append) {
             if (typeof cmnd === "object") {
                 // Try to get the command from the objects data attribute
                 cmnd = $(cmnd).attr("data");
@@ -887,7 +887,7 @@ var chMain = function($) {
          * Sets a command into the input box, and then immediatly runs the command.
          * @param {Event} event The event triggering this function.
          */
-        runQuickCommand: function() {
+        runQuickCommand: function () {
             ch.sendCommand("/" + $(this).attr("data"));
         },
 
@@ -895,7 +895,7 @@ var chMain = function($) {
          * Sets a command into the input box, removing any current text.
          * @param {Event} event The event triggering this function.
          */
-        runGeneralCommand: function() {
+        runGeneralCommand: function () {
             ch.runCommand(this);
         },
 
@@ -904,7 +904,7 @@ var chMain = function($) {
          * menu.
          * @param {Event} event The event triggering this function.
          */
-        runPlayerCommand: function(event) {
+        runPlayerCommand: function (event) {
             var cmnd = $(event.target).attr("data");
             ch.runCommand(cmnd + " " + ch.player);
 
@@ -917,7 +917,7 @@ var chMain = function($) {
          * Send a command to the server.
          * @param {string} message The message to send to the server.
          */
-        sendCommand: function(message) {
+        sendCommand: function (message) {
             // Use the McMyAdmin requestData function
             requestData(APICommands.SendChat, { Message: message }, null);
         },
@@ -931,7 +931,7 @@ var chMain = function($) {
          * to the beginning of the text.
          * @returns {undefined}
          */
-        setInputText: function(text, append, notCommand) {
+        setInputText: function (text, append, notCommand) {
             var chatBox = $("#chatEntryBox");
             if (!notCommand) {
                 text = "/" + text;
@@ -992,13 +992,13 @@ var chMain = function($) {
 
     //   Context Menu   //
     // Attach additional functionality to clicking on the player names
-    $("#chatNames").click(function(event) {
+    $("#chatNames").click(function (event) {
             // Add the /msg command to the clicked on player
             var playerDiv = $(event.target);
             if (playerDiv.hasClass("chatName")) {
                 ch.runCommand("msg " + playerDiv.text(), true);// TODO make this configurable
             }
-        }).bind("contextmenu", function(event) {
+        }).bind("contextmenu", function (event) {
             // Display the context menu
             var playerDiv = $(event.target);
             if (playerDiv.hasClass("chatName")) {
@@ -1046,22 +1046,22 @@ var chMain = function($) {
     ch.buildTabContents();
 
     // Save/Cancel button click event handlers
-    $("#ch-save").click(function() {
+    $("#ch-save").click(function () {
         ch.closeManager();
 
         // Serialize and store the tabs
         var obj, jobj, value, name, modifiers = "";
 
         // Loop through each tab
-        $.each(ch.data.key, function(tabIndex, key) {
+        $.each(ch.data.key, function (tabIndex, key) {
             var contents = [];
 
             // Loop through each row
-            $.each($("#ch-" + key + " tr"), function(rowIndex, row) {
+            $.each($("#ch-" + key + " tr"), function (rowIndex, row) {
                 obj = {};
 
                 // Loop through each input on the row
-                $.each($(row).find("input"), function(inputIndex, input) {
+                $.each($(row).find("input"), function (inputIndex, input) {
                     jobj = $(input);
                     name = jobj.attr("name");
                     // TODO check for empty, we don"t need to store blank rows.
@@ -1121,7 +1121,7 @@ var chMain = function($) {
         ch.buildCommands();
         ch.buildTabContents();
     });
-    $("#ch-cancel").click(function() {
+    $("#ch-cancel").click(function () {
         ch.closeManager();
 
         // Rebuild the tabs so that any changes are lost
@@ -1135,7 +1135,7 @@ var chMain = function($) {
         .append(
             $("<a>")
             .attr("href", "#console-helper")
-            .click(function(event){
+            .click(function (event) {
                 $("#ch-manager").show();
                 event.preventDefault();
             })
@@ -1165,7 +1165,7 @@ var chMain = function($) {
                             ch.addChatEntry("Server", message, null, true);
                         }
                     }
-                }).keyup(function(event) {
+                }).keyup(function (event) {
                     // Arrow UP
                     if (event.keyCode == 38 && ch.history.hasPrev()) {
                         $(this).val(ch.history.prev());
