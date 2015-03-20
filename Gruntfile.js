@@ -97,4 +97,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-contrib-concat");
     grunt.loadNpmTasks("grunt-contrib-uglify");
     grunt.loadNpmTasks("grunt-eslint");
+
+    grunt.registerTask("dist", "Build the files for use", ["concat:dist", "uglify:dist", "uglify:userScript"]);
+    grunt.registerTask("lint", "Alias for eslint task", ["eslint"]);
+    grunt.registerTask("default", ["eslint", "dist"]);
 };
