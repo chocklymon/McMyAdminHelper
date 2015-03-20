@@ -234,7 +234,7 @@ var ch = {
         contextMenu.empty();
         ch.attachCommands(
             contextMenu,
-            ch.data.get(ch.data.key.playerCommands, []),
+            data.get(data.key.playerCommands, []),
             ch.runPlayerCommand,
             "<div>"
         );
@@ -246,13 +246,13 @@ var ch = {
         // General Commands
         ch.attachCommands(
             cmndDiv,
-            ch.data.get(ch.data.key.generalCommands, []),
+            data.get(data.key.generalCommands, []),
             ch.runGeneralCommand
         );
 
         // Insert a spacer between the two command types if we have both types of commands
-        if (ch.data.get(ch.data.key.generalCommands, []).length > 0
-            && ch.data.get(ch.data.key.quickCommands, []).length > 0
+        if (data.get(data.key.generalCommands, []).length > 0
+            && data.get(data.key.quickCommands, []).length > 0
         ) {
             cmndDiv.append($("<div>").addClass("ch-h-spacer"));
         }
@@ -260,7 +260,7 @@ var ch = {
         // Quick Commands
         ch.attachCommands(
             cmndDiv,
-            ch.data.get(ch.data.key.quickCommands, []),
+            data.get(data.key.quickCommands, []),
             ch.runQuickCommand
         );
     },
@@ -272,7 +272,7 @@ var ch = {
         // Filters tab
         ch.buildTable(
             "ch-filters",
-            ch.mergeDefaults(ch.data.get(ch.data.key.filters, []), ch.filterDefaults),
+            ch.mergeDefaults(data.get(data.key.filters, []), ch.filterDefaults),
             {
                 "Match": {
                     "value": "regex",
@@ -318,9 +318,9 @@ var ch = {
         );
 
         // Command Tabs
-        ch.buildTable("ch-pcmnds", ch.data.get(ch.data.key.playerCommands, []), ch.commandTableLayout);
-        ch.buildTable("ch-gcmnds", ch.data.get(ch.data.key.generalCommands, []), ch.commandTableLayout);
-        ch.buildTable("ch-qcmnds", ch.data.get(ch.data.key.quickCommands, []), ch.commandTableLayout);
+        ch.buildTable("ch-pcmnds", data.get(data.key.playerCommands, []), ch.commandTableLayout);
+        ch.buildTable("ch-gcmnds", data.get(data.key.generalCommands, []), ch.commandTableLayout);
+        ch.buildTable("ch-qcmnds", data.get(data.key.quickCommands, []), ch.commandTableLayout);
     },
 
     /**
@@ -622,7 +622,7 @@ var ch = {
      * @return {string} The message ready for input as an HTML message.
      */
     processMessage: function (text) {
-        var filters = ch.data.get(ch.data.key.filters, []),
+        var filters = data.get(data.key.filters, []),
             filter,
             regex;
 

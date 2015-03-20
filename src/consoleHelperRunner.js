@@ -10,28 +10,28 @@
  *              RUN              *
  * ----------------------------- */
 
-if (!ch.data.get()) {
+if (!data.get()) {
     // Initialize Defaults
 
     // General Commands
-    ch.data.set(ch.data.key.generalCommands, [
+    data.set(data.key.generalCommands, [
         {cmnd: "say", text: "Say"}
     ]);
 
     // Quick Commands
-    ch.data.set(ch.data.key.quickCommands, [
+    data.set(data.key.quickCommands, [
         {cmnd: "who", text: "Who"}
     ]);
 
     // Player Commands
-    ch.data.set(ch.data.key.playerCommands, [
+    data.set(data.key.playerCommands, [
         {cmnd: "ban", text: "Ban"},
         {cmnd: "kick", text: "Kick"},
         {cmnd: "mute", text: "Mute"}
     ]);
 
     // Filters
-    ch.data.set(ch.data.key.filters, [
+    data.set(data.key.filters, [
         {   // URL creator
             regex: "(https?://\\w+\\.\\w+\\S+)",
             replace: "<a target='_blank' href=\"$1\">$1</a>"
@@ -103,7 +103,7 @@ $("#ch-save").click(function () {
     var obj, jobj, value, name, modifiers = "";
 
     // Loop through each tab
-    $.each(ch.data.key, function (tabIndex, key) {
+    $.each(data.key, function (tabIndex, key) {
         var contents = [];
 
         // Loop through each row
@@ -164,7 +164,7 @@ $("#ch-save").click(function () {
         });
 
         // Store the serialized tab
-        ch.data.set(key, contents);
+        data.set(key, contents);
     });
 
     // Rebuild the commands and tabs

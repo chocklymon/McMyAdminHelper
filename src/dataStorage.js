@@ -6,7 +6,7 @@
  * Licensed under the MIT license.
  */
 
-ch.data = (function () {
+var data = (function () {
 
     /** The key used to retrieve and set data from the local storage object. */
     var localStorageKey = "cdata";
