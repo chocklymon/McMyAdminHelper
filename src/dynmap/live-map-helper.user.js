@@ -20,95 +20,18 @@ See console-helper.user.js for some example filters.
 var chMain = function ($) {
     "use strict";
 
-
-    /* ----------------------------- *
-     *  VARIABLES AND CONFIGURATION  *
-     * ----------------------------- */
-
-    var
-        /** The height of the controller trough. */
-        ctrlHeight = 30,
-
-        /** The key used to retrieve and set data from the local storage object. */
-        localStorageKey = "cdata",
-
-        /** The data object containing the local storage data. */
-        data = JSON.parse(localStorage.getItem(localStorageKey)),
-
-        /** Handles a incoming chat message. */
-        handleChat = function (event, message) {
-            /* Modified version of the dynamp chat event handler.
-             * Changed to allow HTML in the text messages.
-             */
-            var playerName = message.name;
-            var playerAccount = message.account;
-            var messageRow = $("<div/>")
-                    .addClass("messagerow");
-
-            var playerIconContainer = $("<span/>")
-                    .addClass("messageicon");
-
-            if (message.source === "player" && playerAccount) {
-                // Call the global function to get the players head
-                getMinecraftHead(playerAccount, 16, function (head) {
-                    messageRow.icon = $(head)
-                        .addClass("playerMessageIcon")
-                        .appendTo(playerIconContainer);
-                });
-            }
-
-            var playerNameContainer = "";
-            if(playerName) {
-                playerNameContainer = $("<span/>").addClass("messagetext").text(" " + playerName + ": ");
-            }
-
-            var playerMessageContainer = $("<span/>")
-                    .addClass("messagetext")
-                    .html(processMessage(message));
-
-            var timeStamp = getTimeStamp();
-
-            messageRow.append(timeStamp, playerIconContainer, playerNameContainer, playerMessageContainer);
-            addrow(messageRow);
-        },
-
-        /** Handles a player joining. */
-        handlePlayerJoin = function (event, playername) {
-            var text = dynmap.options.joinmessage.replace("%playername%", playername);
-
-            // Check if we need to alert for this player
-            var players = get("player.alert", []);
-            if(players.indexOf(playername) != -1) {
-                // Player on the alert list, pop an alert.
-                notify(playername + " just logged in!");
-            }
-
-            // Check for players on the highlight (warn) list
-            players = get("player.warn", []);
-            if (players.indexOf(playername) != -1) {
-                // Highlight the player
-                text = "<img src='http://c.lan/personal/imgs/control-record.png' />" + text;
-            }
-
-            // From the dynmap playerjoin event handler, modified to output html
-            if (dynmap.options.joinmessage.length > 0) {
-                addrow(
-                    $("<div/>")
-                        .addClass("messagerow")
-                        .append(getTimeStamp())
-                        .append($("<span/>").html(text))
-                );
-            }
-        };
-
-
-
     /* ----------------------------- *
      *           FUNCTIONS           *
      * ----------------------------- */
 
 
     //     Local Storage Helpers     //
+    var
+        /** The key used to retrieve and set data from the local storage object. */
+        localStorageKey = "cdata",
+
+        /** The data object containing the local storage data. */
+        data = JSON.parse(localStorage.getItem(localStorageKey));
 
     /**
      * Clears a value from local storage.
@@ -192,13 +115,13 @@ var chMain = function ($) {
      */
     function generateMessageTable() {
         /* Text Highlight Object.
-        var message = {
-            alert    : <boolean|Indicates if the user should be alerted>
-            modifiers: <string|The regex modifiers>
-            regex    : <string|The regex string>
-            replace  : <string|The string to replace the regex with>
-        }
-        */
+         var message = {
+         alert    : <boolean|Indicates if the user should be alerted>
+         modifiers: <string|The regex modifiers>
+         regex    : <string|The regex string>
+         replace  : <string|The string to replace the regex with>
+         }
+         */
 
         var table = $("<table>").attr("id", "cmt");// C Message Table
         var tbody = $("<tbody>");
@@ -209,21 +132,21 @@ var chMain = function ($) {
                 .append($("<th>").text("Replace"))
                 .append($("<th>").text("Alert"))
                 .append($("<th>").text(" "))// buttons column
-            );
+        );
 
         $.each(get("messages", []), function (index, value) {
             // Create a new row for each message
             tbody.append(
-                $("<tr>").attr("id", "m" + index).dblclick(function (event) {
+                $("<tr>").attr("id", "m" + index).dblclick(function () {
                     // Double click to go into edit mode
                     // this is the row.
 
                 })
-                .append($("<td>").text(value.regex))
-                .append($("<td>").text(value.modifiers))
-                .append($("<td>").text(value.replace))
-                .append($("<td>").text(value.alert))
-                .append($("<td>").text(" "))
+                    .append($("<td>").text(value.regex))
+                    .append($("<td>").text(value.modifiers))
+                    .append($("<td>").text(value.replace))
+                    .append($("<td>").text(value.alert))
+                    .append($("<td>").text(" "))
             );
         });
 
@@ -247,8 +170,8 @@ var chMain = function ($) {
         }
 
         return $("<span/>")
-                .addClass("timestamp")
-                .text(hour + ":" + minute);
+            .addClass("timestamp")
+            .text(hour + ":" + minute);
     }
 
     /**
@@ -268,19 +191,19 @@ var chMain = function ($) {
     function addNewFilterRow() {
         // Attach a row to the table body
         $("#cmt tbody").append($("<tr>").attr("id", "cadd")
-            // Attach columns for each of the input fields to the row
-            .append($("<td>").append($("<input>").attr({id: "ca-regex", type: "text"})))
-            .append($("<td>").append($("<input>").attr({id: "ca-modifiers", type: "text"})))
-            .append($("<td>").append($("<input>").attr({id: "ca-replace", type: "text"})))
-            .append($("<td>").append($("<input>").attr({id: "ca-alert", type: "checkbox"})))
-            // Attach the add new message filter button
-            .append($("<td>").append($("<button>").text("Add").click(function () {
-                var regex = $("#ca-regex").val();
-                var modifiers = $("#ca-modifiers").val();
-                var replace = $("#ca-replace").val();
-                var alert = $("#ca-alert").is(":selected");
-                // TODO
-            })))
+                // Attach columns for each of the input fields to the row
+                .append($("<td>").append($("<input>").attr({id: "ca-regex", type: "text"})))
+                .append($("<td>").append($("<input>").attr({id: "ca-modifiers", type: "text"})))
+                .append($("<td>").append($("<input>").attr({id: "ca-replace", type: "text"})))
+                .append($("<td>").append($("<input>").attr({id: "ca-alert", type: "checkbox"})))
+                // Attach the add new message filter button
+                .append($("<td>").append($("<button>").text("Add").click(function () {
+                    // TODO
+                    // var regex = $("#ca-regex").val();
+                    // var modifiers = $("#ca-modifiers").val();
+                    // var replace = $("#ca-replace").val();
+                    // var alert = $("#ca-alert").is(":selected");
+                })))
         );
     }
 
@@ -330,6 +253,82 @@ var chMain = function ($) {
         $("#cdialog").html(contents);
         $("#coverlay").show();
     }
+
+
+
+    /* ----------------------------- *
+     *  VARIABLES AND CONFIGURATION  *
+     * ----------------------------- */
+
+    var
+        /** The height of the controller trough. */
+        ctrlHeight = 30,
+
+        /** Handles a incoming chat message. */
+        handleChat = function (event, message) {
+            /* Modified version of the dynamp chat event handler.
+             * Changed to allow HTML in the text messages.
+             */
+            var playerName = message.name;
+            var playerAccount = message.account;
+            var messageRow = $("<div/>")
+                    .addClass("messagerow");
+
+            var playerIconContainer = $("<span/>")
+                    .addClass("messageicon");
+
+            if (message.source === "player" && playerAccount) {
+                // Call the global function to get the players head
+                getMinecraftHead(playerAccount, 16, function (head) {
+                    messageRow.icon = $(head)
+                        .addClass("playerMessageIcon")
+                        .appendTo(playerIconContainer);
+                });
+            }
+
+            var playerNameContainer = "";
+            if(playerName) {
+                playerNameContainer = $("<span/>").addClass("messagetext").text(" " + playerName + ": ");
+            }
+
+            var playerMessageContainer = $("<span/>")
+                    .addClass("messagetext")
+                    .html(processMessage(message));
+
+            var timeStamp = getTimeStamp();
+
+            messageRow.append(timeStamp, playerIconContainer, playerNameContainer, playerMessageContainer);
+            addrow(messageRow);
+        },
+
+        /** Handles a player joining. */
+        handlePlayerJoin = function (event, playername) {
+            var text = dynmap.options.joinmessage.replace("%playername%", playername);
+
+            // Check if we need to alert for this player
+            var players = get("player.alert", []);
+            if(players.indexOf(playername) != -1) {
+                // Player on the alert list, pop an alert.
+                notify(playername + " just logged in!");
+            }
+
+            // Check for players on the highlight (warn) list
+            players = get("player.warn", []);
+            if (players.indexOf(playername) != -1) {
+                // Highlight the player
+                text = "<img src='http://c.lan/personal/imgs/control-record.png' />" + text;
+            }
+
+            // From the dynmap playerjoin event handler, modified to output html
+            if (dynmap.options.joinmessage.length > 0) {
+                addrow(
+                    $("<div/>")
+                        .addClass("messagerow")
+                        .append(getTimeStamp())
+                        .append($("<span/>").html(text))
+                );
+            }
+        };
 
 
 
@@ -433,8 +432,13 @@ var chMain = function ($) {
 
 
     // DEBUG:  reveal certain methods
-    window.cset = set;
-    window.cget = get;
+    window.ch = {
+        clear: clear,
+        set: set,
+        get: get,
+        editRow: editRow,
+        addNewFilterRow: addNewFilterRow
+    };
 };
 
 // Inserts the main method into the header of the page so that JQuery works.
