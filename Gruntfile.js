@@ -66,7 +66,8 @@ module.exports = function (grunt) {
             },
             userScript: {
                 options: {
-                    banner: userScriptHeader
+                    banner: userScriptHeader + "\n" + injector.header(),
+                    footer: injector.footer()
                 },
                 src: ["src/console-helper.js", "src/contextMenu.js", "src/dataStorage.js", "src/user_script/*.js", "src/consoleHelperRunner.js"],
                 dest: "dist/console-helper.user.js"
