@@ -6,7 +6,7 @@
  * Licensed under the MIT license.
  */
 
-/* global contextMenu data */
+/* global contextMenu data commandHistory */
 "use strict";
 
 /* ----------------------------- *
@@ -210,7 +210,7 @@ function modifyMcMyAdmin() {
                 var message = $(this).val();
 
                 ch.sendCommand(message);
-                ch.history.add(message);
+                commandHistory.add(message);
 
                 $(this).val("");
 
@@ -220,12 +220,13 @@ function modifyMcMyAdmin() {
             }
         }).keyup(function (event) {
             // Arrow UP
-            if (event.keyCode == 38 && ch.history.hasPrev()) {
-                $(this).val(ch.history.prev());
+            if (event.keyCode == 38 && commandHistory.hasPrev()) {
+                var textField = $(this);
+                textField.val(commandHistory.prev(textField.val()));
 
                 // Down Arrow
-            } else if (event.keyCode == 40 && ch.history.hasNext()) {
-                $(this).val(ch.history.next());
+            } else if (event.keyCode == 40 && commandHistory.hasNext()) {
+                $(this).val(commandHistory.next());
             }
         });
 

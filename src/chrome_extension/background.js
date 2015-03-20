@@ -12,7 +12,6 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
                 for (var i = 0; i < sites.length; i++) {
                     if (tab.url.indexOf(sites[i]) === 0) {
                         // Should run.
-                        console.log("Injecting Content Script");
                         chrome.tabs.insertCSS(tabId, {file: "console-helper.css"});
                         chrome.tabs.executeScript(tabId, {file: "console-helper.js"});
                     }

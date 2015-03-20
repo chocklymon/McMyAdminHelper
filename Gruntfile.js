@@ -65,7 +65,7 @@ module.exports = function (grunt) {
                     banner: injector.header(),
                     footer: injector.footer()
                 },
-                src: ["src/console-helper.js", "src/contextMenu.js", "src/dataStorage.js", "src/consoleHelperRunner.js"],
+                src: ["src/console-helper.js", "src/contextMenu.js", "src/dataStorage.js", "src/commandHistory.js", "src/consoleHelperRunner.js"],
                 dest: "dist/console-helper.js"
             },
             userScript: {
@@ -73,7 +73,7 @@ module.exports = function (grunt) {
                     banner: userScriptHeader + "\n" + injector.header(),
                     footer: injector.footer()
                 },
-                src: ["src/console-helper.js", "src/contextMenu.js", "src/dataStorage.js", "src/user_script/*.js", "src/consoleHelperRunner.js"],
+                src: ["src/console-helper.js", "src/contextMenu.js", "src/dataStorage.js", "src/commandHistory.js", "src/user_script/*.js", "src/consoleHelperRunner.js"],
                 dest: "dist/console-helper.user.js"
             }
         },
