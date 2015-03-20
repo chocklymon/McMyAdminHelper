@@ -1,4 +1,4 @@
-/*!
+/*
  * McMyAdminHelper
  * http://chockly.org/
  *
@@ -9,16 +9,6 @@
 /* ----------------------------- *
  *              RUN              *
  * ----------------------------- */
-
-// USER SCRIPT SPECIFIC
-// Attach the CSS to the page
-$("head").append($("<link>").attr({
-    href: "http://chockly.org/ch/console-helper.css",
-    type: "text/css",
-    rel: "stylesheet",
-    media: "screen"
-}));
-// END - USER SCRIPT SPECIFIC
 
 if (!ch.data.get()) {
     // Initialize Defaults

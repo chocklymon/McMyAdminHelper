@@ -1,4 +1,4 @@
-/*!
+/*
  * McMyAdminHelper
  * http://chockly.org/
  *
