@@ -53,7 +53,7 @@ $("#chatNames").click(function (event) {
     var playerDiv = $(event.target);
     if (playerDiv.hasClass("chatName")) {
         ch.player = playerDiv.text();
-        ch.menu.open(event);
+        contextMenu.open(event);
         event.preventDefault();
     }
 });

@@ -231,9 +231,9 @@ var ch = {
      */
     buildCommands: function () {
         // Attach the context menu commands
-        ch.menu.empty();
+        contextMenu.empty();
         ch.attachCommands(
-            ch.menu,
+            contextMenu,
             ch.data.get(ch.data.key.playerCommands, []),
             ch.runPlayerCommand,
             "<div>"
@@ -731,7 +731,7 @@ var ch = {
         ch.runCommand(cmnd + " " + ch.player);
 
         // Close the context menu
-        ch.menu.close();
+        contextMenu.close();
     },
 
 
