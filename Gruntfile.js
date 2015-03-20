@@ -57,9 +57,8 @@ module.exports = function (grunt) {
                     banner: injector.header(),
                     footer: injector.footer()
                 },
-                files: {
-                    "dist/console-helper.js": ["src/*.js"]
-                }
+                src: ["src/console-helper.js", "src/contextMenu.js", "src/dataStorage.js", "src/consoleHelperRunner.js"],
+                dest: "dist/console-helper.js"
             }
         },
         uglify: {
