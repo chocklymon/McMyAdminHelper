@@ -1,0 +1,9 @@
+// ==UserScript==
+// @name <%= pkg.name %>
+// @description Adds additional functionality to the McMyAdmin console page.
+// @author <%= pkg.author %>
+// @license <%= pkg.license %> License
+// @version <%= pkg.version %>
+// @match http://72.249.124.178:25967/*
+// @namespace http://72.249.124.178:25967/
+// ==/UserScript==

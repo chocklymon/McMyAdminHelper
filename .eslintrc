@@ -3,7 +3,8 @@
     "browser": true
   },
   "globals": {
-    "jQuery": false
+    "jQuery": false,
+    "$": false
   },
   "rules": {
     "brace-style": [2, "1tbs"],
