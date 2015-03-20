@@ -8,6 +8,8 @@
 var chMain = function ($) {
     "use strict";
     /*!code injection start*/
+    // Anything placed here will be replaced with the actual code
+    // Use jQuery so linting will be happy
     $();
     /*!code injection end*/
 };

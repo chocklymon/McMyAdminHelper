@@ -20,21 +20,25 @@ module.exports = function (grunt) {
 
     // Handles the page injection wrapper
     var injector = (function () {
-        var templateFile = null,
-            separator = /\/\*!code [^*]+\*\//g,
+        var template = null,
+            separator = /\/\*!code injection (start|end)\*\//g,
             getTemplate = function () {
-                if (!templateFile) {
-                    templateFile = grunt.file.read("src/templates/pageInjection.tpl.js");
+                if (!template) {
+                    var templateFile = grunt.file.read("src/templates/pageInjection.tpl.js");
+                    template = templateFile.split(separator);
                 }
-                return templateFile;
+                return template;
             };
 
         return {
             header: function () {
-                return getTemplate().split(separator)[0];
+                // Return the first part of the template
+                return getTemplate()[0];
             },
             footer: function () {
-                return getTemplate().split(separator)[2];
+                // Return the last section of the template
+                var template = getTemplate();
+                return template[template.length - 1];
             }
         };
     })();
