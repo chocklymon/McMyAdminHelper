@@ -1202,7 +1202,7 @@ var chMain = function ($) {
 
 // Inserts the main method into the page so that it can override javascript
 // functions on the page.
-var chathelper = document.createElement("script");
-chathelper.type = "application/javascript";
-chathelper.textContent = "jQuery(" + chMain.toString() + ");";
-document.body.appendChild(chathelper);
+var chatHelper = document.createElement("script");
+chatHelper.type = "application/javascript";
+chatHelper.textContent = "jQuery(" + chMain.toString() + ");";
+document.body.appendChild(chatHelper);
