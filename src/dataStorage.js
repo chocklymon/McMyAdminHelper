@@ -7,6 +7,7 @@
  */
 
 var data = (function () {
+    "use strict";
 
     /** The key used to retrieve and set data from the local storage object. */
     var localStorageKey = "cdata";
@@ -16,7 +17,7 @@ var data = (function () {
         key: {
             generalCommands: "gcmnds",
             quickCommands: "qcmnds",
-            playerCommands:  "pcmnds",
+            playerCommands: "pcmnds",
             filters: "filters"
         },
 
@@ -28,13 +29,13 @@ var data = (function () {
             if (!key) {
                 localStorage.removeItem(localStorageKey);
             } else {
-                var data = ch.data.get();
-                if (!data) {
+                var datum = ch.data.get();
+                if (!datum) {
                     // Do nothing if there is no data
                     return;
                 }
-                delete data[key];
-                localStorage.setItem(localStorageKey, JSON.stringify(data));
+                delete datum[key];
+                localStorage.setItem(localStorageKey, JSON.stringify(datum));
             }
         },
 
@@ -46,13 +47,13 @@ var data = (function () {
          * @returns {mixed}
          */
         get: function (key, defaultValue) {
-            var data = JSON.parse(localStorage.getItem(localStorageKey));
+            var datum = JSON.parse(localStorage.getItem(localStorageKey));
             if (!key) {
-                return data;
-            } else if (!data || !data[key]) {
+                return datum;
+            } else if (!datum || !datum[key]) {
                 return defaultValue;
             } else {
-                return data[key];
+                return datum[key];
             }
         },
 
@@ -62,12 +63,12 @@ var data = (function () {
          * @param {mixed} value The data to store.
          */
         set: function (key, value) {
-            var data = ch.data.get();
-            if (!data) {
-                data = {};
+            var datum = ch.data.get();
+            if (!datum) {
+                datum = {};
             }
-            data[key] = value;
-            localStorage.setItem(localStorageKey, JSON.stringify(data));
+            datum[key] = value;
+            localStorage.setItem(localStorageKey, JSON.stringify(datum));
         }
     };
 })();

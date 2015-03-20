@@ -7,7 +7,9 @@
  */
 var chMain = function ($) {
     "use strict";
-    /*!code*/
+    /*!code injection start*/
+    $();
+    /*!code injection end*/
 };
 
 // Inserts the main method into the page so that it can override javascript

@@ -6,6 +6,9 @@
  * Licensed under the MIT license.
  */
 
+/* global contextMenu data */
+"use strict";
+
 /* ----------------------------- *
  *              RUN              *
  * ----------------------------- */

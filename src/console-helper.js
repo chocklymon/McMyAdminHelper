@@ -23,8 +23,8 @@ Message Filters
 See the default generator for more.
 */
 
-// Globals from McMyAdmin JS
-/* global parseDate parseBool ScrollChat showModal Icons hideModal requestData APICommands */
+//        [ - Globals from McMyAdmin JS                                                  ] [ - Local Globals ]
+/* global parseDate parseBool ScrollChat showModal Icons hideModal requestData APICommands contextMenu data */
 
 "use strict";
 
