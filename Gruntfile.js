@@ -20,14 +20,14 @@ module.exports = function (grunt) {
 
     // Handles the page injection wrapper
     var injector = (function () {
-        var template = null,
+        var templateParts = null,
             separator = /\/\*!code injection (start|end)\*\//g,
             getTemplate = function () {
-                if (!template) {
+                if (!templateParts) {
                     var templateFile = grunt.file.read("src/templates/pageInjection.tpl.js");
-                    template = templateFile.split(separator);
+                    templateParts = templateFile.split(separator);
                 }
-                return template;
+                return templateParts;
             };
 
         return {
