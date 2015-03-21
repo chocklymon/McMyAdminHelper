@@ -99,8 +99,16 @@ module.exports = function (grunt) {
                 }
             }
         },
+        jasmine: {
+            base: {
+                src: "src/*.js",
+                options: {
+                    specs: 'tests/*Test.js'
+                }
+            }
+        },
         eslint: {
-            target: ["src/**/*.js", "Gruntfile.js"]
+            target: ["src/**/*.js", "tests/**/*.js", "Gruntfile.js"]
         }
     });
 
@@ -111,6 +119,7 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks("grunt-contrib-concat");
     grunt.loadNpmTasks("grunt-contrib-uglify");
+    grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks("grunt-eslint");
 
     grunt.registerTask("dist", "Build the files for use", ["concat:dist", "concat:userScript", "uglify:dist", "uglify:userScript"]);
