@@ -18,5 +18,8 @@ var chMain = function ($) {
 // functions on the page.
 var chatHelper = document.createElement("script");
 chatHelper.type = "application/javascript";
+chatHelper.id = "chMain";
+chatHelper.setAttribute("data-version", "<%= pkg.version %>");
+chatHelper.setAttribute("data-build-date", "<%= grunt.template.today('yyyy-mm-dd HH:MM:ss') %>");
 chatHelper.textContent = "jQuery(" + chMain.toString() + ");";
 document.body.appendChild(chatHelper);
