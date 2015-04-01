@@ -6,7 +6,7 @@
  * Licensed under the MIT license.
  */
 
-var data = (function () {
+define(['$window'], function ($window) {
     "use strict";
 
     /** The key used to retrieve and set data from the local storage object. */
@@ -71,4 +71,4 @@ var data = (function () {
             localStorage.setItem(localStorageKey, JSON.stringify(datum));
         }
     };
-})();
+});

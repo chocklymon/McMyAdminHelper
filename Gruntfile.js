@@ -107,6 +107,27 @@ module.exports = function (grunt) {
                 }
             }
         },
+        requirejs: {
+            compile: {
+                options: {
+                    baseUrl: 'src',
+                    mainConfigFile: 'src/console-helper.js',
+                    name: 'console-helper',
+                    out: 'dist/required.js',
+                    optimize: 'none',
+                    onModuleBundleComplete: function (data) {
+                        var fs = module.require('fs'),
+                            amdclean = module.require('amdclean'),
+                            outputFile = data.path,
+                            cleanedCode = amdclean.clean({
+                                'filePath': outputFile
+                            });
+
+                        fs.writeFileSync(outputFile, cleanedCode);
+                    }
+                }
+            }
+        },
         eslint: {
             target: ["src/**/*.js", "tests/**/*.js", "Gruntfile.js"]
         }
@@ -120,6 +141,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-contrib-concat");
     grunt.loadNpmTasks("grunt-contrib-uglify");
     grunt.loadNpmTasks('grunt-contrib-jasmine');
+    grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks("grunt-eslint");
 
     grunt.registerTask("dist", "Build the files for use", ["concat:dist", "concat:userScript", "uglify:dist", "uglify:userScript"]);
