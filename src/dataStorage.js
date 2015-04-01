@@ -29,7 +29,7 @@ var data = (function () {
             if (!key) {
                 localStorage.removeItem(localStorageKey);
             } else {
-                var datum = ch.data.get();
+                var datum = data.get();
                 if (!datum) {
                     // Do nothing if there is no data
                     return;
@@ -63,7 +63,7 @@ var data = (function () {
          * @param {mixed} value The data to store.
          */
         set: function (key, value) {
-            var datum = ch.data.get();
+            var datum = data.get();
             if (!datum) {
                 datum = {};
             }
