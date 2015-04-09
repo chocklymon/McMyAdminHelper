@@ -5,6 +5,7 @@
  * Copyright © 2015 Curtis Oakley
  * Licensed under the MIT license.
  */
+"use strict";
 
 // Attach the CSS to the page
 $("head").append($("<link>").attr({

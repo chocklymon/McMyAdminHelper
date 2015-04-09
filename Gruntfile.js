@@ -44,7 +44,7 @@ module.exports = function (grunt) {
     })();
 
 
-    var getRequireJSOptions = (function() {
+    var getRequireJSOptions = (function () {
         var defaults = {
             baseUrl: "src",
             findNestedDependencies: true,
@@ -57,7 +57,7 @@ module.exports = function (grunt) {
             name: "console-helper"
         };
 
-        return function (destination, extraHeader) {
+        return function (destination, extraHeader, extraFiles) {
             var extend = require('util')._extend;
 
             if (extraHeader) {
@@ -85,6 +85,10 @@ module.exports = function (grunt) {
                     fs.writeFileSync(outputFile, cleanedCode);
                 }
             });
+
+            if (extraFiles) {
+                options.include = extraFiles;
+            }
 
             return options;
         };
@@ -132,7 +136,7 @@ module.exports = function (grunt) {
                 options: getRequireJSOptions("dist/console-helper.js")
             },
             userScript: {
-                options: getRequireJSOptions("dist/console-helper.user.js", userScriptHeader)
+                options: getRequireJSOptions("dist/console-helper.user.js", userScriptHeader, ['user_script/injectCss'])
             }
         },
         eslint: {
