@@ -6,7 +6,7 @@
  * Licensed under the MIT license.
  */
 
-define(['$window'], function ($window) {
+define(['wrappers/window'], function ($window) {
     "use strict";
 
     /** The key used to retrieve and set data from the local storage object. */
@@ -27,7 +27,7 @@ define(['$window'], function ($window) {
          */
         clear: function (key) {
             if (!key) {
-                localStorage.removeItem(localStorageKey);
+                $window.localStorage.removeItem(localStorageKey);
             } else {
                 var datum = data.get();
                 if (!datum) {
@@ -35,7 +35,7 @@ define(['$window'], function ($window) {
                     return;
                 }
                 delete datum[key];
-                localStorage.setItem(localStorageKey, JSON.stringify(datum));
+                $window.localStorage.setItem(localStorageKey, JSON.stringify(datum));
             }
         },
 
@@ -47,7 +47,7 @@ define(['$window'], function ($window) {
          * @returns {mixed}
          */
         get: function (key, defaultValue) {
-            var datum = JSON.parse(localStorage.getItem(localStorageKey));
+            var datum = JSON.parse($window.localStorage.getItem(localStorageKey));
             if (!key) {
                 return datum;
             } else if (!datum || !datum[key]) {
@@ -68,7 +68,7 @@ define(['$window'], function ($window) {
                 datum = {};
             }
             datum[key] = value;
-            localStorage.setItem(localStorageKey, JSON.stringify(datum));
+            $window.localStorage.setItem(localStorageKey, JSON.stringify(datum));
         }
     };
 });
