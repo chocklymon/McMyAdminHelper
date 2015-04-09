@@ -929,7 +929,7 @@ require(['jQuery', '$window', 'dataStorage', 'contextMenu', 'commandHistory'], f
 // Debugging Help
 // Uncomment to reveal the command helper to the window
     window.ch = ch;
-    window.ch.data = data;
+    window.ch.data = dataStorage;
     window.ch.history = history;
 
 // */
