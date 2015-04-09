@@ -26,7 +26,14 @@ See the default generator for more.
 //        [ - Globals from McMyAdmin JS                                                  ] [ - Local Globals ]
 /* global parseDate parseBool ScrollChat showModal Icons hideModal requestData APICommands contextMenu data */
 
-require(['wrappers/jQuery', 'wrappers/window', 'dataStorage', 'contextMenu', 'commandHistory'], function ($, window, dataStorage, contextMenu, commandHistory) {
+require.config({
+    paths: {
+        "jQuery": "wrappers/jQuery",
+        "window": "wrappers/window"
+    }
+});
+
+require(['jQuery', 'window', 'dataStorage', 'contextMenu', 'commandHistory'], function ($, window, dataStorage, contextMenu, commandHistory) {
     "use strict";
 
 // Create the console helper object

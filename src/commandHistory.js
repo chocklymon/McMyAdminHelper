@@ -6,7 +6,7 @@
  * Licensed under the MIT license.
  */
 
-define(function () {
+define([], function () {
     "use strict";
 
     var
