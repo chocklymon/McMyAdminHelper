@@ -44,6 +44,53 @@ module.exports = function (grunt) {
     })();
 
 
+    var getRequireJSOptions = (function() {
+        var defaults = {
+            baseUrl: "src",
+            findNestedDependencies: true,
+            optimize: "none",
+            paths: {
+                "jQuery": "wrappers/jQuery",
+                "$window": "wrappers/$window"
+            },
+            mainConfigFile: "src/console-helper.js",
+            name: "console-helper"
+        };
+
+        return function (destination, extraHeader) {
+            var extend = require('util')._extend;
+
+            if (extraHeader) {
+                extraHeader += "\n";
+            } else {
+                extraHeader = "";
+            }
+            var header = extraHeader + injector.header();
+
+            var options = extend(defaults, {
+                out: destination,
+                onModuleBundleComplete: function (data) {
+                    // Run AMD clean to remove the need to for the AMD function definitions
+                    var fs = module.require("fs"),
+                        amdclean = module.require("amdclean"),
+                        outputFile = data.path,
+                        cleanedCode = amdclean.clean({
+                            "filePath": outputFile,
+                            "wrap": {
+                                "start": grunt.template.process(header),
+                                "end": grunt.template.process(injector.footer())
+                            }
+                        });
+
+                    fs.writeFileSync(outputFile, cleanedCode);
+                }
+            });
+
+            return options;
+        };
+    })();
+
+
     //-------------------------------
     // Initialize the Configuration
     //-------------------------------
@@ -82,62 +129,10 @@ module.exports = function (grunt) {
         },
         requirejs: {
             compile: {
-                options: {
-                    baseUrl: "src",
-                    findNestedDependencies: true,
-                    optimize: "none",
-                    paths: {
-                        "jQuery": "wrappers/jQuery",
-                        "$window": "wrappers/$window"
-                    },
-                    mainConfigFile: "src/console-helper.js",
-                    name: "console-helper",
-                    out: "dist/console-helper.js",
-                    onModuleBundleComplete: function (data) {
-                        // Run AMD clean to remove the need to for the AMD function definitions
-                        var fs = module.require("fs"),
-                            amdclean = module.require("amdclean"),
-                            outputFile = data.path,
-                            cleanedCode = amdclean.clean({
-                                "filePath": outputFile,
-                                "wrap": {
-                                    "start": grunt.template.process(injector.header()),
-                                    "end": grunt.template.process(injector.footer())
-                                }
-                            });
-
-                        fs.writeFileSync(outputFile, cleanedCode);
-                    }
-                }
+                options: getRequireJSOptions("dist/console-helper.js")
             },
             userScript: {
-                options: {
-                    baseUrl: "src",
-                    findNestedDependencies: true,
-                    optimize: "none",
-                    paths: {
-                        "jQuery": "wrappers/jQuery",
-                        "$window": "wrappers/$window"
-                    },
-                    mainConfigFile: "src/console-helper.js",
-                    name: "console-helper",
-                    out: "dist/console-helper.user.js",
-                    onModuleBundleComplete: function (data) {
-                        // Run AMD clean to remove the need to for the AMD function definitions
-                        var fs = module.require("fs"),
-                            amdclean = module.require("amdclean"),
-                            outputFile = data.path,
-                            cleanedCode = amdclean.clean({
-                                "filePath": outputFile,
-                                "wrap": {
-                                    "start": grunt.template.process(userScriptHeader) + "\n" + grunt.template.process(injector.header()),
-                                    "end": grunt.template.process(injector.footer())
-                                }
-                            });
-
-                        fs.writeFileSync(outputFile, cleanedCode);
-                    }
-                }
+                options: getRequireJSOptions("dist/console-helper.user.js", userScriptHeader)
             }
         },
         eslint: {
