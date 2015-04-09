@@ -116,6 +116,7 @@ module.exports = function (grunt) {
                     out: 'dist/required.js',
                     optimize: 'none',
                     onModuleBundleComplete: function (data) {
+                        // Run AMD clean to remove the need to for the AMD function definitions
                         var fs = module.require('fs'),
                             amdclean = module.require('amdclean'),
                             outputFile = data.path,
