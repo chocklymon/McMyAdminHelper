@@ -6,7 +6,7 @@
  * Licensed under the MIT license.
  */
 
-define(['window'], function ($window) {
+define(["$window"], function ($window) {
     "use strict";
 
     /** The key used to retrieve and set data from the local storage object. */

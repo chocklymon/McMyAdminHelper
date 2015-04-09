@@ -5,7 +5,9 @@
   "globals": {
     "jQuery": false,
     "$": false,
-    "ch": true
+    "ch": true,
+    "require": false,
+    "define": false
   },
   "rules": {
     "brace-style": [2, "1tbs"],

@@ -103,25 +103,34 @@ module.exports = function (grunt) {
             base: {
                 src: "src/*.js",
                 options: {
-                    specs: 'tests/*Test.js'
+                    specs: "tests/*Test.js"
                 }
             }
         },
         requirejs: {
             compile: {
                 options: {
-                    baseUrl: 'src',
-                    mainConfigFile: 'src/console-helper.js',
-                    name: 'console-helper',
-                    out: 'dist/required.js',
-                    optimize: 'none',
+                    baseUrl: "src",
+                    findNestedDependencies: true,
+                    optimize: "none",
+                    paths: {
+                        "jQuery": "wrappers/jQuery",
+                        "$window": "wrappers/$window"
+                    },
+                    mainConfigFile: "src/console-helper.js",
+                    name: "console-helper",
+                    out: "dist/required.js",
                     onModuleBundleComplete: function (data) {
                         // Run AMD clean to remove the need to for the AMD function definitions
-                        var fs = module.require('fs'),
-                            amdclean = module.require('amdclean'),
+                        var fs = module.require("fs"),
+                            amdclean = module.require("amdclean"),
                             outputFile = data.path,
                             cleanedCode = amdclean.clean({
-                                'filePath': outputFile
+                                "filePath": outputFile,
+                                "wrap": {
+                                    "start": "",
+                                    "end": ""
+                                }
                             });
 
                         fs.writeFileSync(outputFile, cleanedCode);
@@ -141,8 +150,8 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks("grunt-contrib-concat");
     grunt.loadNpmTasks("grunt-contrib-uglify");
-    grunt.loadNpmTasks('grunt-contrib-jasmine');
-    grunt.loadNpmTasks('grunt-contrib-requirejs');
+    grunt.loadNpmTasks("grunt-contrib-jasmine");
+    grunt.loadNpmTasks("grunt-contrib-requirejs");
     grunt.loadNpmTasks("grunt-eslint");
 
     grunt.registerTask("dist", "Build the files for use", ["concat:dist", "concat:userScript", "uglify:dist", "uglify:userScript"]);

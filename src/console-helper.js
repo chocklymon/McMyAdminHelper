@@ -26,14 +26,7 @@ See the default generator for more.
 //        [ - Globals from McMyAdmin JS                                                  ] [ - Local Globals ]
 /* global parseDate parseBool ScrollChat showModal Icons hideModal requestData APICommands contextMenu data */
 
-require.config({
-    paths: {
-        "jQuery": "wrappers/jQuery",
-        "window": "wrappers/window"
-    }
-});
-
-require(['jQuery', 'window', 'dataStorage', 'contextMenu', 'commandHistory'], function ($, window, dataStorage, contextMenu, commandHistory) {
+require(["jQuery", "$window", "dataStorage", "contextMenu", "commandHistory"], function ($, $window, dataStorage, contextMenu, commandHistory) {
     "use strict";
 
 // Create the console helper object
@@ -510,7 +503,7 @@ require(['jQuery', 'window', 'dataStorage', 'contextMenu', 'commandHistory'], fu
             var id = ch.hash(message);
 
             // Generate the popup window
-            var popup = window.open(
+            var popup = $window.open(
                 "",
                 "notify-" + id,
                 "width=300,height=150,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0"
@@ -916,11 +909,11 @@ require(['jQuery', 'window', 'dataStorage', 'contextMenu', 'commandHistory'], fu
             });
 
             // Replace the current add chat row function with the modified one
-            window.addChatEntry = ch.addChatEntry;
+            $window.addChatEntry = ch.addChatEntry;
 
             // Bind the console helper's tabs to use McMyAdmins' tabbing functionality
-            $("#ch-manager .subtab").mousedown(window.subTabClick);
-            $("#ch-manager .subtab").click(window.nopFalse);
+            $("#ch-manager .subtab").mousedown($window.subTabClick);
+            $("#ch-manager .subtab").click($window.nopFalse);
 
             console.log("Console Helper Loaded!");
         } else {
@@ -935,9 +928,9 @@ require(['jQuery', 'window', 'dataStorage', 'contextMenu', 'commandHistory'], fu
 //*
 // Debugging Help
 // Uncomment to reveal the command helper to the window
-    window.ch = ch;
-    window.ch.data = dataStorage;
-    window.ch.history = history;
+    $window.ch = ch;
+    $window.ch.data = dataStorage;
+    $window.ch.history = history;
 
 // */
 

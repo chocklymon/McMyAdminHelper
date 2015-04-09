@@ -6,7 +6,7 @@
  * Licensed under the MIT license.
  */
 
-define(['jQuery'], function ($) {
+define(["jQuery"], function ($) {
     "use strict";
 
     /** Create the context menu HTML element used for the player commands. */
