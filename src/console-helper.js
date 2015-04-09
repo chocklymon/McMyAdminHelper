@@ -26,7 +26,7 @@ See the default generator for more.
 //        [ - Globals from McMyAdmin JS                                                  ]
 /* global parseDate parseBool ScrollChat Icons showModal hideModal requestData APICommands */
 
-require(["jQuery", "$window", "dataStorage", "contextMenu", "commandHistory"], function ($, $window, dataStorage, contextMenu, commandHistory) {
+require(["jQuery", "$window", "Utils", "Notify", "dataStorage", "contextMenu", "commandHistory"], function ($, $window, Utils, Notify, dataStorage, contextMenu, commandHistory) {
     "use strict";
 
 // Create the console helper object
@@ -182,7 +182,7 @@ require(["jQuery", "$window", "dataStorage", "contextMenu", "commandHistory"], f
             // Filters tab
             ch.buildTable(
                 "ch-filters",
-                ch.mergeDefaults(dataStorage.get(dataStorage.key.filters, []), ch.filterDefaults),
+                Utils.mergeDefaults(dataStorage.get(dataStorage.key.filters, []), ch.filterDefaults),
                 {
                     "Match": {
                         "value": "regex",
@@ -425,31 +425,13 @@ require(["jQuery", "$window", "dataStorage", "contextMenu", "commandHistory"], f
         },
 
         /**
-         * Creates a hash from a string. This is not a cryptographically safe,
-         * just a very basic hash generation function.
-         * @param {string} input The string to get the has for.
-         */
-        hash: function (input) {
-            var hash = 0,
-                l = input.length,
-                character;
-
-            for (var i = 0; i < l; i++) {
-                character = input.charCodeAt(i);
-                hash = ((hash << 5) - hash) + character;
-                hash |= 0; // Convert to 32bit integer
-            }
-            return hash;
-        },
-
-        /**
          * Increments the count for the provided message filter.
          * @param {object} filter The message filter.
          * @param {string} message The message causing the increment.
          */
         incrementCount: function (filter, message) {
             // Use the hexadecimal hash of the regex as the key
-            var key = ch.hash(filter.regex).toString(16),
+            var key = Utils.hash(filter.regex).toString(16),
             // Get the current timestamp in seconds.
                 now = Math.round(Date.now() / 1000);
 
@@ -472,57 +454,10 @@ require(["jQuery", "$window", "dataStorage", "contextMenu", "commandHistory"], f
 
             // Notify the user if the count for the filter has been met or exceeded.
             if (ch.count[key].length >= filter.count) {
-                ch.notify("<b>Count Alert:</b><br>" + message);
+                Notify.alert("Count Alert", message);
 
                 // Remove all values for the count so the count resets to 0
                 delete ch.count[key];
-            }
-        },
-
-        /**
-         * Merges each of the objects in the data array with the provided defaults.
-         * @param {array} data
-         * @param {object} defaults
-         * @returns {array}
-         */
-        mergeDefaults: function (data, defaults) {
-            var merged = [];
-            for (var i = 0; i < data.length; i++) {
-                merged[i] = $.extend({}, defaults, data[i]);
-            }
-            return merged;
-        },
-
-        /**
-         * Notifies the user of important events by opening a new window.
-         * @param {string} message The message to display in the notification.
-         */
-        notify: function (message) {
-            // TODO chrome notifications, play sound, popup option.
-            // TODO have a better way to ID notifications to prevent duplicates?
-            var id = ch.hash(message);
-
-            // Generate the popup window
-            var popup = $window.open(
-                "",
-                "notify-" + id,
-                "width=300,height=150,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0"
-            );
-
-            // Write the notification
-            if (popup && popup.document) {
-                popup.document.write("<!DOCTYPE HTML>"
-                    + "<html>"
-                    + "<head>"
-                    + "<title>Alert</title><link href='http://chockly.org/ch/notify.css' rel='stylesheet' type='text/css' />"
-                    + "</head>"
-                    + "<body>"
-                    + "<div class='wrapper'><div class='message'>"
-                    + message
-                    + "</div></div>"
-                    + "</body>"
-                    + "</html>"
-                );
             }
         },
 
@@ -552,7 +487,7 @@ require(["jQuery", "$window", "dataStorage", "contextMenu", "commandHistory"], f
 
                     // Pop a notification if needed
                     if (filter.alert) {
-                        ch.notify("<b>Chat Message Alert:</b><br>" + text);
+                        Notify.alert("Chat Message Alert", text);
                     }
 
                     // Increment the count of this filter if needed.
@@ -915,7 +850,7 @@ require(["jQuery", "$window", "dataStorage", "contextMenu", "commandHistory"], f
             $("#ch-manager .subtab").mousedown($window.subTabClick);
             $("#ch-manager .subtab").click($window.nopFalse);
 
-            console.log("Console Helper Loaded!");
+            Notify.log("Console Helper Loaded!");
         } else {
             // Wait half a second and try again
             setTimeout(modifyMcMyAdmin, 500);
