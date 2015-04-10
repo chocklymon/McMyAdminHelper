@@ -9,18 +9,17 @@ define(["$window", "Utils"], function ($window, Utils) {
     "use strict";
 
     // TODO chrome notifications, play sound, popup option.
-    // TODO have a better way to ID notifications to prevent duplicates?
+    // TODO have a better way to identify notifications to prevent duplicates?
 
     var noOp = function () {},
+        lastHash,
 
         // Default alert function - Opens a pop-up window.
-        alert = function (title, message) {
-            var id = Utils.hash(message);
-
+        alertUser = function (title, message, id) {
             // Generate the popup window
             var popup = $window.open(
                 "",
-                "alert-" + id,
+                "ch-alert-" + id,
                 "width=300,height=150,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0"
             );
 
@@ -47,7 +46,7 @@ define(["$window", "Utils"], function ($window, Utils) {
             if ($window.Notification) {
                 return $window.Notification;
 
-            // Firefox < 22 fallback
+            // Mozilla Firefox < 22 fallback
             } else if (navigator && "mozNotification" in navigator) {
                 return navigator.mozNotification;
 
@@ -57,41 +56,34 @@ define(["$window", "Utils"], function ($window, Utils) {
             }
         })(),
 
-        cnsle = (function () {
+        cnsl = (function () {
             if ($window.console) {
                 return $window.console;
             } else {
+                // No console, return a mock one that does nothing
                 return {
                     log: noOp,
-                    error: noOp,
-                    info: noOp
+                    info: noOp,
+                    warn: noOp,
+                    error: noOp
                 };
             }
-        })(),
-
-        // User notification handler
-        notify = {
-            "alert": alert,
-            "log": function () {
-                cnsle.log.apply(null, arguments);
-            }
-        };
+        })();
 
 
-
-    // See if we can use the notifications api
-    if(Notification && Notification.permission !== "denied") {
+    // See if we can use the Web Notifications API
+    if (Notification && Notification.permission !== "denied") {
         Notification.requestPermission(function (permission) {
             if (permission === "granted") {
                 // Notification permission is granted.
                 // Replace the alert function with the notifications ones
-                notify.alert = function (title, msg) {
+                alertUser = function (title, msg, id) {
                     var n = new Notification(title, {
                         body: msg,
-                        tag: Utils.hash(title)
+                        tag: "ch" + id
                     });
-                    n.onerror(function (error) {
-                        notify.log(error);
+                    n.addEventListener("error", function (error) {
+                        cnsl.log(error);
                     });
                 };
             }
@@ -104,11 +96,22 @@ define(["$window", "Utils"], function ($window, Utils) {
          * @param {string} title The title of the message.
          * @param {string} message The message to display in the notification.
          */
-        alert: notify.alert,
+        "alert": function (title, message) {
+            // Generate a unique ID for the alert
+            var id = Utils.hash(title + message);
+
+            // Only open the alert if the ID is different from the last, helps to prevent duplicates
+            if (id !== lastHash) {
+                lastHash = id;
+                alertUser(title, message, id);
+            }
+        },
 
         /**
          * Log a message
          */
-        log: notify.log
+        "log": function () {
+            cnsl.log.apply(null, arguments);
+        }
     };
 });

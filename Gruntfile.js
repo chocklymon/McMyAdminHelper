@@ -58,7 +58,7 @@ module.exports = function (grunt) {
         };
 
         return function (destination, extraHeader, extraFiles) {
-            var extend = require('util')._extend;
+            var extend = require("util")._extend;
 
             if (extraHeader) {
                 extraHeader += "\n";
@@ -136,7 +136,7 @@ module.exports = function (grunt) {
                 options: getRequireJSOptions("dist/console-helper.js")
             },
             userScript: {
-                options: getRequireJSOptions("dist/console-helper.user.js", userScriptHeader, ['user_script/injectCss'])
+                options: getRequireJSOptions("dist/console-helper.user.js", userScriptHeader, ["user_script/injectCss"])
             }
         },
         eslint: {
