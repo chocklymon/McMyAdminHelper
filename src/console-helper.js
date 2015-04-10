@@ -26,7 +26,7 @@ See the default generator for more.
 //        [ - Globals from McMyAdmin JS                                                  ]
 /* global parseDate parseBool ScrollChat Icons showModal hideModal requestData APICommands */
 
-require(["jQuery", "$window", "Utils", "Notify", "dataStorage", "contextMenu", "commandHistory"], function ($, $window, Utils, Notify, dataStorage, contextMenu, commandHistory) {
+require(["jQuery", "$window", "Utils", "Notify", "DataStorage", "ContextMenu", "CommandHistory"], function ($, $window, Utils, Notify, DataStorage, ContextMenu, CommandHistory) {
     "use strict";
 
 // Create the console helper object
@@ -141,10 +141,10 @@ require(["jQuery", "$window", "Utils", "Notify", "dataStorage", "contextMenu", "
          */
         buildCommands: function () {
             // Attach the context menu commands
-            contextMenu.empty();
+            ContextMenu.empty();
             ch.attachCommands(
-                contextMenu,
-                dataStorage.get(dataStorage.key.playerCommands, []),
+                ContextMenu,
+                DataStorage.get(DataStorage.key.playerCommands, []),
                 ch.runPlayerCommand,
                 "<div>"
             );
@@ -156,13 +156,13 @@ require(["jQuery", "$window", "Utils", "Notify", "dataStorage", "contextMenu", "
             // General Commands
             ch.attachCommands(
                 cmndDiv,
-                dataStorage.get(dataStorage.key.generalCommands, []),
+                DataStorage.get(DataStorage.key.generalCommands, []),
                 ch.runGeneralCommand
             );
 
             // Insert a spacer between the two command types if we have both types of commands
-            if (dataStorage.get(dataStorage.key.generalCommands, []).length > 0
-                && dataStorage.get(dataStorage.key.quickCommands, []).length > 0
+            if (DataStorage.get(DataStorage.key.generalCommands, []).length > 0
+                && DataStorage.get(DataStorage.key.quickCommands, []).length > 0
             ) {
                 cmndDiv.append($("<div>").addClass("ch-h-spacer"));
             }
@@ -170,7 +170,7 @@ require(["jQuery", "$window", "Utils", "Notify", "dataStorage", "contextMenu", "
             // Quick Commands
             ch.attachCommands(
                 cmndDiv,
-                dataStorage.get(dataStorage.key.quickCommands, []),
+                DataStorage.get(DataStorage.key.quickCommands, []),
                 ch.runQuickCommand
             );
         },
@@ -182,7 +182,7 @@ require(["jQuery", "$window", "Utils", "Notify", "dataStorage", "contextMenu", "
             // Filters tab
             ch.buildTable(
                 "ch-filters",
-                Utils.mergeDefaults(dataStorage.get(dataStorage.key.filters, []), ch.filterDefaults),
+                Utils.mergeDefaults(DataStorage.get(DataStorage.key.filters, []), ch.filterDefaults),
                 {
                     "Match": {
                         "value": "regex",
@@ -228,9 +228,9 @@ require(["jQuery", "$window", "Utils", "Notify", "dataStorage", "contextMenu", "
             );
 
             // Command Tabs
-            ch.buildTable("ch-pcmnds", dataStorage.get(dataStorage.key.playerCommands, []), ch.commandTableLayout);
-            ch.buildTable("ch-gcmnds", dataStorage.get(dataStorage.key.generalCommands, []), ch.commandTableLayout);
-            ch.buildTable("ch-qcmnds", dataStorage.get(dataStorage.key.quickCommands, []), ch.commandTableLayout);
+            ch.buildTable("ch-pcmnds", DataStorage.get(DataStorage.key.playerCommands, []), ch.commandTableLayout);
+            ch.buildTable("ch-gcmnds", DataStorage.get(DataStorage.key.generalCommands, []), ch.commandTableLayout);
+            ch.buildTable("ch-qcmnds", DataStorage.get(DataStorage.key.quickCommands, []), ch.commandTableLayout);
         },
 
         /**
@@ -467,7 +467,7 @@ require(["jQuery", "$window", "Utils", "Notify", "dataStorage", "contextMenu", "
          * @return {string} The message ready for input as an HTML message.
          */
         processMessage: function (text) {
-            var filters = dataStorage.get(dataStorage.key.filters, []),
+            var filters = DataStorage.get(DataStorage.key.filters, []),
                 filter,
                 regex;
 
@@ -576,7 +576,7 @@ require(["jQuery", "$window", "Utils", "Notify", "dataStorage", "contextMenu", "
             ch.runCommand(cmnd + " " + ch.player);
 
             // Close the context menu
-            contextMenu.close();
+            ContextMenu.close();
         },
 
 
@@ -626,28 +626,28 @@ require(["jQuery", "$window", "Utils", "Notify", "dataStorage", "contextMenu", "
      *              RUN              *
      * ----------------------------- */
 
-    if (!dataStorage.get()) {
+    if (!DataStorage.get()) {
         // Initialize Defaults
 
         // General Commands
-        dataStorage.set(dataStorage.key.generalCommands, [
+        DataStorage.set(DataStorage.key.generalCommands, [
             {cmnd: "say", text: "Say"}
         ]);
 
         // Quick Commands
-        dataStorage.set(dataStorage.key.quickCommands, [
+        DataStorage.set(DataStorage.key.quickCommands, [
             {cmnd: "who", text: "Who"}
         ]);
 
         // Player Commands
-        dataStorage.set(dataStorage.key.playerCommands, [
+        DataStorage.set(DataStorage.key.playerCommands, [
             {cmnd: "ban", text: "Ban"},
             {cmnd: "kick", text: "Kick"},
             {cmnd: "mute", text: "Mute"}
         ]);
 
         // Filters
-        dataStorage.set(dataStorage.key.filters, [
+        DataStorage.set(DataStorage.key.filters, [
             {   // URL creator
                 regex: "(https?://\\w+\\.\\w+\\S+)",
                 replace: "<a target='_blank' href=\"$1\">$1</a>"
@@ -669,7 +669,7 @@ require(["jQuery", "$window", "Utils", "Notify", "dataStorage", "contextMenu", "
         var playerDiv = $(event.target);
         if (playerDiv.hasClass("chatName")) {
             ch.player = playerDiv.text();
-            contextMenu.open(event);
+            ContextMenu.open(event);
             event.preventDefault();
         }
     });
@@ -719,7 +719,7 @@ require(["jQuery", "$window", "Utils", "Notify", "dataStorage", "contextMenu", "
         var obj, jobj, value, name, modifiers = "";
 
         // Loop through each tab
-        $.each(dataStorage.key, function (tabIndex, key) {
+        $.each(DataStorage.key, function (tabIndex, key) {
             var contents = [];
 
             // Loop through each row
@@ -780,7 +780,7 @@ require(["jQuery", "$window", "Utils", "Notify", "dataStorage", "contextMenu", "
             });
 
             // Store the serialized tab
-            dataStorage.set(key, contents);
+            DataStorage.set(key, contents);
         });
 
         // Rebuild the commands and tabs
@@ -823,7 +823,7 @@ require(["jQuery", "$window", "Utils", "Notify", "dataStorage", "contextMenu", "
                     var message = $(this).val();
 
                     ch.sendCommand(message);
-                    commandHistory.add(message);
+                    CommandHistory.add(message);
 
                     $(this).val("");
 
@@ -833,13 +833,13 @@ require(["jQuery", "$window", "Utils", "Notify", "dataStorage", "contextMenu", "
                 }
             }).keyup(function (event) {
                 // Arrow UP
-                if (event.keyCode == 38 && commandHistory.hasPrev()) {
+                if (event.keyCode == 38 && CommandHistory.hasPrev()) {
                     var textField = $(this);
-                    textField.val(commandHistory.prev(textField.val()));
+                    textField.val(CommandHistory.prev(textField.val()));
 
                     // Down Arrow
-                } else if (event.keyCode == 40 && commandHistory.hasNext()) {
-                    $(this).val(commandHistory.next());
+                } else if (event.keyCode == 40 && CommandHistory.hasNext()) {
+                    $(this).val(CommandHistory.next());
                 }
             });
 
@@ -864,8 +864,8 @@ require(["jQuery", "$window", "Utils", "Notify", "dataStorage", "contextMenu", "
 // Debugging Help
 // Uncomment to reveal the command helper to the window
     $window.ch = ch;
-    $window.ch.data = dataStorage;
-    $window.ch.history = history;
+    $window.ch.data = DataStorage;
+    $window.ch.history = CommandHistory;
 
 // */
 
