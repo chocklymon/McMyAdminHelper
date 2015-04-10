@@ -5,12 +5,10 @@
  * Copyright © <%= grunt.template.today('yyyy') %> <%= pkg.author %>
  * Licensed under the <%= pkg.license %> license.
  */
-var chMain = function ($) {
+var chMain = function () {
     "use strict";
     /*!code injection start*/
     // Anything placed here will be replaced with the actual code
-    // Use jQuery so linting will be happy
-    $();
     /*!code injection end*/
 };
 

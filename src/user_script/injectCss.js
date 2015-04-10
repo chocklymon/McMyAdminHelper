@@ -5,6 +5,7 @@
  * Copyright © 2015 Curtis Oakley
  * Licensed under the MIT license.
  */
+/* globals $ */
 "use strict";
 
 // Attach the CSS to the page

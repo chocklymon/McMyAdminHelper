@@ -74,6 +74,7 @@ module.exports = function (grunt) {
                     amdclean = module.require("amdclean"),
                     outputFile = data.path,
                     cleanedCode = amdclean.clean({
+                        "aggressiveOptimizations": true,
                         "filePath": outputFile,
                         "wrap": {
                             "start": grunt.template.process(header),

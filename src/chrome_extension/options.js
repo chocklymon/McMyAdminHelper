@@ -1,5 +1,13 @@
+/*
+ * McMyAdminHelper
+ * http://chockly.org/
+ *
+ * Copyright © 2015 Curtis Oakley
+ * Licensed under the MIT license.
+ */
+
 // Globals from Chrome Extension JS API
-/* global chrome */
+/* global chrome jQuery */
 jQuery(function ($) {
     "use strict";
 
@@ -13,6 +21,7 @@ jQuery(function ($) {
                 }
             });
             chrome.storage.sync.set({"sites": sites}, function () {
+                // TODO provide feedback to the page
                 console.log("Enabled Sites Updated");
             });
         },
