@@ -9,37 +9,39 @@
 define(["$window"], function ($window) {
     "use strict";
 
-    /** The key used to retrieve and set data from the local storage object. */
-    var localStorageKey = "cdata",
+    var
+        /** The key used to retrieve and set data from the local storage object. */
+        storageKey = "cdata",
+        storage = $window.localStorage,
         get = function (key, defaultValue) {
-            var datum = JSON.parse($window.localStorage.getItem(localStorageKey));
+            var data = JSON.parse(storage.getItem(storageKey));
             if (!key) {
-                return datum;
-            } else if (!datum || !datum[key]) {
+                return data;
+            } else if (!data || !data[key]) {
                 return defaultValue;
             } else {
-                return datum[key];
+                return data[key];
             }
         },
         set = function (key, value) {
-            var datum = get();
-            if (!datum) {
-                datum = {};
+            var data = get();
+            if (!data) {
+                data = {};
             }
-            datum[key] = value;
-            $window.localStorage.setItem(localStorageKey, JSON.stringify(datum));
+            data[key] = value;
+            storage.setItem(storageKey, JSON.stringify(data));
         },
         clear = function (key) {
             if (!key) {
-                $window.localStorage.removeItem(localStorageKey);
+                storage.removeItem(storageKey);
             } else {
-                var datum = get();
-                if (!datum) {
+                var data = get();
+                if (!data) {
                     // Do nothing if there is no data
                     return;
                 }
-                delete datum[key];
-                $window.localStorage.setItem(localStorageKey, JSON.stringify(datum));
+                delete data[key];
+                storage.setItem(storageKey, JSON.stringify(data));
             }
         };
 
