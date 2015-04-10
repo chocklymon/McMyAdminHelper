@@ -105,6 +105,9 @@ module.exports = function (grunt) {
                 banner: "/*! <%= pkg.name %> v<%= pkg.version %> | (c) <%= grunt.template.today('yyyy') %> <%= pkg.author %> | License: <%= pkg.license %> */",
                 sourceMap: true,
                 maxLineLen: 4096,
+                mangle: {
+                    toplevel: true
+                },
                 screwIE8: true
             },
             dist: {
