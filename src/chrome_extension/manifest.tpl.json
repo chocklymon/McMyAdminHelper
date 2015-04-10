@@ -3,8 +3,8 @@
 
     "name" : "McMyAdmin Console Helper",
     "short_name" : "Console Help",
-    "description" : "Adds additional functionality to the McMyAdmin console tab.",
-    "version" : "0.1.2",
+    "description" : "<%= pkg.description %>",
+    "version" : "<%= pkg.version %>",
     "icons" : {
         "16"  : "icon16.png",
         "48"  : "icon48.png",

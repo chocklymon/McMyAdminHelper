@@ -58,7 +58,7 @@ module.exports = function (grunt) {
         };
 
         return function (destination, extraHeader, extraFiles) {
-            var extend = require("util")._extend;
+            var options = JSON.parse(JSON.stringify(defaults));
 
             if (extraHeader) {
                 extraHeader += "\n";
@@ -67,24 +67,22 @@ module.exports = function (grunt) {
             }
             var header = extraHeader + injector.header();
 
-            var options = extend(defaults, {
-                out: destination,
-                onModuleBundleComplete: function (data) {
-                    // Run AMD clean to remove the need to for the AMD function definitions
-                    var fs = module.require("fs"),
-                        amdclean = module.require("amdclean"),
-                        outputFile = data.path,
-                        cleanedCode = amdclean.clean({
-                            "filePath": outputFile,
-                            "wrap": {
-                                "start": grunt.template.process(header),
-                                "end": grunt.template.process(injector.footer())
-                            }
-                        });
+            options.out = destination;
+            options.onModuleBundleComplete = function (data) {
+                // Run AMD clean to remove the need to for the AMD function definitions
+                var fs = module.require("fs"),
+                    amdclean = module.require("amdclean"),
+                    outputFile = data.path,
+                    cleanedCode = amdclean.clean({
+                        "filePath": outputFile,
+                        "wrap": {
+                            "start": grunt.template.process(header),
+                            "end": grunt.template.process(injector.footer())
+                        }
+                    });
 
-                    fs.writeFileSync(outputFile, cleanedCode);
-                }
-            });
+                fs.writeFileSync(outputFile, cleanedCode);
+            };
 
             if (extraFiles) {
                 options.include = extraFiles;
@@ -123,6 +121,36 @@ module.exports = function (grunt) {
                 }
             }
         },
+        compress: {
+            chromeExtension: {
+                options: {
+                    archive: "dist/chrome-extension.zip",
+                    mode: "zip"
+                },
+                files: [
+                    {
+                        src: ["console-helper.js", "console-helper.min.js", "console-helper.min.js.map", "manifest.json"],
+                        cwd: "dist",
+                        expand: true
+                    },
+                    {
+                        src: ["**", "!**.tpl.*"],
+                        cwd: "src/chrome_extension",
+                        expand: true
+                    },
+                    {
+                        src: ["**/*"],
+                        cwd: "src/assets/css",
+                        expand: true
+                    },
+                    {
+                        src: ["**/*"],
+                        cwd: "src/assets/images",
+                        expand: true
+                    }
+                ]
+            }
+        },
         jasmine: {
             base: {
                 src: "src/*.js",
@@ -144,17 +172,28 @@ module.exports = function (grunt) {
         }
     });
 
+    grunt.registerTask("chromeExtension", "Prepares the chrome extension manifest", function () {
+        var manifestFile = grunt.file.read("src/chrome_extension/manifest.tpl.json");
+        manifestFile = grunt.template.process(manifestFile);
+        grunt.file.write("dist/manifest.json", manifestFile);
+    });
+
 
     //-------------------------------
     // Setup the Tasks
     //-------------------------------
 
     grunt.loadNpmTasks("grunt-contrib-uglify");
+    grunt.loadNpmTasks("grunt-contrib-compress");
     grunt.loadNpmTasks("grunt-contrib-jasmine");
     grunt.loadNpmTasks("grunt-contrib-requirejs");
     grunt.loadNpmTasks("grunt-eslint");
 
-    grunt.registerTask("dist", "Build the files for use", ["requirejs:compile", "requirejs:userScript", "uglify:dist", "uglify:userScript"]);
+    grunt.registerTask(
+        "dist",
+        "Build the files for use",
+        ["chromeExtension", "requirejs:compile", "requirejs:userScript", "uglify:dist", "uglify:userScript", "compress:chromeExtension"]
+    );
     grunt.registerTask("lint", "Alias for eslint task", ["eslint"]);
     grunt.registerTask("default", ["eslint", "dist"]);
 };
