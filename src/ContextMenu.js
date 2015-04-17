@@ -6,7 +6,7 @@
  * Licensed under the MIT license.
  */
 
-define(["jQuery"], function ($) {
+var ContextMenu = (function () {
     "use strict";
 
     /** Create the context menu HTML element used for the player commands. */
@@ -119,4 +119,4 @@ define(["jQuery"], function ($) {
             });
         }
     };
-});
+})();

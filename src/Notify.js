@@ -5,7 +5,8 @@
  * Copyright © 2015 Curtis Oakley
  * Licensed under the MIT license.
  */
-define(["$window", "Utils"], function ($window, Utils) {
+/* globals Utils */
+var Notify = (function ($window) {
     "use strict";
 
     // TODO chrome notifications, play sound, popup option.
@@ -114,4 +115,4 @@ define(["$window", "Utils"], function ($window, Utils) {
             cnsl.log.apply(null, arguments);
         }
     };
-});
+})(window);

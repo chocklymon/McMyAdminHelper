@@ -6,7 +6,7 @@
  * Licensed under the MIT license.
  */
 
-define([], function () {
+var CommandHistory = (function () {
     "use strict";
 
     var
@@ -99,4 +99,4 @@ define([], function () {
             return sentCommands[current];
         }
     };
-});
+})();

@@ -44,62 +44,39 @@ module.exports = function (grunt) {
     })();
 
 
-    var getRequireJSOptions = (function () {
-        var defaults = {
-            baseUrl: "src",
-            findNestedDependencies: true,
-            optimize: "none",
-            paths: {
-                "jQuery": "wrappers/jQuery",
-                "$window": "wrappers/$window"
-            },
-            mainConfigFile: "src/console-helper.js",
-            name: "console-helper"
-        };
-
-        return function (destination, extraHeader, extraFiles) {
-            var options = JSON.parse(JSON.stringify(defaults));
-
-            if (extraHeader) {
-                extraHeader += "\n";
-            } else {
-                extraHeader = "";
-            }
-            var header = extraHeader + injector.header();
-
-            options.out = destination;
-            options.onModuleBundleComplete = function (data) {
-                // Run AMD clean to remove the need to for the AMD function definitions
-                var fs = module.require("fs"),
-                    amdclean = module.require("amdclean"),
-                    outputFile = data.path,
-                    cleanedCode = amdclean.clean({
-                        "aggressiveOptimizations": true,
-                        "filePath": outputFile,
-                        "wrap": {
-                            "start": grunt.template.process(header),
-                            "end": grunt.template.process(injector.footer())
-                        }
-                    });
-
-                fs.writeFileSync(outputFile, cleanedCode);
-            };
-
-            if (extraFiles) {
-                options.include = extraFiles;
-            }
-
-            return options;
-        };
-    })();
-
-
     //-------------------------------
     // Initialize the Configuration
     //-------------------------------
 
     grunt.initConfig({
         pkg: grunt.file.readJSON("package.json"),
+        concat: {
+            options: {
+                stripBanners: true,
+                process: function (src, filepath) {
+                    // Remove all "use strict" flags in the processed files. There should be one in the banner only.
+                    // Regex, capture "use strict" and replace it with just whitespace (if any).
+                    var useStrictRegex = /(^|\n)[ \t]*('use strict'|"use strict");?\s*/g;
+                    return "\n// Source: " + filepath + "\n" + src.replace(useStrictRegex, "$1");
+                }
+            },
+            dist: {
+                options: {
+                    banner: injector.header(),
+                    footer: injector.footer()
+                },
+                src: ["src/Utils.js", "src/DataStorage.js", "src/CommandHistory.js", "src/ContextMenu.js", "src/Notify.js", "src/console-helper.js"],
+                dest: "dist/console-helper.js"
+            },
+            userScript: {
+                options: {
+                    banner: userScriptHeader + "\n" + injector.header(),
+                    footer: injector.footer()
+                },
+                src: ["src/Utils.js", "src/DataStorage.js", "src/CommandHistory.js", "src/ContextMenu.js", "src/Notify.js", "src/user_script/*.js", "src/console-helper.js"],
+                dest: "dist/console-helper.user.js"
+            }
+        },
         uglify: {
             options: {
                 banner: "/*! <%= pkg.name %> v<%= pkg.version %> | (c) <%= grunt.template.today('yyyy') %> <%= pkg.author %> | License: <%= pkg.license %> */",
@@ -163,14 +140,6 @@ module.exports = function (grunt) {
                 }
             }
         },
-        requirejs: {
-            compile: {
-                options: getRequireJSOptions("dist/console-helper.js")
-            },
-            userScript: {
-                options: getRequireJSOptions("dist/console-helper.user.js", userScriptHeader, ["user_script/injectCss"])
-            }
-        },
         eslint: {
             target: ["src/**/*.js", "tests/**/*.js", "Gruntfile.js"]
         }
@@ -187,16 +156,16 @@ module.exports = function (grunt) {
     // Setup the Tasks
     //-------------------------------
 
+    grunt.loadNpmTasks("grunt-contrib-concat");
     grunt.loadNpmTasks("grunt-contrib-uglify");
     grunt.loadNpmTasks("grunt-contrib-compress");
     grunt.loadNpmTasks("grunt-contrib-jasmine");
-    grunt.loadNpmTasks("grunt-contrib-requirejs");
     grunt.loadNpmTasks("grunt-eslint");
 
     grunt.registerTask(
         "dist",
         "Build the files for use",
-        ["chromeExtension", "requirejs:compile", "requirejs:userScript", "uglify:dist", "uglify:userScript", "compress:chromeExtension"]
+        ["chromeExtension", "concat:dist", "concat:userScript", "uglify:dist", "uglify:userScript", "compress:chromeExtension"]
     );
     grunt.registerTask("lint", "Alias for eslint task", ["eslint"]);
     grunt.registerTask("default", ["eslint", "dist"]);

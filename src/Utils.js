@@ -5,7 +5,7 @@
  * Copyright © 2015 Curtis Oakley
  * Licensed under the MIT license.
  */
-define(["jQuery"], function ($) {
+var Utils = (function () {
     "use strict";
 
     return {
@@ -42,4 +42,4 @@ define(["jQuery"], function ($) {
             return merged;
         }
     };
-});
+})();

@@ -6,13 +6,13 @@
  * Licensed under the MIT license.
  */
 
-define(["$window"], function ($window) {
+var DataStorage = (function () {
     "use strict";
 
     var
         /** The key used to retrieve and set data from the local storage object. */
         storageKey = "cdata",
-        storage = $window.localStorage,
+        storage = window.localStorage,
         get = function (key, defaultValue) {
             var data = JSON.parse(storage.getItem(storageKey));
             if (!key) {
@@ -76,4 +76,4 @@ define(["$window"], function ($window) {
          */
         set: set
     };
-});
+})();
