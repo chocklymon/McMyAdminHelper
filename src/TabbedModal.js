@@ -14,25 +14,25 @@ var TabbedModal = (function () {
         tabTitles = $("<div class='subtabhead' />").appendTo(tabContents),
         saveCallbacks = [],
         contentBuilders = [],
-        saveTabs = function() {
+        saveTabs = function () {
             $.each(saveCallbacks, function (i, saveCallback) {
                 saveCallback();
             });
         },
-        empty = function() {
+        empty = function () {
             tabTitles.empty();
             tabContents.remove("div:gt(0)");
 
             saveCallbacks = [];
             contentBuilders = [];
         },
-        reset = function() {
-            $.each(contentBuilders, function(index, contentBuilder) {
+        reset = function () {
+            $.each(contentBuilders, function (index, contentBuilder) {
                 var contents = contentBuilder();
                 $("tab-" + index).empty().append(contents);
             });
         },
-        closeModal = function() {
+        closeModal = function () {
             modalWindow.hide();
         };
 
@@ -52,7 +52,7 @@ var TabbedModal = (function () {
         open: function () {
             modalWindow.show();
         },
-        addTab: function(title, contentBuilder, saveCallback) {
+        addTab: function (title, contentBuilder, saveCallback) {
             // Save the content builder and save callback
             contentBuilders.push(contentBuilder);
             saveCallbacks.push(saveCallback);
@@ -73,5 +73,5 @@ var TabbedModal = (function () {
             tabTitles.append(tabTitle);
         },
         empty: empty
-    }
+    };
 })();
