@@ -4,6 +4,7 @@
 // @author <%= pkg.author %>
 // @license <%= pkg.license %> License
 // @version <%= pkg.version %>
-// @match http://72.249.124.178:25967/*
-// @namespace http://72.249.124.178:25967/
+// @match http://fsmc.console:25967/*
+// @namespace http://chockly.org
+// @grant none
 // ==/UserScript==
