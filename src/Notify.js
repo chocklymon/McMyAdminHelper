@@ -5,7 +5,7 @@
  * Copyright © 2015 Curtis Oakley
  * Licensed under the MIT license.
  */
-/* globals Utils */
+/* globals DataStorage Utils */
 var Notify = (function ($window) {
     "use strict";
 
@@ -13,7 +13,20 @@ var Notify = (function ($window) {
     // TODO have a better way to identify notifications to prevent duplicates?
 
     var noOp = function () {},
+        logs = {},
         lastHash,
+
+        addLog = function (type, message) {
+            if (!Array.isArray(logs[type])) {
+                logs[type] = [];
+            }
+            logs[type].append(message);
+
+            var maxLogSize = DataStorage.get("maxLogSize", 20);
+            while (logs[type].length >= maxLogSize) {
+                logs[type].shift();
+            }
+        },
 
         // Default alert function - Opens a pop-up window.
         alertUser = function (title, message, id) {
@@ -104,15 +117,49 @@ var Notify = (function ($window) {
             // Only open the alert if the ID is different from the last, helps to prevent duplicates
             if (id !== lastHash) {
                 lastHash = id;
+                addLog("alert", title + ": " + message);
                 alertUser(title, message, id);
             }
         },
 
         /**
-         * Log a message
+         * Log a debug message
          */
         "log": function () {
+            addLog("log", arguments);
             cnsl.log.apply(null, arguments);
+        },
+
+        /**
+         * Log an information message
+         */
+        "info": function () {
+            addLog("info", arguments);
+            cnsl.info.apply(null, arguments);
+        },
+
+        /**
+         * Log an warning message
+         */
+        "warn": function () {
+            addLog("warn", arguments);
+            cnsl.warn.apply(null, arguments);
+        },
+
+        /**
+         * Log an error message
+         */
+        "error": function () {
+            addLog("error", arguments);
+            cnsl.error.apply(null, arguments);
+        },
+
+        /**
+         * Gets the logged messages.
+         * @returns {object}
+         */
+        "getLogs": function () {
+            return logs;
         }
     };
 })(window);
