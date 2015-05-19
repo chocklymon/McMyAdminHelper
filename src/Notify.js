@@ -20,7 +20,7 @@ var Notify = (function ($window) {
             if (!Array.isArray(logs[type])) {
                 logs[type] = [];
             }
-            logs[type].append(message);
+            logs[type].push(message);
 
             var maxLogSize = DataStorage.get("maxLogSize", 20);
             while (logs[type].length >= maxLogSize) {

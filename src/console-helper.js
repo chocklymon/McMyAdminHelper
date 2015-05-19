@@ -864,5 +864,6 @@ setTimeout(modifyMcMyAdmin, 2000);
 window.ch = ch;
 window.ch.data = DataStorage;
 window.ch.history = CommandHistory;
+window.ch.getLogs = Notify.getLogs;
 
 // */
