@@ -864,6 +864,7 @@ setTimeout(modifyMcMyAdmin, 2000);
 window.ch = ch;
 window.ch.data = DataStorage;
 window.ch.history = CommandHistory;
-window.ch.getLogs = Notify.getLogs;
+window.ch.notify = Notify;
+window.ch.getLogs = Notify.getLogs;// Shortcut to get logs in notify
 
 // */

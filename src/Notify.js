@@ -13,18 +13,21 @@ var Notify = (function ($window) {
     // TODO have a better way to identify notifications to prevent duplicates?
 
     var noOp = function () {},
-        logs = {},
+        logs = [],
         lastHash,
 
         addLog = function (type, message) {
-            if (!Array.isArray(logs[type])) {
-                logs[type] = [];
-            }
-            logs[type].push(message);
+            // Push a new log
+            logs.push({
+                "type": type,
+                "message": message,
+                "timestamp": Date.now() // Unix timestamp in milliseconds
+            });
 
+            // Remove old logs if needed
             var maxLogSize = DataStorage.get("maxLogSize", 20);
-            while (logs[type].length >= maxLogSize) {
-                logs[type].shift();
+            while (logs.length >= maxLogSize) {
+                logs.shift();
             }
         },
 
@@ -82,7 +85,17 @@ var Notify = (function ($window) {
                     error: noOp
                 };
             }
-        })();
+        })(),
+
+        logger = function (type, args) {
+            if (args.length && args.length == 1) {
+                addLog(type, args[0]);
+            } else {
+                addLog(type, args);
+            }
+
+            cnsl[type].apply(null, args);
+        };
 
 
     // See if we can use the Web Notifications API
@@ -126,32 +139,28 @@ var Notify = (function ($window) {
          * Log a debug message
          */
         "log": function () {
-            addLog("log", arguments);
-            cnsl.log.apply(null, arguments);
+            logger("log", arguments);
         },
 
         /**
          * Log an information message
          */
         "info": function () {
-            addLog("info", arguments);
-            cnsl.info.apply(null, arguments);
+            logger("info", arguments);
         },
 
         /**
          * Log an warning message
          */
         "warn": function () {
-            addLog("warn", arguments);
-            cnsl.warn.apply(null, arguments);
+            logger("warn", arguments);
         },
 
         /**
          * Log an error message
          */
         "error": function () {
-            addLog("error", arguments);
-            cnsl.error.apply(null, arguments);
+            logger("error", arguments);
         },
 
         /**
