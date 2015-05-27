@@ -1,6 +1,7 @@
 # Build and package manager generated files
 node_modules/
 dist/
+lib/
 
 # IDE Files
 nbproject/

@@ -63,6 +63,8 @@ var ch = {
      */
     player: "",
 
+    maxScrollBack: DataStorage.get("maxScrollBack", 200),
+
 
     /* ----------------------------- *
      *           FUNCTIONS           *
@@ -89,7 +91,7 @@ var ch = {
             newLine.children("div.chatNick:first").text();
             newLine.children("div.chatMessage:first").html(message);
 
-            if ($("#chatHistory").children("div").size() > 200) {
+            if ($("#chatHistory").children("div").size() > ch.maxScrollBack) {
                 $("#chatHistory").children("div").first().remove();
             }
 
