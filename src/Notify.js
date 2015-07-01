@@ -60,12 +60,16 @@ var Notify = (function ($window) {
 
         Notification = (function () {
             // Standard notifications
-            if ($window.Notification) {
+            if ("Notification" in $window) {
                 return $window.Notification;
 
             // Mozilla Firefox < 22 fallback
             } else if (navigator && "mozNotification" in navigator) {
                 return navigator.mozNotification;
+
+            // Old webkit browsers fallback
+            } else if ("webkitNotification" in $window) {
+                return $window.webkitNotification;
 
             // No notifications
             } else {
@@ -107,7 +111,8 @@ var Notify = (function ($window) {
                 alertUser = function (title, msg, id) {
                     var n = new Notification(title, {
                         body: msg,
-                        tag: "ch" + id
+                        tag: "ch" + id,
+                        icon: "/Images/Logo256.png"
                     });
                     n.addEventListener("error", function (error) {
                         cnsl.log(error);
