@@ -476,24 +476,28 @@ var ch = {
 
         // Process any message notifications.
         for (var i = 0; i < filters.length; i++) {
-            filter = $.extend({}, ch.filterDefaults, filters[i]);
+            try {
+                filter = $.extend({}, ch.filterDefaults, filters[i]);
 
-            regex = new RegExp(filter.regex, filter.modifiers);
+                regex = new RegExp(filter.regex, filter.modifiers);
 
-            // See if we have a match
-            if (regex.test(text)) {
-                // Replace the text
-                text = text.replace(regex, filter.replace);
+                // See if we have a match
+                if (regex.test(text)) {
+                    // Replace the text
+                    text = text.replace(regex, filter.replace);
 
-                // Pop a notification if needed
-                if (filter.alert) {
-                    Notify.alert("Chat Message Alert", text);
+                    // Pop a notification if needed
+                    if (filter.alert) {
+                        Notify.alert("Chat Message Alert", text);
+                    }
+
+                    // Increment the count of this filter if needed.
+                    if (filter.count) {
+                        ch.incrementCount(filter, text);
+                    }
                 }
-
-                // Increment the count of this filter if needed.
-                if (filter.count) {
-                    ch.incrementCount(filter, text);
-                }
+            } catch (exception) {
+                Notify.error("Problem processing message", exception);
             }
         }
         return text;

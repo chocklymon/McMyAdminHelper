@@ -98,7 +98,7 @@ var Notify = (function ($window) {
                 addLog(type, args);
             }
 
-            cnsl[type].apply(null, args);
+            cnsl[type].apply(cnsl, args);
         };
 
 
