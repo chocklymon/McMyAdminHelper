@@ -109,8 +109,12 @@ var Notify = (function ($window) {
                 // Notification permission is granted.
                 // Replace the alert function with the notifications ones
                 alertUser = function (title, msg, id) {
+                    // Notifications don't display HTML content, so remove it.
+                    var noHtmlMessage = $("<div/>").html(msg).text();
+
+                    // Create and display the notification
                     var n = new Notification(title, {
-                        body: msg,
+                        body: noHtmlMessage,
                         tag: "ch" + id,
                         icon: "/Images/Logo256.png"
                     });
