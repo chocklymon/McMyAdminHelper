@@ -26,7 +26,7 @@ var Notify = (function ($window) {
 
             // Remove old logs if needed
             var maxLogSize = DataStorage.get("maxLogSize", 20);
-            while (logs.length >= maxLogSize) {
+            while (logs.length > maxLogSize) {
                 logs.shift();
             }
         },
