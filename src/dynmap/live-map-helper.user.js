@@ -24,65 +24,6 @@ var chMain = function ($) {
      *           FUNCTIONS           *
      * ----------------------------- */
 
-
-    //     Local Storage Helpers     //
-    var
-        /** The key used to retrieve and set data from the local storage object. */
-        localStorageKey = "cdata",
-
-        /** The data object containing the local storage data. */
-        data = JSON.parse(localStorage.getItem(localStorageKey));
-
-    /**
-     * Clears a value from local storage.
-     * key - Optional, deletes the key and it"s value from local storage. If
-     * not provided removes all data from local storage.
-     */
-    function clear(key) {
-        if (key == null) {
-            data = null;
-            localStorage.removeItem(localStorageKey);
-        } else {
-            if(data == null) {
-                // Do nothing if there is no data
-                return;
-            }
-            delete data[key];
-            localStorage.setItem(localStorageKey, JSON.stringify(data));
-        }
-    }
-
-    /**
-     * Gets a piece of data from local storage.
-     * key - the key for the data. If null returns all data stored.
-     * defaultValue - Value to return if the key has no value.
-     */
-    function get(key, defaultValue) {
-        if(key == null) {
-            return data;
-        } else if(data == null) {
-            return defaultValue;
-        } else if(data[key] == null) {
-            return defaultValue;
-        } else {
-            return data[key];
-        }
-    }
-
-    /**
-     * Sets a value to local storage.
-     * key - The key for the value.
-     * value - The data to store.
-     */
-    function set(key, value) {
-        if(data == null) {
-            data = {};
-        }
-        data[key] = value;
-        localStorage.setItem(localStorageKey, JSON.stringify(data));
-    }
-
-
     //       Other Functions         //
 
     /**
@@ -92,9 +33,9 @@ var chMain = function ($) {
      */
     function addrow(row) {
         var configuration = dynmap.options.components[2];// Is this consitent?
-        var messagelist = $("div.messagelist");
+        var messageList = $("div.messagelist");
         if (configuration.scrollback) {
-            var c = messagelist.children();
+            var c = messageList.children();
             c.slice(0, Math.max(0, c.length - configuration.scrollback)).each(function (index, elem) {
                 $(elem).remove();
             });
@@ -105,9 +46,9 @@ var chMain = function ($) {
                 (configuration.messagettl * 1000)
             );
         }
-        messagelist.append(row);
-        messagelist.show();
-        messagelist.scrollTop(messagelist.scrollHeight());// TODO don"t scroll if the mouse is over the message box
+        messageList.append(row);
+        messageList.show();
+        messageList.scrollTop(messageList.scrollHeight());// TODO don"t scroll if the mouse is over the message box
     }
 
     /**
@@ -134,7 +75,7 @@ var chMain = function ($) {
                 .append($("<th>").text(" "))// buttons column
         );
 
-        $.each(get("messages", []), function (index, value) {
+        $.each(DataStorage.get("messages", []), function (index, value) {
             // Create a new row for each message
             tbody.append(
                 $("<tr>").attr("id", "m" + index).dblclick(function () {
@@ -208,17 +149,6 @@ var chMain = function ($) {
     }
 
     /**
-     * Notifies the user of important events by opening a new window.
-     */
-    function notify(message) {
-        window.open(
-            "http://chockly.org/ch/?m=" + encodeURIComponent(message),
-            "notification",
-            "width=300,height=150,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0"
-        );
-    }
-
-    /**
      * Process a chat message for input into a row.
      */
     function processMessage(message) {
@@ -229,7 +159,7 @@ var chMain = function ($) {
         text = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
         // Process any message notifications.
-        var messages = get("messages", []);
+        var messages = DataStorage.get("messages", []);
 
         $.each(messages, function (index, m) {
             var regex = new RegExp(m.regex, m.modifiers);
@@ -241,7 +171,7 @@ var chMain = function ($) {
                 text = text.replace(regex, m.replace);
 
                 if (m.alert) {
-                    notify("<b>Chat Message Alert:</b><br>" + message.name + ": " + text);
+                    Notify.alert('Chat Message Alert',  message.name + ": " + text);
                 }
             }
         });
@@ -306,14 +236,14 @@ var chMain = function ($) {
             var text = dynmap.options.joinmessage.replace("%playername%", playername);
 
             // Check if we need to alert for this player
-            var players = get("player.alert", []);
+            var players = DataStorage.get("player.alert", []);
             if(players.indexOf(playername) != -1) {
                 // Player on the alert list, pop an alert.
-                notify(playername + " just logged in!");
+                Notify.alert("User log in", playername + " just logged in.");
             }
 
             // Check for players on the highlight (warn) list
-            players = get("player.warn", []);
+            players = DataStorage.get("player.warn", []);
             if (players.indexOf(playername) != -1) {
                 // Highlight the player
                 text = "<img src='http://c.lan/personal/imgs/control-record.png' />" + text;
@@ -433,9 +363,7 @@ var chMain = function ($) {
 
     // DEBUG:  reveal certain methods
     window.ch = {
-        clear: clear,
-        set: set,
-        get: get,
+        dataStorage: DataStorage,
         editRow: editRow,
         addNewFilterRow: addNewFilterRow
     };
