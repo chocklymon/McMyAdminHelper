@@ -195,6 +195,8 @@ var
     /** The dynmap chat configuration */
     configuration = {},
 
+    assetsBaseUrl = "http://chockly.org/ch/",
+
     /** Handles a incoming chat message. */
     handleChat = function (event, message) {
         /* Modified version of the dynamp chat event handler.
@@ -263,7 +265,7 @@ var
             players = DataStorage.get("player.warn", []);
             if (players.indexOf(playername) != -1) {
                 // Highlight the player
-                text = "<img src='http://c.lan/personal/imgs/control-record.png' />" + text;
+                text = "<img src='" + assetsBaseUrl + "imgs/control-record.png' />" + text;
             }
 
             addrow(
@@ -315,7 +317,7 @@ setTimeout(function () {
 
     //      Import the CSS        //
     $("head").append($("<link>").attr({
-        "href": "http://chockly.org/ch/live-map-helper.css",
+        "href": assetsBaseUrl + "live-map-helper.css",
         "type": "text/css",
         "rel": "stylesheet",
         "media": "screen"
@@ -327,42 +329,43 @@ setTimeout(function () {
         .attr("id", "ctrough")
         .css("top", "-" + (ctrlHeight - 8) + "px") // Leave eight pixels of the controller visible
         // Animate the controller up and down
-        .mouseenter( function () {
+        .mouseenter(function () {
             $(this).animate( { top: "0" } );
         })
-        .mouseleave( function () {
+        .mouseleave(function () {
             $(this).animate( { top: "-" + (ctrlHeight - 8) + "px" } );
         })
         // Attach the inner div
         .append(
             $("<div>")
-            .addClass("inner")
-            // Attach the edge divs
-            .append($("<div>").addClass("corner-left"))
-            .append($("<div>").addClass("corner-right"))
-            // Attach the controls trough
-            .append($("<div>").attr("id", "cbuttons")
-                // Attach the controls
-                // Message Alerts
-                .append($("<div>")
-                    .css("background-image", "url(http://c.lan/personal/imgs/bell.png)")
-                    .append($("<span>").text("Alerts"))
-                    .click(function () {
-                        showDialog(generateMessageTable());
-                    })
+                .addClass("inner")
+                // Attach the edge divs
+                .append($("<div>").addClass("corner-left"))
+                .append($("<div>").addClass("corner-right"))
+                // Attach the controls trough
+                .append($("<div>").attr("id", "cbuttons")
+                    // Attach the controls
+                    // Message Alerts
+                    .append($("<div>")
+                        .css("background-image", "url(" + assetsBaseUrl + "imgs/bell.png)")
+                        .append($("<span>").text("Alerts"))
+                        .click(function () {
+                            showDialog(generateMessageTable());
+                        })
+                    )
+                    // Player Alerts
+                    .append($("<div>")
+                        .css({
+                            "background-image": "url(" + assetsBaseUrl + "imgs/user.png)",
+                            "margin-right": "0"
+                        })
+                        .append($("<span>").text("Players"))
+                        .click(function () {
+                            // TODO
+                            Notify.log("Player alerts clicked");
+                        })
+                    )
                 )
-                // Player Alerts
-                .append($("<div>")
-                    .css({
-                        "background-image": "url(http://c.lan/personal/imgs/user.png)",
-                        "margin-right": "0"
-                    })
-                    .append($("<span>").text("Players"))
-                    .click(function () {
-                        // TODO
-                    })
-                )
-            )
         )
         // Attach to the page
         .appendTo("body");
