@@ -61,18 +61,19 @@ function generateMessageTable() {
             .append($("<th>").text(" "))// buttons column
     );
 
-    $.each(DataStorage.get("messages", []), function (index, value) {
+    $.each(DataStorage.get(DataStorage.key.filters, []), function (index, value) {
         // Create a new row for each message
+        var filter = $.extend({}, filterDefaults, value);
         tbody.append(
             $("<tr>").attr("id", "m" + index).dblclick(function () {
                 // Double click to go into edit mode
                 // this is the row.
 
             })
-                .append($("<td>").text(value.regex))
-                .append($("<td>").text(value.modifiers))
-                .append($("<td>").text(value.replace))
-                .append($("<td>").text(value.alert))
+                .append($("<td>").text(filter.regex))
+                .append($("<td>").text(filter.modifiers))
+                .append($("<td>").text(filter.replace))
+                .append($("<td>").text(filter.alert))
                 .append($("<td>").text(" "))
         );
     });
@@ -139,24 +140,26 @@ function addNewFilterRow() {
  */
 function processMessage(message) {
     // Get the text from the message in it"s properly encoded format
-    var text = chat_encoder(message);
+    var text = chat_encoder(message),
+        filter, regex;
 
     // Escape any HTML entities
     text = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
     // Process any message notifications.
-    var messages = DataStorage.get("messages", []);
+    var messages = DataStorage.get(DataStorage.key.filters, []);
 
-    $.each(messages, function (index, m) {
-        var regex = new RegExp(m.regex, m.modifiers);
+    $.each(messages, function (index, value) {
+        filter = $.extend({}, filterDefaults, value);
+        regex = new RegExp(filter.regex, filter.modifiers);
 
         if (text.match(regex) != null) {
             // Text contains a match
 
             // Replace the text
-            text = text.replace(regex, m.replace);
+            text = text.replace(regex, filter.replace);
 
-            if (m.alert) {
+            if (filter.alert) {
                 Notify.alert('Chat Message Alert',  message.name + ": " + text);
             }
         }
@@ -187,6 +190,13 @@ var
     configuration = {},
 
     assetsBaseUrl = "http://chockly.org/ch/",
+
+    filterDefaults = {
+        modifiers: "gi",
+        alert: false,
+        count: false,
+        replace: "<b>$1</b>"
+    },
 
     /** Handles a incoming chat message. */
     handleChat = function (event, message) {
@@ -245,16 +255,17 @@ var
         if ((dynmap.options.joinmessage.length > 0) && (playername.length > 0)) {
             var text = dynmap.options.joinmessage.replace('%playername%', playername);
 
+            // Get the player arrays
+            var players = DataStorage.get("players", {});
+
             // Check if we need to alert for this player
-            var players = DataStorage.get("player.alert", []);
-            if (players.indexOf(playername) != -1) {
+            if (players.alert && players.alert.indexOf(playername) != -1) {
                 // Player on the alert list, pop an alert.
                 Notify.alert("User log in", playername + " just logged in.");
             }
 
             // Check for players on the highlight (warn) list
-            players = DataStorage.get("player.warn", []);
-            if (players.indexOf(playername) != -1) {
+            if (players.warn && players.warn.indexOf(playername) != -1) {
                 // Highlight the player
                 text = "<img src='" + assetsBaseUrl + "imgs/control-record.png' />" + text;
             }
@@ -380,7 +391,8 @@ setTimeout(function () {
 //*
 // DEBUG:  reveal certain methods
 window.ch = {
-    dataStorage: DataStorage,
+    data: DataStorage,
+    notify: Notify,
     editRow: editRow,
     addNewFilterRow: addNewFilterRow
 };
