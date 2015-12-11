@@ -30,8 +30,10 @@ See console-helper.user.js for some example filters.
  * @param row The row to add, accepts anything the jQuery appends accepts.
  */
 function addrow(row) {
-    var configuration = dynmap.options.components[2];// Is this consitent?
-    var messageList = $("div.messagelist");
+    // Modified from dynamp chatbox.js addrow function
+    var configuration = dynmap.options.components[2];// Is this consistent?
+    var messageList = $("div.messagelist");// TODO cache this lookup
+
     if (configuration.scrollback) {
         var c = messageList.children();
         c.slice(0, Math.max(0, c.length - configuration.scrollback)).each(function (index, elem) {
@@ -39,14 +41,12 @@ function addrow(row) {
         });
     } else {
         setTimeout(function () {
-                row.remove();
-            },
-            (configuration.messagettl * 1000)
-        );
+            row.remove();
+        }, (configuration.messagettl * 1000));
     }
     messageList.append(row);
     messageList.show();
-    messageList.scrollTop(messageList.scrollHeight());// TODO don"t scroll if the mouse is over the message box
+    messageList.scrollTop(messageList.scrollHeight()); // TODO don"t scroll if the mouse is over the message box
 }
 
 /**
@@ -194,19 +194,19 @@ var
 
     /** Handles a incoming chat message. */
     handleChat = function (event, message) {
+        var configuration = dynmap.options.components[2];// Is this consistent? TODO cache this
         /* Modified version of the dynamp chat event handler.
          * Changed to allow HTML in the text messages.
          */
         var playerName = message.name;
         var playerAccount = message.account;
         var messageRow = $("<div/>")
-                .addClass("messagerow");
+            .addClass("messagerow");
 
         var playerIconContainer = $("<span/>")
-                .addClass("messageicon");
+            .addClass("messageicon");
 
-        if (message.source === "player" && playerAccount) {
-            // Call the global function to get the players head
+        if (message.source === "player" && configuration.showplayerfaces && playerAccount) {
             getMinecraftHead(playerAccount, 16, function (head) {
                 messageRow.icon = $(head)
                     .addClass("playerMessageIcon")
@@ -214,46 +214,67 @@ var
             });
         }
 
+        var playerChannelContainer = "";
+        if (message.channel) {
+            playerChannelContainer = $("<span/>").addClass("messagetext")
+                .text("[" + message.channel + "] ")
+                .appendTo(messageRow);
+        }
+
+        if (message.source === 'player' && configuration.showworld && playerAccount) {
+            var playerWorldContainer = $('<span/>')
+                .addClass("messagetext")
+                .text("[" + dynmap.players[playerAccount].location.world.name + "]")
+                .appendTo(messageRow);
+        }
+
         var playerNameContainer = "";
-        if(playerName) {
-            playerNameContainer = $("<span/>").addClass("messagetext").text(" " + playerName + ": ");
+        if (playerName) {
+            playerNameContainer = $("<span/>").addClass("messagetext").append(" " + playerName + ": ");
         }
 
         var playerMessageContainer = $("<span/>")
-                .addClass("messagetext")
-                .html(processMessage(message));
+            .addClass("messagetext")
+            .html(processMessage(message));
 
         var timeStamp = getTimeStamp();
 
-        messageRow.append(timeStamp, playerIconContainer, playerNameContainer, playerMessageContainer);
+        messageRow.append(timeStamp, playerIconContainer, playerChannelContainer, playerNameContainer, playerMessageContainer);
         addrow(messageRow);
     },
 
     /** Handles a player joining. */
     handlePlayerJoin = function (event, playername) {
-        var text = dynmap.options.joinmessage.replace("%playername%", playername);
+        // Modified from the dynmap playerjoin event handler.
+        // Changed to check for player join alerts and provide HTML output
+        if ((dynmap.options.joinmessage.length > 0) && (playername.length > 0)) {
+            var text = dynmap.options.joinmessage.replace('%playername%', playername);
 
-        // Check if we need to alert for this player
-        var players = DataStorage.get("player.alert", []);
-        if(players.indexOf(playername) != -1) {
-            // Player on the alert list, pop an alert.
-            Notify.alert("User log in", playername + " just logged in.");
-        }
+            // Check if we need to alert for this player
+            var players = DataStorage.get("player.alert", []);
+            if (players.indexOf(playername) != -1) {
+                // Player on the alert list, pop an alert.
+                Notify.alert("User log in", playername + " just logged in.");
+            }
 
-        // Check for players on the highlight (warn) list
-        players = DataStorage.get("player.warn", []);
-        if (players.indexOf(playername) != -1) {
-            // Highlight the player
-            text = "<img src='http://c.lan/personal/imgs/control-record.png' />" + text;
-        }
+            // Check for players on the highlight (warn) list
+            players = DataStorage.get("player.warn", []);
+            if (players.indexOf(playername) != -1) {
+                // Highlight the player
+                text = "<img src='http://c.lan/personal/imgs/control-record.png' />" + text;
+            }
 
-        // From the dynmap playerjoin event handler, modified to output html
-        if (dynmap.options.joinmessage.length > 0) {
             addrow(
-                $("<div/>")
-                    .addClass("messagerow")
+                $('<div/>')
+                    .addClass('messagerow')
                     .append(getTimeStamp())
                     .append($("<span/>").html(text))
+            );
+        } else if ((dynmap.options['msg-hiddennamejoin'].length > 0) && (playername.length == 0)) {
+            addrow(
+                $('<div/>')
+                    .addClass('messagerow')
+                    .append(dynmap.options['msg-hiddennamejoin'])
             );
         }
     };
@@ -266,12 +287,12 @@ var
 
 // Delay running this so we can be sure that dynmap has finished setting up
 setTimeout(function () {
-    var messagelist = $("div.messagelist");
+    var messageList = $("div.messagelist");
 
     //  Unbind the dynamp events  //
     $(dynmap).unbind("chat");
     $(dynmap).unbind("playerjoin");
-    messagelist.unbind("click");// Remove the chat close function
+    messageList.unbind("click");// Remove the chat close function
 
 
     //     Bind into Dynamap     //
@@ -283,7 +304,7 @@ setTimeout(function () {
     $(dynmap).bind("playerjoin", handlePlayerJoin);
 
     // Make the chat list only close on double click
-    messagelist.dblclick(function () {
+    messageList.dblclick(function () {
         $(this).hide();
     });
 
@@ -358,10 +379,11 @@ setTimeout(function () {
 
 }, 500);
 
-
+//*
 // DEBUG:  reveal certain methods
 window.ch = {
     dataStorage: DataStorage,
     editRow: editRow,
     addNewFilterRow: addNewFilterRow
 };
+// */
