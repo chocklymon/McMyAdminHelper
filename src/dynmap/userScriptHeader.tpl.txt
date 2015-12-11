@@ -1,0 +1,10 @@
+// ==UserScript==
+// @name FSMC Chat Helper
+// @description Adds additional functionality to the final score mc live map chat.
+// @author <%= pkg.author %>
+// @license <%= pkg.license %> License
+// @version <%= pkg.version %>
+// @match http://mc.finalscoremc.com:25966/*
+// @namespace http://chockly.org/ch/
+// @grant none
+// ==/UserScript==

@@ -17,6 +17,7 @@ module.exports = function (grunt) {
 
     // User Script Header
     var userScriptHeader = grunt.file.read("src/templates/userScriptHeader.tpl.txt");
+    var dynmapUserScriptHeader = grunt.file.read("src/dynmap/userScriptHeader.tpl.txt");
 
     // Handles the page injection wrapper
     var injector = (function () {
@@ -75,6 +76,14 @@ module.exports = function (grunt) {
                 },
                 src: ["src/Utils.js", "src/DataStorage.js", "src/CommandHistory.js", "src/ContextMenu.js", "src/Notify.js", "src/user_script/*.js", "src/console-helper.js"],
                 dest: "dist/console-helper.user.js"
+            },
+            dynmap: {
+                options: {
+                    banner: dynmapUserScriptHeader + "\n" + injector.header(),
+                    footer: injector.footer()
+                },
+                src: ["src/Utils.js", "src/DataStorage.js", "src/Notify.js", "src/dynmap/live-map-helper.js"],
+                dest: "dist/live-map-helper.user.js"
             }
         },
         uglify: {
@@ -98,6 +107,15 @@ module.exports = function (grunt) {
                 },
                 options: {
                     banner: userScriptHeader,
+                    sourceMap: false
+                }
+            },
+            dynmap: {
+                files: {
+                    "dist/live-map-helper.min.user.js": ["dist/live-map-helper.user.js"]
+                },
+                options: {
+                    banner: dynmapUserScriptHeader,
                     sourceMap: false
                 }
             }
@@ -169,4 +187,5 @@ module.exports = function (grunt) {
     );
     grunt.registerTask("lint", "Alias for eslint task", ["eslint"]);
     grunt.registerTask("default", ["eslint", "dist"]);
+    grunt.registerTask("dynmap", "Build the live map user script", ["concat:dynmap", "uglify:dynmap"]);
 };

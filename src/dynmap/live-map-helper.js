@@ -1,12 +1,3 @@
-// ==UserScript==
-// @name FSMC Chat Helper
-// @description Adds additional functionality to the final score mc live map chat.
-// @author Curtis Oakley
-// @version 0.1.43
-// @match http://mc.finalscoremc.com:25966/*
-// @namespace http://mc.finalscoremc.com:25966/
-// ==/UserScript==
-
 /*
 - Message Filter Template -
 {regex:"",modifiers:"",replace:"",alert:false,name:""}
