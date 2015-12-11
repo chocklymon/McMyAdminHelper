@@ -31,9 +31,6 @@ See console-helper.user.js for some example filters.
  */
 function addrow(row) {
     // Modified from dynamp chatbox.js addrow function
-    var configuration = dynmap.options.components[2];// Is this consistent?
-    var messageList = $("div.messagelist");// TODO cache this lookup
-
     if (configuration.scrollback) {
         var c = messageList.children();
         c.slice(0, Math.max(0, c.length - configuration.scrollback)).each(function (index, elem) {
@@ -192,9 +189,14 @@ var
     /** The height of the controller trough. */
     ctrlHeight = 30,
 
+    /** The chat box message list jQuery object. */
+    messageList = null,
+
+    /** The dynmap chat configuration */
+    configuration = {},
+
     /** Handles a incoming chat message. */
     handleChat = function (event, message) {
-        var configuration = dynmap.options.components[2];// Is this consistent? TODO cache this
         /* Modified version of the dynamp chat event handler.
          * Changed to allow HTML in the text messages.
          */
@@ -287,7 +289,9 @@ var
 
 // Delay running this so we can be sure that dynmap has finished setting up
 setTimeout(function () {
-    var messageList = $("div.messagelist");
+    // Save the message list and configuration
+    messageList = $("div.messagelist");
+    configuration = dynmap.options.components[2];// Is this consistent?
 
     //  Unbind the dynamp events  //
     $(dynmap).unbind("chat");
