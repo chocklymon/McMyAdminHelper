@@ -12,71 +12,80 @@ var Notify = (function ($window) {
     // TODO chrome notifications, play sound, popup option.
     // TODO have a better way to identify notifications to prevent duplicates?
 
-    var noOp = function () {},
+    // Simple variables
+    var /** Contains all the logs. */
         logs = [],
-        lastHash,
+        /** Contains the hash of the last displayed notification. */
+        lastHash;
 
-        addLog = function (type, message) {
-            // Push a new log
-            logs.push({
-                "type": type,
-                "message": message,
-                "timestamp": Date.now() // Unix timestamp in milliseconds
-            });
+    function addLog(type, message) {
+        // Push a new log
+        logs.push({
+            "type": type,
+            "message": message,
+            "timestamp": Date.now() // Unix timestamp in milliseconds
+        });
 
-            // Remove old logs if needed
-            var maxLogSize = DataStorage.get("maxLogSize", 20);
-            while (logs.length > maxLogSize) {
-                logs.shift();
-            }
-        },
+        // Remove old logs if needed
+        var maxLogSize = DataStorage.get("maxLogSize", 20);
+        while (logs.length > maxLogSize) {
+            logs.shift();
+        }
+    }
 
-        // Default alert function - Opens a pop-up window.
-        alertUser = function (title, message, id) {
-            // Generate the popup window
-            var popup = $window.open(
-                "",
-                "ch-alert-" + id,
-                "width=300,height=150,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0"
+    function noOp() {}
+
+    // Default alert function - Opens a pop-up window.
+    function openPopup(title, message, id) {
+        // Generate the popup window
+        var popup = $window.open(
+            "",
+            "ch-alert-" + id,
+            "width=300,height=150,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0"
+        );
+
+        // Write the notification
+        if (popup && popup.document) {
+            popup.document.write("<!DOCTYPE HTML>"
+                + "<html>"
+                + "<head>"
+                + "<title>Notification - " + title + "</title>"
+                + "<link href='http://chockly.org/ch/notify.css' rel='stylesheet' type='text/css' />"
+                + "</head>"
+                + "<body>"
+                + "<div class='wrapper'><div class='message'>"
+                + message
+                + "</div></div>"
+                + "</body>"
+                + "</html>"
             );
+        }
+    }
 
-            // Write the notification
-            if (popup && popup.document) {
-                popup.document.write("<!DOCTYPE HTML>"
-                    + "<html>"
-                    + "<head>"
-                    + "<title>Notification - " + title + "</title>"
-                    + "<link href='http://chockly.org/ch/notify.css' rel='stylesheet' type='text/css' />"
-                    + "</head>"
-                    + "<body>"
-                    + "<div class='wrapper'><div class='message'>"
-                    + message
-                    + "</div></div>"
-                    + "</body>"
-                    + "</html>"
-                );
-            }
-        },
+    // Save dynamic functions
+    var alertUser = openPopup,
 
+        /** The window notification function, if there is one. */
         Notification = (function () {
             // Standard notifications
             if ("Notification" in $window) {
                 return $window.Notification;
 
-            // Mozilla Firefox < 22 fallback
+                // Mozilla Firefox < 22 fallback
             } else if (navigator && "mozNotification" in navigator) {
                 return navigator.mozNotification;
 
-            // Old webkit browsers fallback
+                // Old webkit browsers fallback
             } else if ("webkitNotification" in $window) {
                 return $window.webkitNotification;
 
-            // No notifications
+                // No notifications
             } else {
                 return null;
             }
         })(),
 
+        /** The window console object, if there is one. */
         cnsl = (function () {
             if ($window.console) {
                 return $window.console;
@@ -89,17 +98,33 @@ var Notify = (function ($window) {
                     error: noOp
                 };
             }
-        })(),
+        })();
 
-        logger = function (type, args) {
-            if (args.length && args.length == 1) {
-                addLog(type, args[0]);
-            } else {
-                addLog(type, args);
-            }
+    function createNotification(title, msg, id) {
+        // Notifications don't display HTML content, so remove it.
+        var noHtmlMessage = $("<div/>").html(msg).text();
 
-            cnsl[type].apply(cnsl, args);
-        };
+        // Create and display the notification
+        var n = new Notification(title, {
+            body: noHtmlMessage,
+            tag: "ch" + id,
+            icon: "/Images/Logo256.png"
+        });
+        n.addEventListener("error", function (error) {
+            cnsl.log(error);
+        });
+        return n;
+    }
+
+    function logger(type, args) {
+        if (args.length && args.length == 1) {
+            addLog(type, args[0]);
+        } else {
+            addLog(type, args);
+        }
+
+        cnsl[type].apply(cnsl, args);
+    }
 
 
     // See if we can use the Web Notifications API
@@ -108,20 +133,7 @@ var Notify = (function ($window) {
             if (permission === "granted") {
                 // Notification permission is granted.
                 // Replace the alert function with the notifications ones
-                alertUser = function (title, msg, id) {
-                    // Notifications don't display HTML content, so remove it.
-                    var noHtmlMessage = $("<div/>").html(msg).text();
-
-                    // Create and display the notification
-                    var n = new Notification(title, {
-                        body: noHtmlMessage,
-                        tag: "ch" + id,
-                        icon: "/Images/Logo256.png"
-                    });
-                    n.addEventListener("error", function (error) {
-                        cnsl.log(error);
-                    });
-                };
+                alertUser = createNotification;
             }
         });
     }

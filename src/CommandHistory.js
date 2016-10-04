@@ -20,39 +20,65 @@ var CommandHistory = (function () {
         maxCommands = 20,
 
         /** Store commands and messages that have been sent to the server. */
-        sentCommands = [],
+        sentCommands = [];
 
-        hasPrev = function () {
-            return current > 0;
-        },
+    function hasPrev() {
+        return current > 0;
+    }
 
-        hasNext = function () {
-            return current < sentCommands.length;
-        };
+    function hasNext() {
+        return current < sentCommands.length;
+    }
+
+    function add(command) {
+        // Don't store a command that is the same as the last one.
+        if (sentCommands[sentCommands.length - 1] === command) {
+            return;
+        }
+
+        // Store the command
+        sentCommands.push(command);
+
+        // Remove old commands as needed
+        while (sentCommands.length > maxCommands) {
+            sentCommands.shift();
+        }
+
+        // Reset the current command pointer
+        current = sentCommands.length;
+    }
+
+    function previous(currentValue) {
+        if (current === sentCommands.length) {
+            // Store the current command into history
+            tempCommand = currentValue;
+        }
+
+        if (hasPrev()) {
+            current--;
+        }
+
+        return sentCommands[current];
+    }
+
+    function next() {
+        if (hasNext()) {
+            current++;
+        }
+
+        if (current === sentCommands.length) {
+            return tempCommand;
+        }
+
+        return sentCommands[current];
+    }
 
     return {
-
         /**
          * Add a command to the list of used commands.
          * @param {string} command The command to add.
          */
-        add: function (command) {
-            // Don't store a command that is the same as the last one.
-            if (sentCommands[sentCommands.length - 1] === command) {
-                return;
-            }
-
-            // Store the command
-            sentCommands.push(command);
-
-            // Remove old commands as needed
-            while (sentCommands.length > maxCommands) {
-                sentCommands.shift();
-            }
-
-            // Reset the current command pointer
-            current = sentCommands.length;
-        },
+        add: add,
 
         /**
          * Indicates if the history has a previous command.
@@ -70,33 +96,12 @@ var CommandHistory = (function () {
          * The previous entered command.
          * @returns {string} The previous command.
          */
-        prev: function (currentValue) {
-            if (current === sentCommands.length) {
-                // Store the current command into history
-                tempCommand = currentValue;
-            }
-
-            if (hasPrev()) {
-                current--;
-            }
-
-            return sentCommands[current];
-        },
+        prev: previous,
 
         /**
          * The next command that was entered.
          * @returns {string} The next command.
          */
-        next: function () {
-            if (hasNext()) {
-                current++;
-            }
-
-            if (current === sentCommands.length) {
-                return tempCommand;
-            }
-
-            return sentCommands[current];
-        }
+        next: next
     };
 })();

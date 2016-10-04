@@ -40,7 +40,7 @@ Console chat helper styles
 
 /* Override the z-index so the confirmation dialog is above the management interface */
 #modalbg {
-	z-index: 150 !important;
+    z-index: 150 !important;
 }
 
 /* Helper Management Interface */
