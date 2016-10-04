@@ -1,7 +1,7 @@
 {
   "name": "McMyAdminHelper",
   "version": "0.1.2",
-  "description": "Adds additional functionality to the McMyAdmin console",
+  "description": "Adds additional functionality to a McMyAdmin console",
   "repository": {
     "type": "git",
     "url": "ssh://git@hs.chockly.org:1104/~/web/fs-chat"
