@@ -2,7 +2,7 @@
  * McMyAdminHelper
  * http://chockly.org/
  *
- * Copyright © 2015 Curtis Oakley
+ * Copyright © 2015-2016 Curtis Oakley
  * Licensed under the MIT license.
  */
 

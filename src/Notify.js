@@ -2,9 +2,10 @@
  * McMyAdminHelper
  * http://chockly.org/
  *
- * Copyright © 2015 Curtis Oakley
+ * Copyright © 2015-2016 Curtis Oakley
  * Licensed under the MIT license.
  */
+
 /* globals DataStorage Utils */
 var Notify = (function ($window) {
     "use strict";
@@ -117,7 +118,7 @@ var Notify = (function ($window) {
     }
 
     function logger(type, args) {
-        if (args.length && args.length == 1) {
+        if (args.length && args.length === 1) {
             addLog(type, args[0]);
         } else {
             addLog(type, args);
