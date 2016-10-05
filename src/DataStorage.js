@@ -6,44 +6,14 @@
  * Licensed under the MIT license.
  */
 
-var DataStorage = (function () {
+var DataStorage = (function ($window) {
     "use strict";
 
     var
         /** The key used to retrieve and set data from the local storage object. */
         storageKey = "cdata",
         data,
-        storage = window.localStorage;
-
-    function retrieve(forceRefresh) {
-        if (!data || forceRefresh) {
-            data = JSON.parse(storage.getItem(storageKey));
-            if (!data) {
-                data = {};
-            }
-        }
-    }
-
-    function persist() {
-        storage.setItem(storageKey, JSON.stringify(data));
-    }
-
-    function get(key, defaultValue, forceRefresh) {
-        retrieve(forceRefresh);
-        if (!key) {
-            return data;
-        } else if (!data || !data[key]) {
-            return defaultValue;
-        } else {
-            return data[key];
-        }
-    }
-
-    function set(key, value) {
-        retrieve();
-        data[key] = value;
-        persist();
-    }
+        storage = $window.localStorage;
 
     function clear(key) {
         if (!key) {
@@ -58,6 +28,36 @@ var DataStorage = (function () {
             delete data[key];
             persist();
         }
+    }
+
+    function get(key, defaultValue, forceRefresh) {
+        retrieve(forceRefresh);
+        if (!key) {
+            return data;
+        } else if (!data || !data[key]) {
+            return defaultValue;
+        } else {
+            return data[key];
+        }
+    }
+
+    function persist() {
+        storage.setItem(storageKey, JSON.stringify(data));
+    }
+
+    function retrieve(forceRefresh) {
+        if (!data || forceRefresh) {
+            data = JSON.parse(storage.getItem(storageKey));
+            if (!data) {
+                data = {};
+            }
+        }
+    }
+
+    function set(key, value) {
+        retrieve();
+        data[key] = value;
+        persist();
     }
 
     /** Stores the names of keys used to get and set data from localStorage. */
@@ -92,4 +92,4 @@ var DataStorage = (function () {
          */
         set: set
     };
-})();
+})(window);

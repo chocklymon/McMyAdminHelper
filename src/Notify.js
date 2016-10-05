@@ -13,58 +13,12 @@ var Notify = (function ($window) {
     // TODO chrome notifications, play sound, popup option.
     // TODO have a better way to identify notifications to prevent duplicates?
 
-    // Simple variables
     var /** Contains all the logs. */
         logs = [],
         /** Contains the hash of the last displayed notification. */
-        lastHash;
+        lastHash,
 
-    function addLog(type, message) {
-        // Push a new log
-        logs.push({
-            "type": type,
-            "message": message,
-            "timestamp": Date.now() // Unix timestamp in milliseconds
-        });
-
-        // Remove old logs if needed
-        var maxLogSize = DataStorage.get("maxLogSize", 20);
-        while (logs.length > maxLogSize) {
-            logs.shift();
-        }
-    }
-
-    function noOp() {}
-
-    // Default alert function - Opens a pop-up window.
-    function openPopup(title, message, id) {
-        // Generate the popup window
-        var popup = $window.open(
-            "",
-            "ch-alert-" + id,
-            "width=300,height=150,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0"
-        );
-
-        // Write the notification
-        if (popup && popup.document) {
-            popup.document.write("<!DOCTYPE HTML>"
-                + "<html>"
-                + "<head>"
-                + "<title>Notification - " + title + "</title>"
-                + "<link href='http://chockly.org/ch/notify.css' rel='stylesheet' type='text/css' />"
-                + "</head>"
-                + "<body>"
-                + "<div class='wrapper'><div class='message'>"
-                + message
-                + "</div></div>"
-                + "</body>"
-                + "</html>"
-            );
-        }
-    }
-
-    // Save dynamic functions
-    var alertUser = openPopup,
+        alertUser = openPopup,
 
         /** The window notification function, if there is one. */
         Notification = (function () {
@@ -101,6 +55,33 @@ var Notify = (function ($window) {
             }
         })();
 
+    // See if we can use the Web Notifications API
+    if (Notification && Notification.permission !== "denied") {
+        Notification.requestPermission(function (permission) {
+            if (permission === "granted") {
+                // Notification permission is granted.
+                // Replace the alert function with the notifications ones
+                alertUser = createNotification;
+            }
+        });
+    }
+
+
+    function addLog(type, message) {
+        // Push a new log
+        logs.push({
+            "type": type,
+            "message": message,
+            "timestamp": Date.now() // Unix timestamp in milliseconds
+        });
+
+        // Remove old logs if needed
+        var maxLogSize = DataStorage.get("maxLogSize", 20);
+        while (logs.length > maxLogSize) {
+            logs.shift();
+        }
+    }
+
     function createNotification(title, msg, id) {
         // Notifications don't display HTML content, so remove it.
         var noHtmlMessage = $("<div/>").html(msg).text();
@@ -127,16 +108,33 @@ var Notify = (function ($window) {
         cnsl[type].apply(cnsl, args);
     }
 
+    function noOp() {}
 
-    // See if we can use the Web Notifications API
-    if (Notification && Notification.permission !== "denied") {
-        Notification.requestPermission(function (permission) {
-            if (permission === "granted") {
-                // Notification permission is granted.
-                // Replace the alert function with the notifications ones
-                alertUser = createNotification;
-            }
-        });
+    // Default alert function - Opens a pop-up window.
+    function openPopup(title, message, id) {
+        // Generate the popup window
+        var popup = $window.open(
+            "",
+            "ch-alert-" + id,
+            "width=300,height=150,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0"
+        );
+
+        // Write the notification
+        if (popup && popup.document) {
+            popup.document.write("<!DOCTYPE HTML>"
+                + "<html>"
+                + "<head>"
+                + "<title>Notification - " + title + "</title>"
+                + "<link href='http://chockly.org/ch/notify.css' rel='stylesheet' type='text/css' />"
+                + "</head>"
+                + "<body>"
+                + "<div class='wrapper'><div class='message'>"
+                + message
+                + "</div></div>"
+                + "</body>"
+                + "</html>"
+            );
+        }
     }
 
     return {

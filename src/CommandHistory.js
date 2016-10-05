@@ -22,14 +22,6 @@ var CommandHistory = (function () {
         /** Store commands and messages that have been sent to the server. */
         sentCommands = [];
 
-    function hasPrev() {
-        return current > 0;
-    }
-
-    function hasNext() {
-        return current < sentCommands.length;
-    }
-
     function add(command) {
         // Don't store a command that is the same as the last one.
         if (sentCommands[sentCommands.length - 1] === command) {
@@ -46,6 +38,14 @@ var CommandHistory = (function () {
 
         // Reset the current command pointer
         current = sentCommands.length;
+    }
+
+    function hasPrev() {
+        return current > 0;
+    }
+
+    function hasNext() {
+        return current < sentCommands.length;
     }
 
     function previous(currentValue) {

@@ -15,27 +15,18 @@ var TabbedModal = (function () {
         saveCallbacks = [],
         contentBuilders = [];
 
-    function saveTabs() {
-        $.each(saveCallbacks, function (i, saveCallback) {
-            saveCallback();
-        });
-    }
-    function empty() {
-        tabTitles.empty();
-        tabContents.remove("div:gt(0)");
+    // Attach the buttons
+    modalWindow.children().first().append(
+        $("<div class='modalbuttons' />")
+            .append($("<button>Save</button>").click(saveTabs))
+            .append($("<button>Cancel</button>").click(reset))
+            .append($("<button>Close</button>").click(closeModal))
+    );
 
-        saveCallbacks = [];
-        contentBuilders = [];
-    }
-    function reset() {
-        $.each(contentBuilders, function (index, contentBuilder) {
-            var contents = contentBuilder();
-            $("tab-" + index).empty().append(contents);
-        });
-    }
-    function closeModal() {
-        modalWindow.hide();
-    }
+    // Attach the modal to the page
+    $("body").append(modalWindow);
+
+
     function addTab(title, contentBuilder, saveCallback) {
         // Save the content builder and save callback
         contentBuilders.push(contentBuilder);
@@ -57,16 +48,30 @@ var TabbedModal = (function () {
         tabTitles.append(tabTitle);
     }
 
-    // Attach the buttons
-    modalWindow.children().first().append(
-        $("<div class='modalbuttons' />")
-            .append($("<button>Save</button>").click(saveTabs))
-            .append($("<button>Cancel</button>").click(reset))
-            .append($("<button>Close</button>").click(closeModal))
-    );
+    function closeModal() {
+        modalWindow.hide();
+    }
 
-    // Attach the modal to the page
-    $("body").append(modalWindow);
+    function empty() {
+        tabTitles.empty();
+        tabContents.remove("div:gt(0)");
+
+        saveCallbacks = [];
+        contentBuilders = [];
+    }
+
+    function saveTabs() {
+        $.each(saveCallbacks, function (i, saveCallback) {
+            saveCallback();
+        });
+    }
+
+    function reset() {
+        $.each(contentBuilders, function (index, contentBuilder) {
+            var contents = contentBuilder();
+            $("tab-" + index).empty().append(contents);
+        });
+    }
 
     return {
         close: closeModal,
