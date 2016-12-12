@@ -469,7 +469,11 @@ var ch = {
     processMessage: function (text) {
         var filters = DataStorage.get(DataStorage.key.filters, []),
             filter,
-            regex;
+            regex,
+            result,
+            style,
+            styleTag,
+            resetCount = 0;
 
         // Escape any HTML entities
         text = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -500,6 +504,117 @@ var ch = {
                 Notify.error("Problem processing message", exception);
             }
         }
+
+        if (DataStorage.get(DataStorage.key.colorize, false)) {
+            regex = /&[0-9a-fk-or]/g;
+            while ((result = regex.exec(text)) != null) {
+                switch (result[0]) {
+                    case "&0":
+                        style = "black";
+                        break;
+
+                    case "&1":
+                        style = "dark-blue";
+                        break;
+
+                    case "&2":
+                        style = "dark-green";
+                        break;
+
+                    case "&3":
+                        style = "dark-aqua";
+                        break;
+
+                    case "&4":
+                        style = "dark-red";
+                        break;
+
+                    case "&5":
+                        style = "dark-purple";
+                        break;
+
+                    case "&6":
+                        style = "gold";
+                        break;
+
+                    case "&7":
+                        style = "gray";
+                        break;
+
+                    case "&8":
+                        style = "dark-gray";
+                        break;
+
+                    case "&9":
+                        style = "blue";
+                        break;
+
+                    case "&a":
+                        style = "green";
+                        break;
+
+                    case "&b":
+                        style = "aqua";
+                        break;
+
+                    case "&c":
+                        style = "red";
+                        break;
+
+                    case "&d":
+                        style = "light-purple";
+                        break;
+
+                    case "&e":
+                        style = "yellow";
+                        break;
+
+                    case "&f":
+                        style = "white";
+                        break;
+
+                    case "&k":
+                        style = "obfuscated";
+                        break;
+                    case "&l":
+                        style = "bold";
+                        break;
+
+                    case "&m":
+                        style = "strikethrough";
+                        break;
+
+                    case "&n":
+                        style = "underline";
+                        break;
+
+                    case "&o":
+                        style = "italic";
+                        break;
+
+                    case "&r":
+                        style = false;
+                        break;
+                }
+                if (style === false) {
+                    // Reset
+                    styleTag = "";
+                    for (; resetCount > 0; resetCount--) {
+                        styleTag += "</span>";
+                    }
+                } else {
+                    styleTag = '<span class="ch-' + style + '">';
+                    resetCount++;
+                }
+                text = text.substring(0, result.index) + styleTag + "§" + result[0][1] + text.substring(result.index + 2);
+            }
+
+            // Close any open style tags
+            for (; resetCount > 0; resetCount--) {
+                text += "</span>";
+            }
+        }
+
         return text;
     },
 

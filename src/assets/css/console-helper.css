@@ -86,3 +86,70 @@ input.ch-large {
 .ch-add-new, .ch-delete {
 	cursor: pointer;
 }
+
+/* Colors */
+/* See: http://minecraft.gamepedia.com/Formatting_codes */
+.ch-black {
+    color: #000000;
+}
+.ch-dark-blue {
+    color: #0000AA;
+}
+.ch-dark-green {
+    color: #00AA00;
+}
+.ch-dark-aqua {
+    color: #00AAAA;
+}
+.ch-dark-red {
+    color: #AA0000;
+}
+.ch-dark-purple {
+    color: #AA00AA;
+}
+.ch-gold {
+    color: #FFAA00;
+}
+.ch-gray {
+    color: #AAAAAA;
+}
+.ch-dark-gray {
+    color: #555555;
+}
+.ch-blue {
+    color: #5555FF;
+}
+.ch-green {
+    color: #55FF55;
+}
+.ch-aqua {
+    color: #55FFFF;
+}
+.ch-red {
+    color: #FF5555;
+}
+.ch-light-purple {
+    color: #FF55FF;
+}
+.ch-yellow {
+    color: #FFFF55;
+}
+.ch-white {
+    color: #FFFFFF;
+}
+.ch-obfuscated {
+    color: #000000;
+    background-color: #707070;
+}
+.ch-bold {
+    font-weight: 700;
+}
+.ch-strikethrough {
+    text-decoration: line-through;
+}
+.ch-underline {
+    text-decoration: underline;
+}
+.ch-italic {
+    font-style: italic;
+}

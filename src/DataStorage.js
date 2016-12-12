@@ -66,7 +66,8 @@ var DataStorage = (function ($window) {
             generalCommands: "gcmnds",
             quickCommands: "qcmnds",
             playerCommands: "pcmnds",
-            filters: "filters"
+            filters: "filters",
+            colorize: "colorize"
         },
 
         /**
