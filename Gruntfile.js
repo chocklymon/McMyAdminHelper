@@ -66,7 +66,10 @@ module.exports = function (grunt) {
                     banner: injector.header(),
                     footer: injector.footer()
                 },
-                src: ["src/Utils.js", "src/DataStorage.js", "src/CommandHistory.js", "src/ContextMenu.js", "src/Notify.js", "src/console-helper.js"],
+                src: [
+                    "src/Utils.js", "src/DataStorage.js", "src/CommandHistory.js", "src/ContextMenu.js", "src/Notify.js", "src/TableGenerator.js",
+                    "src/console-helper.js"
+                ],
                 dest: "dist/console-helper.js"
             },
             userScript: {
@@ -74,7 +77,11 @@ module.exports = function (grunt) {
                     banner: userScriptHeader + "\n" + injector.header(),
                     footer: injector.footer()
                 },
-                src: ["src/Utils.js", "src/DataStorage.js", "src/CommandHistory.js", "src/ContextMenu.js", "src/Notify.js", "src/user_script/*.js", "src/console-helper.js"],
+                src: [
+                    "src/Utils.js", "src/DataStorage.js", "src/CommandHistory.js", "src/ContextMenu.js", "src/Notify.js", "src/TableGenerator.js",
+                    "src/user_script/*.js",
+                    "src/console-helper.js"
+                ],
                 dest: "dist/console-helper.user.js"
             },
             dynmap: {
