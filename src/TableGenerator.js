@@ -200,7 +200,7 @@ var TableGenerator = (function () {
 
     return {
         table: buildTable,
-        removeRowAction: function (fn) {
+        setRemoveRowAction: function (fn) {
             removeRow = fn;
         }
     };
