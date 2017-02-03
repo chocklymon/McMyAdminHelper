@@ -332,8 +332,22 @@ var ch = {
             text += chatBox.val();
         }
         chatBox.val(text);
-    }
+    },
 
+    updateLogs: function () {
+        var logs = Notify.getLogs();
+        var logText = $("<div/>");
+        var date;
+        $.each(logs, function (i, log) {
+            date = new Date(log.timestamp);
+            logText.append(
+                $("<p/>").addClass('ch-log-' + log.type).text(
+                    date.toLocaleString() + " [" + log.type.toUpperCase() + "] " + log.message
+                )
+            );
+        });
+        $("#ch-logs").empty().append(logText);
+    }
 };
 
 
@@ -400,27 +414,37 @@ ch.buildCommands();
 //  Helper Manager Interface  //
 // Insert the helper manager interface into the page, with the filters tab selected by default.
 $("body").append(
-    "<div id='ch-manager' class='modalbg modalnormal'>"
-    + "<div class='modalpanel'>"
-    + "<div class='ch-tabs modalcontents'>"
-    + "<div class='subtabhead'>"
-    + "<a href='#ch-filters' class='subtab picked'>Filters</a>"
-    + "<a href='#ch-pcmnds'  class='subtab'>Player Commands</a>"
-    + "<a href='#ch-gcmnds'  class='subtab'>General Commands</a>"
-    + "<a href='#ch-qcmnds'  class='subtab'>Quick Commands</a>"
-    + "</div>"
-    + "<div id='ch-filters' class='subtabcontainer' style='display:block'><p>Create regular expression filters that are applied to the console messages. Checking alert will cause a window to popup when a message matches the filter. Count will cause an alert to display if the message is matched that many times in a five minute period.<br/>Help with regular expressions: <a href='http://net.tutsplus.com/tutorials/javascript-ajax/you-dont-know-anything-about-regular-expressions/' target='_blank'>Regular Expression Tutorial</a> &mdash; <a href='http://regexpal.com/' target='_blank'>Regular Expression Tester</a></p></div>"
-    + "<div id='ch-pcmnds'  class='subtabcontainer'><p>These commands are available when right clicking on a player name in the sidebar. The player's name is added after the command.</p></div>"
-    + "<div id='ch-gcmnds'  class='subtabcontainer'><p>These commands are added as buttons below the console input box.</p></div>"
-    + "<div id='ch-qcmnds'  class='subtabcontainer'><p>These commands are added as buttons below the console input box and run when they are clicked on.</p></div>"
-    + "</div>"
-    + "<div class='modalbuttons'>"
-    + "<button id='ch-save'>Save</button>"
-    + "<button id='ch-cancel'>Cancel</button>"
-    + "<button id='ch-close'>Close</button>"
-    + "</div>"
-    + "</div>"
-    + "</div>"
+    "<div id='ch-manager' class='modalbg modalnormal'>" +
+        "<div class='modalpanel'>" +
+            "<div class='ch-tabs modalcontents'>" +
+                "<div class='subtabhead'>" +
+                    "<a href='#ch-filters' class='subtab picked'>Filters</a>" +
+                    "<a href='#ch-pcmnds' class='subtab'>Player Commands</a>" +
+                    "<a href='#ch-gcmnds' class='subtab'>General Commands</a>" +
+                    "<a href='#ch-qcmnds' class='subtab'>Quick Commands</a>" +
+                    "<a href='#ch-logs' class='subtab'>Logs</a>" +
+                "</div>" +
+                "<div id='ch-filters' class='subtabcontainer' style='display:block'>" +
+                    "<p>Create regular expression filters that are applied to the console messages. Checking alert will cause a window to popup when a message matches the filter. Count will cause an alert to display if the message is matched that many times in a five minute period.<br/>Help with regular expressions: <a href='http://net.tutsplus.com/tutorials/javascript-ajax/you-dont-know-anything-about-regular-expressions/' target='_blank'>Regular Expression Tutorial</a> &mdash; <a href='http://regexpal.com/' target='_blank'>Regular Expression Tester</a></p>" +
+                "</div>" +
+                "<div id='ch-pcmnds' class='subtabcontainer'>" +
+                    "<p>These commands are available when right clicking on a player name in the sidebar. The player's name is added after the command.</p>" +
+                "</div>" +
+                "<div id='ch-gcmnds' class='subtabcontainer'>" +
+                    "<p>These commands are added as buttons below the console input box.</p>" +
+                "</div>" +
+                "<div id='ch-qcmnds' class='subtabcontainer'>" +
+                    "<p>These commands are added as buttons below the console input box and run when they are clicked on.</p>" +
+                "</div>" +
+                "<div id='ch-logs' class='subtabcontainer'></div>" +
+            "</div>" +
+            "<div class='modalbuttons'>" +
+                "<button id='ch-save'>Save</button>" +
+                "<button id='ch-cancel'>Cancel</button>" +
+                "<button id='ch-close'>Close</button>" +
+            "</div>" +
+        "</div>" +
+    "</div>"
 );
 
 // Build the tab contents
@@ -519,6 +543,7 @@ $("#userinfo")
         .attr("href", "#console-helper")
         .click(function (event) {
             $("#ch-manager").show();
+            ch.updateLogs();
             event.preventDefault();
         })
         .text("Console Helper")
