@@ -28,19 +28,6 @@ describe("CSV Tests", function () {
     }
     var testCSV = CSV.withConfiguration(null, null, null, null, forEach);
 
-    it("converts arrays to csv", function () {
-        var arr = [
-            ["v1", "v2"],
-            ["v3", "v4", "v5"],
-            ["v6"]
-        ];
-        var expected = "v1,v2,\nv3,v4,v5\nv6,,\n";
-
-        var actual = testCSV.arraysToCSV(arr);
-
-        expect(actual).toBe(expected);
-    });
-
     it("converts objects to csv", function () {
         var data = [
             {"hello": "world", "goodbye": "Moose"},

@@ -30,26 +30,6 @@ var CSV = (function () {
         var enclosureSearch = new RegExp(enclosure, "g");
 
         /**
-         * Converts all arrays provided into csv.
-         * @param {array[]} data An array of arrays.
-         * @returns {string}
-         */
-        function arraysToCSV(data) {
-            var headers = [],
-                i;
-
-            // Build the headers
-            // The headers are simply a list of indexes
-            forEach(data, function (_, row) {
-                for (i = headers.length; i < row.length; i++) {
-                    headers.push(i);
-                }
-            });
-
-            return toCSV(data, headers, false);
-        }
-
-        /**
          * Converts all objects provided into csv.
          * @param {object[]} data An array of objects. The object keys are used to generate the headers.
          * @returns {string}
@@ -130,7 +110,6 @@ var CSV = (function () {
         }
 
         return {
-            arraysToCSV: arraysToCSV,
             objsToCSV: objsToCSV,
             toCSV: toCSV,
             withConfiguration: CSVCreator
