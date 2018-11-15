@@ -23,8 +23,8 @@ Message Filters
 See the default generator for more.
 */
 
-//        [ - Globals from McMyAdmin JS                                                  ] [ - Local Globals                                                         ]
-/* global parseDate parseBool ScrollChat Icons showModal hideModal requestData APICommands CommandHistory ContextMenu DataStorage Filters Notify TableGenerator Utils */
+//        [ - Globals from McMyAdmin JS                                                  ] [ - Local Globals                                                            ]
+/* global parseDate parseBool ScrollChat Icons showModal hideModal requestData APICommands CommandHistory ContextMenu CSV DataStorage Filters Notify TableGenerator Utils */
 "use strict";
 
 // Create the console helper object
@@ -158,6 +158,23 @@ var ch = {
             cmndDiv,
             DataStorage.get(DataStorage.key.quickCommands, []),
             ch.runQuickCommand
+        );
+
+        // Download button
+        cmndDiv.append(
+            ch.createDownloadButton("console-log.csv", "Download Chat Log", function () {
+                var chatLogs = [];
+                $("#chatHistory .chatEntry").each(function (_, k) {
+                    var el = $(k);
+                    var nick = el.find(".chatNick").text().trim();
+                    chatLogs.push({
+                        timestamp: el.find(".chatTimestamp").text().trim(),
+                        nick: nick.substring(0, nick.length - 1), // Trim the trailing ":"
+                        message: el.find(".chatMessage").text().trim()
+                    });
+                });
+                return CSV.objsToCSV(chatLogs);
+            })
         );
     },
 
@@ -337,16 +354,45 @@ var ch = {
     updateLogs: function () {
         var logs = Notify.getLogs();
         var logText = $("<div/>");
+        logText.append(
+            ch.createDownloadButton("console-helper-log.csv", "Download Logs", function () {
+                return CSV.objsToCSV(Notify.getLogs());
+            })
+        );
         var date;
         $.each(logs, function (i, log) {
             date = new Date(log.timestamp);
             logText.append(
-                $("<p/>").addClass('ch-log-' + log.type).text(
+                $("<p/>").addClass("ch-log-" + log.type).text(
                     date.toLocaleString() + " [" + log.type.toUpperCase() + "] " + log.message
                 )
             );
         });
         $("#ch-logs").empty().append(logText);
+    },
+
+    createDownloadButton: function (fileName, title, getContents) {
+        return $("<a/>")
+            .text("Download")
+            .addClass("fakeButton")
+            .css({
+                float: "right"
+            })
+            .attr({
+                href: "data:application/octet-stream",
+                download: fileName,
+                title: title
+            })
+            .click(function (e) {
+                // Create a blob and attach it as the URL
+                var blob = new Blob([getContents()], { type: "text/csv" });
+                $(e.target).attr("href", window.URL.createObjectURL(blob));
+
+                // Cleanup, remove the created blob
+                setTimeout(function () {
+                    window.URL.revokeObjectURL($(e.target).attr("href"));
+                }, 10);
+            });
     }
 };
 

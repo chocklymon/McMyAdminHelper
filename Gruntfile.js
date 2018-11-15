@@ -67,7 +67,7 @@ module.exports = function (grunt) {
                     footer: injector.footer()
                 },
                 src: [
-                    "src/Utils.js", "src/DataStorage.js", "src/CommandHistory.js", "src/ContextMenu.js", "src/Notify.js", "src/Filters.js", "src/TableGenerator.js",
+                    "src/Utils.js", "src/DataStorage.js", "src/CommandHistory.js", "src/ContextMenu.js", "src/Notify.js", "src/Filters.js", "src/TableGenerator.js", "src/CSV.js",
                     "src/console-helper.js"
                 ],
                 dest: "dist/console-helper.js"
@@ -78,7 +78,7 @@ module.exports = function (grunt) {
                     footer: injector.footer()
                 },
                 src: [
-                    "src/Utils.js", "src/DataStorage.js", "src/CommandHistory.js", "src/ContextMenu.js", "src/Notify.js", "src/Filters.js", "src/TableGenerator.js",
+                    "src/Utils.js", "src/DataStorage.js", "src/CommandHistory.js", "src/ContextMenu.js", "src/Notify.js", "src/Filters.js", "src/TableGenerator.js", "src/CSV.js",
                     "src/user_script/*.js",
                     "src/console-helper.js"
                 ],
