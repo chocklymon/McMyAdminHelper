@@ -34,7 +34,7 @@ Console chat helper styles
     height: 10px;
 }
 
-#ch-cmnds button {
+#ch-cmnds button, #ch-cmnds a {
     margin: 6px 5px 4px 4px;
 }
 
